@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { Course, createNewCourse, calculateSGPA } from "@/types/calculator";
 import { CourseCard } from "@/components/calculator/CourseCard";
 import { StepIndicator } from "@/components/calculator/StepIndicator";
@@ -7,16 +7,10 @@ import { CGPASection } from "@/components/calculator/CGPASection";
 import { GradeChart } from "@/components/calculator/GradeChart";
 import { Button } from "@/components/ui/button";
 import { Plus, GraduationCap, Sparkles } from "lucide-react";
+import { usePersistedGrades } from "@/hooks/use-persisted-grades";
 
 export default function GradeCalculator() {
-  const [courses, setCourses] = useState<Course[]>([createNewCourse()]);
-  const [showCGPA, setShowCGPA] = useState(false);
-  const [cgpaData, setCGPAData] = useState<{
-    cgpa: number;
-    previousCGPA: number;
-    previousCredits: number;
-    newTotalCredits: number;
-  } | null>(null);
+  const { courses, setCourses, showCGPA, setShowCGPA, cgpaData, setCGPAData } = usePersistedGrades();
 
   const addCourse = () => {
     setCourses((prev) => [...prev, createNewCourse()]);
