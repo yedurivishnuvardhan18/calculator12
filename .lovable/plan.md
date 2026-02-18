@@ -1,46 +1,32 @@
 
 
-# Download Grade Card as Excel
+# Persist Grade Calculator Data in Local Storage
 
 ## Overview
-Add a "Download Grade Card" button that appears after SGPA is calculated. The downloaded Excel file will contain a styled grade card with course details and overall results.
+Save the grade calculator state (courses, CGPA inputs, and UI flags) to `localStorage` so that if the user accidentally closes the browser, their data is automatically restored. Data will expire after 24 hours.
 
-## Grade Card Contents
-
-The Excel file will include:
-
-**Course Table:**
-| Subject Name | Sessional 1 | Sessional 2 | Final Grade | Credits |
-|---|---|---|---|---|
-| Mathematics | A+ | A | A+ | 3 |
-| Physics | B+ | A | A | 4 |
-
-**Summary Section:**
-- SGPA: 8.50
-- Total Credits: 20
-- CGPA: 8.25 (only if calculated)
+## How It Works
+- Every time the user changes a course (adds, removes, edits grades, toggles lab, etc.) or calculates CGPA, the state is saved to `localStorage` with a timestamp.
+- On page load, if saved data exists and is less than 24 hours old, it is restored automatically.
+- If the data is older than 24 hours, it is cleared and the user starts fresh.
 
 ## Changes
 
-### 1. New file: `src/lib/gradecard-generator.ts`
-- Create a function `generateGradeCard(courses, sgpaResult, cgpaData?)` using ExcelJS (already installed)
-- Build a styled Excel workbook with:
-  - A header row: "Subject Name", "Sessional 1", "Sessional 2", "Final Grade", "Credits"
-  - One row per valid course, showing the sessional grade labels and final letter grade
-  - A blank spacer row
-  - An SGPA summary row with the calculated value
-  - If CGPA data is provided, a CGPA row as well
-- Apply styling consistent with the pop-art theme (bold headers, colored cells, borders)
-- Download the file as `grade-card.xlsx` using `file-saver`
+### 1. Create: `src/hooks/use-persisted-grades.ts`
+- A custom hook `usePersistedGrades` that wraps `useState` with localStorage persistence.
+- Saves/loads: `courses` array, `showCGPA` flag, and `cgpaData`.
+- Stores a `savedAt` timestamp alongside the data.
+- On load, checks if `Date.now() - savedAt < 24 * 60 * 60 * 1000`; if expired, returns default state.
+- Uses a `localStorage` key like `grade_calculator_state`.
+- Debounces writes to avoid excessive storage calls on rapid input.
 
-### 2. Modify: `src/components/calculator/SGPASection.tsx`
-- Add a "Download Grade Card" button next to the "Calculate CGPA" button
-- The button appears only after SGPA results are shown
-- Pass `courses` and `cgpaData` to the generator function on click
-- Use a Download icon from lucide-react
+### 2. Modify: `src/pages/GradeCalculator.tsx`
+- Replace the three `useState` calls (`courses`, `showCGPA`, `cgpaData`) with the single `usePersistedGrades` hook.
+- All existing `setCourses`, `setShowCGPA`, `setCGPAData` calls remain the same since the hook exposes identical setter functions.
+- No other component changes needed since the data flows down via props as before.
 
-## Technical Notes
-- ExcelJS and file-saver are already installed in the project, so no new dependencies needed
-- Sessional grades come from `course.assessments[0].gradeLabel` (S1) and `course.assessments[1].gradeLabel` (S2)
-- Final grade comes from `course.letterGrade`
-- The button will be styled to match the existing pop-art design with the download icon
+## Technical Details
+- **Storage key**: `grade_calculator_state`
+- **Expiry**: 24 hours from last save
+- **Serialization**: `JSON.stringify` / `JSON.parse` on the full state object
+- **Fallback**: If parsing fails or data is corrupted, defaults to a single empty course with no CGPA
