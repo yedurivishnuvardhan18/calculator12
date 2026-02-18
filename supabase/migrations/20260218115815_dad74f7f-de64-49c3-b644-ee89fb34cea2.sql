@@ -1,0 +1,1 @@
+ALTER TABLE public.user_codes ADD CONSTRAINT code_format CHECK (code ~ '^[a-zA-Z0-9_-]{4,50}$');

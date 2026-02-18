@@ -23,6 +23,20 @@ function codeToEmail(code: string) {
   return `${code.toLowerCase().replace(/[^a-z0-9]/g, "_")}@habittracker.app`;
 }
 
+function validateCode(code: string): { valid: boolean; error?: string } {
+  const trimmed = code.trim();
+  if (!trimmed || trimmed.length < 4) {
+    return { valid: false, error: "Code must be at least 4 characters." };
+  }
+  if (trimmed.length > 50) {
+    return { valid: false, error: "Code must be 50 characters or less." };
+  }
+  if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
+    return { valid: false, error: "Code can only contain letters, numbers, hyphens, and underscores." };
+  }
+  return { valid: true };
+}
+
 export default function AuthDialog({ open, onOpenChange, onAuthenticated }: AuthDialogProps) {
   const [mode, setMode] = useState<"enter" | "create">("enter");
   const [code, setCode] = useState("");
@@ -65,8 +79,9 @@ export default function AuthDialog({ open, onOpenChange, onAuthenticated }: Auth
 
   const handleCreateCode = async () => {
     const trimmed = code.trim();
-    if (!trimmed || trimmed.length < 4) {
-      toast({ title: "Too short", description: "Code must be at least 4 characters.", variant: "destructive" });
+    const validation = validateCode(trimmed);
+    if (!validation.valid) {
+      toast({ title: "Invalid code", description: validation.error, variant: "destructive" });
       return;
     }
     setLoading(true);
