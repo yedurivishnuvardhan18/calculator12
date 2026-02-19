@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Course, createNewCourse, calculateSGPA } from "@/types/calculator";
 import { CourseCard } from "@/components/calculator/CourseCard";
 import { StepIndicator } from "@/components/calculator/StepIndicator";
@@ -62,7 +63,12 @@ export default function GradeCalculator() {
     <div className="min-h-screen bg-background abstract-dots">
       <div className="container max-w-4xl py-5 sm:py-10 px-4 sm:px-6 space-y-5 sm:space-y-8">
         {/* Header */}
-        <div className="text-center space-y-3 animate-pop-in">
+        <motion.div
+          className="text-center space-y-3"
+          initial={{ opacity: 0, scale: 0.5, rotate: -5 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        >
           <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-pop-pink/20 via-pop-purple/15 to-pop-cyan/20 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
             <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-pop-pink animate-float" />
             <h1 className="text-xl sm:text-3xl font-black font-display">Grade Calculator</h1>
@@ -71,64 +77,113 @@ export default function GradeCalculator() {
           <p className="text-muted-foreground text-xs sm:text-base font-medium max-w-lg mx-auto">
             Calculate your WGP, SGPA, and CGPA with step-by-step breakdowns ✨
           </p>
-        </div>
+        </motion.div>
 
         {/* Step Indicator */}
-        <StepIndicator currentStep={currentStep} completedSteps={completedSteps} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+        >
+          <StepIndicator currentStep={currentStep} completedSteps={completedSteps} />
+        </motion.div>
 
         {/* Grade Chart */}
-        <GradeChart />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+        >
+          <GradeChart />
+        </motion.div>
 
         {/* Course Cards */}
         <div className="space-y-5 sm:space-y-6">
-          {courses.map((course, index) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              index={index}
-              onUpdate={(updated) => updateCourse(index, updated)}
-              onRemove={() => removeCourse(index)}
-              canRemove={courses.length > 1}
-            />
-          ))}
+          <AnimatePresence mode="popLayout">
+            {courses.map((course, index) => (
+              <motion.div
+                key={course.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.85, x: -80 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              >
+                <CourseCard
+                  course={course}
+                  index={index}
+                  onUpdate={(updated) => updateCourse(index, updated)}
+                  onRemove={() => removeCourse(index)}
+                  canRemove={courses.length > 1}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
         {/* Add Course Button */}
-        <div className="text-center">
-          <Button
-            onClick={addCourse}
-            variant="outline"
-            size="lg"
-            className="rounded-full border-3 border-dashed border-pop-cyan font-bold font-display text-pop-cyan hover:bg-pop-cyan hover:text-white transition-all duration-300 hover:scale-105 hover:border-solid hover:pop-shadow hover:rotate-1 active:scale-95"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Another Course
-          </Button>
-        </div>
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+        >
+          <motion.div whileHover={{ scale: 1.05, rotate: 1 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={addCourse}
+              variant="outline"
+              size="lg"
+              className="rounded-full border-3 border-dashed border-pop-cyan font-bold font-display text-pop-cyan hover:bg-pop-cyan hover:text-white transition-all duration-300 hover:border-solid hover:pop-shadow"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add Another Course
+            </Button>
+          </motion.div>
+        </motion.div>
 
         {/* SGPA Section */}
-        <SGPASection
-          courses={courses}
-          onShowCGPA={() => setShowCGPA(true)}
-          cgpaData={cgpaData ?? undefined}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <SGPASection
+            courses={courses}
+            onShowCGPA={() => setShowCGPA(true)}
+            cgpaData={cgpaData ?? undefined}
+          />
+        </motion.div>
 
         {/* CGPA Section */}
-        {showCGPA && sgpaResult && (
-          <CGPASection
-            currentSGPA={sgpaResult.sgpa}
-            currentCredits={sgpaResult.totalCredits}
-            courses={courses}
-            onCGPACalculated={handleCGPACalculated}
-          />
-        )}
+        <AnimatePresence>
+          {showCGPA && sgpaResult && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: 40 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -20 }}
+              transition={{ type: "spring", stiffness: 200, damping: 24 }}
+            >
+              <CGPASection
+                currentSGPA={sgpaResult.sgpa}
+                currentCredits={sgpaResult.totalCredits}
+                courses={courses}
+                onCGPACalculated={handleCGPACalculated}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Footer */}
-        <div className="text-center py-4 sm:py-6">
+        <motion.div
+          className="text-center py-4 sm:py-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
           <p className="text-xs text-muted-foreground font-medium">
             Made with 💜 by TeamDino
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
