@@ -717,7 +717,7 @@ export function CourseCard({
 
         {(course.wgp !== null || course.finalGradePoint !== null) && (
           <div className="animate-bounce-in space-y-4">
-            {!isCLAD && course.wgp !== null && (
+            {!isCLAD && course.wgp !== null && (course.gradingMode ?? "relative") === "relative" && course.assessments.length > 0 && (
               <WGPFormula
                 assessments={course.assessments}
                 wgp={course.wgp}
