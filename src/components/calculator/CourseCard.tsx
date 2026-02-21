@@ -5,11 +5,13 @@ import {
   calculateWGP,
   getGradeFromWGP,
   calculateFinalGradePointWithLab,
+  calculateAbsoluteGrade,
   checkForFGrade,
   requiresMarksInput,
   getSessionalTotalMarks,
   getSessionalGradePoint,
   SPECIAL_SESSIONAL_GRADES,
+  createDefaultAssessments,
 } from "@/types/calculator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -352,6 +354,142 @@ export function CourseCard({
           </div>
         </div>
 
+        {/* Grading Mode Toggle */}
+        {!isCLAD && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold font-display text-muted-foreground">Grading:</span>
+            <div className="inline-flex rounded-full border-2 border-foreground/10 overflow-hidden">
+              <button
+                type="button"
+                className={cn(
+                  "px-3 py-1.5 text-xs font-bold transition-all duration-200",
+                  (course.gradingMode ?? "relative") === "relative"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-muted-foreground hover:text-foreground"
+                )}
+                onClick={() => {
+                  if ((course.gradingMode ?? "relative") !== "relative") {
+                    onUpdate({
+                      ...course,
+                      gradingMode: "relative",
+                      absoluteMarks: null,
+                      absoluteMaxMarks: 100,
+                      assessments: createDefaultAssessments(),
+                      wgp: null,
+                      finalGradePoint: null,
+                      letterGrade: null,
+                    });
+                  }
+                }}
+              >
+                Relative
+              </button>
+              <button
+                type="button"
+                className={cn(
+                  "px-3 py-1.5 text-xs font-bold transition-all duration-200",
+                  (course.gradingMode ?? "relative") === "absolute"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-muted-foreground hover:text-foreground"
+                )}
+                onClick={() => {
+                  if ((course.gradingMode ?? "relative") !== "absolute") {
+                    onUpdate({
+                      ...course,
+                      gradingMode: "absolute",
+                      absoluteMarks: null,
+                      absoluteMaxMarks: 100,
+                      assessments: [],
+                      wgp: null,
+                      finalGradePoint: null,
+                      letterGrade: null,
+                    });
+                  }
+                }}
+              >
+                Absolute
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Absolute Grading UI */}
+        {!isCLAD && (course.gradingMode ?? "relative") === "absolute" && (
+          <div className="space-y-3">
+            <h4 className="font-bold text-sm text-foreground/80 font-display">📊 Absolute Grading</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor={`absMarks-${course.id}`} className="font-bold text-xs font-display">Marks Obtained</Label>
+                <Input
+                  id={`absMarks-${course.id}`}
+                  type="number"
+                  min={0}
+                  max={course.absoluteMaxMarks ?? 100}
+                  placeholder="e.g. 75"
+                  value={course.absoluteMarks ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value === "" ? null : Math.max(0, Number(e.target.value));
+                    const maxMarks = course.absoluteMaxMarks ?? 100;
+                    const clampedVal = val !== null ? Math.min(val, maxMarks) : null;
+                    if (clampedVal !== null && maxMarks > 0) {
+                      const result = calculateAbsoluteGrade(clampedVal, maxMarks);
+                      let finalGP = result.gradePoint;
+                      let letter = result.letterGrade;
+                      if (course.hasLab && course.labMarks !== null) {
+                        finalGP = calculateFinalGradePointWithLab(result.gradePoint, course.labMarks);
+                        const grade = getGradeFromWGP(finalGP);
+                        letter = grade.letter;
+                      }
+                      onUpdate({ ...course, absoluteMarks: clampedVal, wgp: result.gradePoint, finalGradePoint: finalGP, letterGrade: letter });
+                    } else {
+                      onUpdate({ ...course, absoluteMarks: clampedVal, wgp: null, finalGradePoint: null, letterGrade: null });
+                    }
+                  }}
+                  className="bg-card rounded-2xl border-2 border-foreground/10 h-11 font-medium"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`absMax-${course.id}`} className="font-bold text-xs font-display">Maximum Marks</Label>
+                <Input
+                  id={`absMax-${course.id}`}
+                  type="number"
+                  min={1}
+                  max={1000}
+                  placeholder="e.g. 100"
+                  value={course.absoluteMaxMarks ?? ""}
+                  onChange={(e) => {
+                    const maxVal = e.target.value === "" ? null : Math.max(1, Number(e.target.value));
+                    const obtained = course.absoluteMarks;
+                    if (obtained !== null && maxVal !== null && maxVal > 0) {
+                      const clamped = Math.min(obtained, maxVal);
+                      const result = calculateAbsoluteGrade(clamped, maxVal);
+                      let finalGP = result.gradePoint;
+                      let letter = result.letterGrade;
+                      if (course.hasLab && course.labMarks !== null) {
+                        finalGP = calculateFinalGradePointWithLab(result.gradePoint, course.labMarks);
+                        const grade = getGradeFromWGP(finalGP);
+                        letter = grade.letter;
+                      }
+                      onUpdate({ ...course, absoluteMaxMarks: maxVal, absoluteMarks: clamped, wgp: result.gradePoint, finalGradePoint: finalGP, letterGrade: letter });
+                    } else {
+                      onUpdate({ ...course, absoluteMaxMarks: maxVal, wgp: null, finalGradePoint: null, letterGrade: null });
+                    }
+                  }}
+                  className="bg-card rounded-2xl border-2 border-foreground/10 h-11 font-medium"
+                />
+              </div>
+            </div>
+            {course.absoluteMarks !== null && course.absoluteMaxMarks !== null && course.absoluteMaxMarks > 0 && (
+              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-2xl border-2 border-foreground/10">
+                <span className="text-sm font-medium">Percentage:</span>
+                <span className="text-lg font-bold font-display text-primary">
+                  {((course.absoluteMarks / course.absoluteMaxMarks) * 100).toFixed(1)}%
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         {isCLAD && (
           <div className="space-y-2">
             <Label htmlFor={`cladGrade-${course.id}`} className="font-display font-bold">Final Grade</Label>
@@ -383,7 +521,7 @@ export function CourseCard({
           </div>
         )}
 
-        {!isCLAD && (
+        {!isCLAD && (course.gradingMode ?? "relative") === "relative" && (
           <div className="space-y-3">
             <h4 className="font-bold text-sm text-foreground/80 font-display">📝 Assessment Grades</h4>
             

@@ -17,6 +17,9 @@ export interface Course {
   letterGrade: string | null;
   hasLab: boolean;
   labMarks: number | null;
+  gradingMode: "relative" | "absolute";
+  absoluteMarks: number | null;
+  absoluteMaxMarks: number | null;
 }
 
 // Grade mappings (10-point scale)
@@ -184,5 +187,20 @@ export function createNewCourse(): Course {
     letterGrade: null,
     hasLab: false,
     labMarks: null,
+    gradingMode: "relative",
+    absoluteMarks: null,
+    absoluteMaxMarks: 100,
   };
+}
+
+// Calculate grade from absolute marks (percentage-based)
+export function calculateAbsoluteGrade(obtained: number, max: number): { gradePoint: number; letterGrade: string; percentage: number } {
+  const percentage = (obtained / max) * 100;
+  if (percentage >= 90) return { gradePoint: 10, letterGrade: "O", percentage };
+  if (percentage >= 80) return { gradePoint: 9, letterGrade: "A+", percentage };
+  if (percentage >= 70) return { gradePoint: 8, letterGrade: "A", percentage };
+  if (percentage >= 60) return { gradePoint: 7, letterGrade: "B+", percentage };
+  if (percentage >= 50) return { gradePoint: 6, letterGrade: "B", percentage };
+  if (percentage >= 40) return { gradePoint: 4, letterGrade: "P", percentage };
+  return { gradePoint: 0, letterGrade: "F", percentage };
 }
