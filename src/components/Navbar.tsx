@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Calculator, CheckSquare, Sun, Moon, Menu, X } from "lucide-react";
+import { Calculator, CheckSquare, Sun, Moon, Menu, X, Globe, MessageSquare, Coffee } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
@@ -8,6 +8,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
+];
+
+const externalLinks = [
+  { href: "https://teamdino.in", label: "TeamDino", icon: Globe },
+  { href: "https://docs.google.com/forms/d/e/1FAIpQLSffSEUgxpJZ4i14s1E0cFQmheKTlS6uKGajijuL3YMBUY4txg/viewform?usp=publish-editor", label: "Feedback", icon: MessageSquare },
+  { href: "https://razorpay.me/@teamdino", label: "Buy Me a Coffee", icon: Coffee },
 ];
 
 export function Navbar() {
@@ -83,6 +89,19 @@ export function Navbar() {
           );
         })}
 
+        {!isMobile && externalLinks.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 text-[hsl(220,10%,55%)] hover:text-[hsl(220,15%,80%)] hover:bg-[hsl(240,12%,12%)]"
+          >
+            <item.icon className="w-4 h-4" />
+            <span>{item.label}</span>
+          </a>
+        ))}
+
         <div className="flex items-center gap-1">
           <button
             onClick={toggleTheme}
@@ -143,6 +162,18 @@ export function Navbar() {
                   </NavLink>
                 );
               })}
+              {externalLinks.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 text-[hsl(220,10%,55%)] hover:text-white hover:bg-[hsl(240,12%,12%)]"
+                >
+                  <item.icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </a>
+              ))}
             </div>
           </motion.div>
         )}
