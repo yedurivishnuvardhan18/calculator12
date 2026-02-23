@@ -135,9 +135,6 @@ export function FloatingCoffee() {
             className="w-20 h-20 object-contain drop-shadow-lg pointer-events-none"
             draggable={false}
           />
-          <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold text-foreground/70 px-1.5 py-0.5 rounded-full">
-            Buy me a ☕
-          </span>
         </motion.div>
       </div>
     </>
