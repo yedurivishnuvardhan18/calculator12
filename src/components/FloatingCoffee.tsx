@@ -103,27 +103,27 @@ export function FloatingCoffee() {
           className="relative"
         >
           {/* Steam particles */}
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-8 pointer-events-none">
-            {[0, 1, 2].map((i) => (
+          <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-12 pointer-events-none">
+            {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
-                className="absolute rounded-full bg-foreground/10"
+                className="absolute rounded-full bg-foreground/20"
                 style={{
-                  width: 4 + i * 2,
-                  height: 4 + i * 2,
-                  left: `${30 + i * 15}%`,
+                  width: 6 + i * 3,
+                  height: 6 + i * 3,
+                  left: `${15 + i * 16}%`,
                   bottom: 0,
                 }}
                 animate={{
-                  y: [-2, -18 - i * 4],
-                  x: [0, (i - 1) * 6],
-                  opacity: [0, 0.5, 0],
-                  scale: [0.5, 1.2],
+                  y: [-2, -24 - i * 6],
+                  x: [0, 5 + i, -3 - i, 7, 0],
+                  opacity: [0, 0.7, 0],
+                  scale: [0.5, 1.4],
                 }}
                 transition={{
                   repeat: Infinity,
-                  duration: 1.5 + i * 0.3,
-                  delay: i * 0.4,
+                  duration: 1.8 + i * 0.25,
+                  delay: i * 0.3,
                   ease: "easeOut",
                 }}
               />
@@ -135,7 +135,7 @@ export function FloatingCoffee() {
             className="w-20 h-20 object-contain drop-shadow-lg pointer-events-none"
             draggable={false}
           />
-          <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold text-foreground/70 bg-background/80 px-1.5 py-0.5 rounded-full backdrop-blur-sm">
+          <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold text-foreground/70 px-1.5 py-0.5 rounded-full">
             Buy me a ☕
           </span>
         </motion.div>
