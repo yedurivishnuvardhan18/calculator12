@@ -10,6 +10,7 @@ import GradeCalculator from "./pages/GradeCalculator";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ExternalPage } from "./components/ExternalPage";
+import { FloatingCoffee } from "./components/FloatingCoffee";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
+          <FloatingCoffee />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
