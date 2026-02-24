@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import coffeeCup from "@/assets/coffee-cup.png";
@@ -7,7 +6,6 @@ import coffeeCup from "@/assets/coffee-cup.png";
 const STORAGE_KEY = "ht_coffee_dismissed";
 
 export function FloatingCoffee() {
-  const navigate = useNavigate();
   const [dismissed, setDismissed] = useState(() => localStorage.getItem(STORAGE_KEY) === "1");
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
@@ -52,11 +50,11 @@ export function FloatingCoffee() {
       setDismissed(true);
       localStorage.setItem(STORAGE_KEY, "1");
     } else if (!hasMoved) {
-      navigate("/external/coffee");
+      window.open("https://razorpay.me/@teamdino", "_blank", "noopener,noreferrer");
     }
     setDragging(false);
     setNearBin(false);
-  }, [nearBin, hasMoved, navigate]);
+  }, [nearBin, hasMoved]);
 
   if (dismissed) return null;
 
