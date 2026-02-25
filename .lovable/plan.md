@@ -1,88 +1,121 @@
 
-Issue re-stated clearly:
-The same extraction failure keeps happening even for `.txt` uploads.  
-From the latest evidence, this is not an OCR/image-quality problem anymore.
+Goal: stop the repeated “Extraction failed — Failed to send a request to the Edge Function” error and make `.txt` uploads work even if the browser can’t reach backend functions.
 
-What I confirmed by investigation:
-1. The frontend is sending `textContent` correctly to `extract-timetable` (seen in network request body).
-2. Direct backend test calls to both `extract-timetable` and `extract-attendance` return:
-   - `500`
-   - `{ "error": "No image provided" }`
-3. That exact error string does not exist in the current repository code, which means the live backend functions are running an older deployed version (stale deployment mismatch), not the code now shown in the editor.
+What I found from investigation:
+- The backend functions are currently healthy and text-capable:
+  - direct calls to `extract-timetable` and `extract-attendance` return `200`
+  - response headers include `X-Function-Version: 2026-02-25-text-support-v2`
+- In your failing browser attempt, request body was correctly built (`textContent`), but it ended with `Failed to fetch`.
+- That specific failure means the request likely failed before function execution (browser/network/CORS preflight layer), because there is no matching function execution log at that request time.
+- I also noticed the failing payload was attendance-style text sent to `extract-timetable` (step 1). That won’t cause `Failed to fetch`, but it’s a UX mismatch we should guard against.
 
 Do I know what the issue is?
-Yes.  
-The app and backend are out of sync: frontend expects text-capable functions, but production-preview function runtime is still an older “image-only” build.
+Yes:
+1) Primary issue: browser-side transport/preflight failure to backend function endpoint (not extraction logic).
+2) Secondary issue: fragile dependency on backend for `.txt`, so any temporary network/preflight issue breaks the entire flow.
 
-Implementation approach to permanently stop this loop:
+Implementation plan (fix + practical alternative):
 
-1) Force-sync backend functions to current code
-- Scope:
-  - `supabase/functions/extract-timetable/index.ts`
-  - `supabase/functions/extract-attendance/index.ts`
-- Actions:
-  - Redeploy both functions explicitly (manual deploy trigger, not relying on passive auto-sync).
-  - Immediately verify with direct function test calls using `textContent`.
-- Success criteria:
-  - `extract-timetable` no longer returns “No image provided”.
-  - `extract-attendance` no longer returns “No image provided”.
+1. Harden backend function CORS/preflight handling (both functions)
+Files:
+- `supabase/functions/extract-timetable/index.ts`
+- `supabase/functions/extract-attendance/index.ts`
 
-2) Add function build/version marker for drift detection
-- Same files above.
-- Add a constant build marker (e.g. `FUNCTION_VERSION = "2026-02-25-text-support-v1"`), include it in logs and optionally response headers/body in debug-safe way.
-- Why:
-  - Lets us confirm in one request whether the running function is the latest build.
-  - Prevents future “it works in code but not in runtime” confusion.
+Changes:
+- In `OPTIONS` handler, echo requested headers dynamically:
+  - read `access-control-request-headers` from request
+  - return that value in `Access-Control-Allow-Headers`
+- Always return explicit:
+  - `Access-Control-Allow-Methods: POST, OPTIONS`
+  - `Access-Control-Max-Age` (preflight cache)
+- Keep `Access-Control-Allow-Origin: *` and ensure all success/error responses include full CORS headers.
+- Add lightweight request tracing logs for method/origin/header list so future transport issues are diagnosable quickly.
 
-3) Harden function input validation and error clarity for text path
-- Same files above.
-- Ensure text-mode path explicitly validates:
-  - `typeof textContent === "string"`
-  - `textContent.trim().length > 0`
-- Return clear, typed 400 messages for malformed payload instead of generic 500.
-- Why:
-  - Avoids ambiguous fetch failures.
-  - Makes user-visible errors actionable.
+Why:
+- Prevents failures when client/runtime adds headers not present in hardcoded allowlist.
+- Reduces intermittent browser-side “Failed to fetch” preflight breaks.
 
-4) Harden frontend invoke error handling for backend failures
-- File:
-  - `src/pages/AttendanceCalculator.tsx`
-- Actions:
-  - Parse and surface backend error payloads from function invocation consistently (not just fallback network message).
-  - Distinguish:
-    - request transport failure
-    - backend validation failure
-    - AI extraction failure
-- Why:
-  - User currently sees repetitive generic failures.
-  - Better diagnosis and less trial-and-error.
+2. Add deterministic local parser for `.txt` files (network-independent fallback and default path)
+New file:
+- `src/lib/attendance-text-parser.ts`
 
-5) Add non-AI fallback parser for plain-text attendance/timetable (optional but recommended for reliability)
-- Files:
-  - `src/pages/AttendanceCalculator.tsx`
-  - possibly new helper in `src/lib/` for deterministic parsing
-- Behavior:
-  - For `.txt` files, first attempt deterministic regex/table parser.
-  - If parser confidence is low, then call AI backend.
-- Why:
-  - Eliminates external model dependency for common `.txt` formats.
-  - Makes `.txt` path much more stable and faster.
+Implement:
+- `parseAttendanceText(text): SubjectAttendance[] | null`
+  - robust line parser for rows like:
+    `CODE  Subject Name  Present  Total  Percentage`
+  - support irregular spaces and missing `%` symbol
+  - sanitize control chars (`\f`, repeated whitespace)
+- `parseTimetableText(text): TimetableSchedule | null`
+  - support common formats:
+    - `Monday: CS101, MA101, ...`
+    - table-like day rows
+  - normalize day aliases (Mon/Monday, Tue/Tuesday, etc.)
+- Return confidence/validity signals (minimum parsed rows, required days).
 
-6) End-to-end verification checklist
-- Timetable `.txt` (step 1):
-  - Upload valid timetable text -> extraction success -> editor auto-filled.
-- Attendance `.txt` (step 2):
-  - Upload valid attendance text -> extraction success -> attendance editor filled.
-- Negative tests:
-  - Empty text file -> clear validation error.
-  - Random text -> clear “could not parse” message.
-- Deployment drift test:
-  - Trigger one direct backend call and confirm returned version marker matches latest build.
-- Regression checks:
-  - Image extraction still works.
-  - Step navigation and PDF flow remain unchanged.
+Why:
+- `.txt` extraction should not rely on backend AI for common structured files.
+- Eliminates this class of network-related blocking for `.txt`.
 
-Technical notes:
-- No database schema or policy changes are required.
-- Root cause is backend deployment drift, not frontend file upload logic.
-- The ref warnings in console are separate UI warnings and not the cause of extraction failure; they can be cleaned up in a follow-up task.
+3. Use local parser first for text uploads, then backend AI fallback only if parsing confidence is low
+File:
+- `src/pages/AttendanceCalculator.tsx`
+
+Changes:
+- In `extractTimetable` and `extractAttendance`:
+  - if `result.type === "text"`:
+    - attempt local parser first
+    - if success: set state immediately and show “Parsed locally” toast
+    - if fail: call backend function as fallback
+- Keep image flow unchanged (AI extraction + image retry logic).
+- Improve transport error messages:
+  - map function-fetch errors to: “Couldn’t reach backend service. We’ll keep local parsing for .txt; check connection or retry.”
+
+Why:
+- Makes `.txt` flow fast and resilient.
+- Backend remains available for complex/unstructured text.
+
+4. Add guardrails for wrong-file-in-wrong-step UX
+File:
+- `src/pages/AttendanceCalculator.tsx` (or parser helper)
+
+Changes:
+- If step 1 text strongly matches attendance table (has `present`, `total`, `percentage` columns):
+  - show clear toast: “This looks like attendance data—please upload it in Step 2.”
+  - optionally offer auto-step switch (if existing UI pattern supports it).
+- If step 2 text looks timetable-like, do equivalent warning.
+
+Why:
+- Prevents confusion from uploading attendance text into timetable extractor.
+
+5. Keep manual-edit alternative always usable
+Existing components already support manual editing:
+- `TimetableEditor`
+- `AttendanceEditor`
+
+Small UX additions:
+- add hint text near uploader:
+  - “If upload fails, you can paste/edit data manually below.”
+- ensure editor remains visible for quick manual entry when extraction fails.
+
+Why:
+- Gives user progress path even during transient network issues.
+
+Validation checklist (end-to-end):
+1) Timetable `.txt` with clean format:
+- parses locally, no backend call required, editor fills.
+2) Attendance `.txt` with copied portal text (including odd spacing/form feed):
+- parses locally or falls back and still succeeds.
+3) Simulated backend unreachable case:
+- `.txt` still works via local parser.
+4) Image uploads still work:
+- AI extraction + retry unchanged.
+5) Wrong-step upload:
+- user gets clear corrective prompt.
+6) Regression:
+- step navigation, calculations, and PDF generation remain intact.
+
+Scope and risk:
+- No database schema changes required.
+- No auth flow changes required.
+- Main risk is parser strictness; mitigated by backend fallback for ambiguous text.
+- This is the most reliable path because it fixes transport fragility and removes backend dependency for `.txt` at the same time.
