@@ -57,6 +57,20 @@ export default function AttendanceCalculator() {
   const isImageError = (msg: string) =>
     msg.includes("image") || msg.includes("Unable to process") || msg.includes("INVALID_ARGUMENT");
 
+  const parseEdgeFunctionError = (e: any): string => {
+    // Try to extract JSON error from the response
+    if (e?.context?.body) {
+      try {
+        const body = typeof e.context.body === "string" ? JSON.parse(e.context.body) : e.context.body;
+        if (body?.error) return body.error;
+      } catch {}
+    }
+    const msg = e?.message || "";
+    if (msg.includes("fetch") || msg.includes("network") || msg.includes("Failed to fetch"))
+      return "Network error — check your connection and try again.";
+    return msg || "Extraction failed. Please try again.";
+  };
+
   const extractTimetable = async (result: FileUploadResult) => {
     setTtLoading(true);
     if (result.type === "image") {
@@ -98,9 +112,7 @@ export default function AttendanceCalculator() {
           // Fall through
         }
       }
-      const msg = e.message?.includes("fetch") || e.message?.includes("network")
-        ? "Network error — check your connection and try again."
-        : e.message || "Extraction failed.";
+      const msg = parseEdgeFunctionError(e);
       toast({ title: "Extraction failed", description: msg, variant: "destructive" });
     } finally {
       setTtLoading(false);
@@ -147,9 +159,7 @@ export default function AttendanceCalculator() {
           // Fall through
         }
       }
-      const msg = e.message?.includes("fetch") || e.message?.includes("network")
-        ? "Network error — check your connection and try again."
-        : e.message || "Extraction failed.";
+      const msg = parseEdgeFunctionError(e);
       toast({ title: "Extraction failed", description: msg, variant: "destructive" });
     } finally {
       setAttLoading(false);

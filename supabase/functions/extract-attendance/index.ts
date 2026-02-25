@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const FUNCTION_VERSION = "2026-02-25-text-support-v2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -9,9 +11,25 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: { ...corsHeaders, "Access-Control-Allow-Methods": "POST, OPTIONS" } });
 
+  console.log(`[extract-attendance] version=${FUNCTION_VERSION}`);
+
   try {
-    const { imageBase64, mimeType: rawMime, textContent } = await req.json();
-    if (!imageBase64 && !textContent) throw new Error("No image or text provided");
+    const body = await req.json();
+    const { imageBase64, mimeType: rawMime, textContent } = body;
+
+    console.log(`[extract-attendance] input: hasImage=${!!imageBase64}, hasText=${!!textContent}`);
+
+    if (!imageBase64 && !textContent) {
+      return new Response(JSON.stringify({ error: "No image or text provided. Please upload an image or .txt file." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (textContent && (typeof textContent !== "string" || textContent.trim().length === 0)) {
+      return new Response(JSON.stringify({ error: "Text content is empty. Please upload a valid .txt file." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -111,8 +129,9 @@ serve(async (req) => {
     if (!toolCall) throw new Error("No tool call in response");
 
     const args = JSON.parse(toolCall.function.arguments);
+    console.log(`[extract-attendance] success, subjects=${args.subjects.length}`);
     return new Response(JSON.stringify(args.subjects), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json", "X-Function-Version": FUNCTION_VERSION },
     });
   } catch (e) {
     console.error("extract-attendance error:", e);
