@@ -14,9 +14,38 @@ interface ImageUploaderProps {
   onClear?: () => void;
 }
 
-const MAX_DIMENSION = 1600;
-const JPEG_QUALITY = 0.8;
-const MAX_BASE64_LENGTH = 4 * 1024 * 1024; // ~3MB decoded
+const MAX_DIMENSION = 1024;
+const JPEG_QUALITY = 0.6;
+const MAX_BASE64_LENGTH = 1.5 * 1024 * 1024; // ~1.1MB decoded
+
+// For retry with even smaller image
+export const RETRY_MAX_DIMENSION = 800;
+export const RETRY_JPEG_QUALITY = 0.4;
+
+export function compressImageFromBase64(base64: string, maxDim: number, quality: number): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        const scale = maxDim / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, width, height);
+      const mimeType = "image/jpeg";
+      const dataUrl = canvas.toDataURL(mimeType, quality);
+      const b64 = dataUrl.split(",")[1];
+      resolve({ base64: b64, mimeType });
+    };
+    img.onerror = () => reject(new Error("Could not re-compress image."));
+    img.src = `data:image/jpeg;base64,${base64}`;
+  });
+}
 
 function compressImage(file: File): Promise<{ base64: string; mimeType: string }> {
   return new Promise((resolve, reject) => {

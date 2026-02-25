@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AttendanceStepIndicator } from "@/components/attendance/AttendanceStepIndicator";
 import { ImageUploader } from "@/components/attendance/ImageUploader";
+import { compressImageFromBase64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY } from "@/components/attendance/ImageUploader";
 import { TimetableEditor } from "@/components/attendance/TimetableEditor";
 import { AttendanceEditor } from "@/components/attendance/AttendanceEditor";
 import { DateRangeConfig } from "@/components/attendance/DateRangeConfig";
@@ -51,21 +52,43 @@ export default function AttendanceCalculator() {
     [subjectResults, config.targetPercentage]
   );
 
+  const isImageError = (msg: string) =>
+    msg.includes("image") || msg.includes("Unable to process") || msg.includes("INVALID_ARGUMENT");
+
   const extractTimetable = async ({ base64, mimeType }: { base64: string; mimeType: string }) => {
     setTtLoading(true);
     setTtImage(base64);
-    try {
+
+    const tryExtract = async (b64: string, mime: string) => {
       const { data, error } = await supabase.functions.invoke("extract-timetable", {
-        body: { imageBase64: base64, mimeType },
+        body: { imageBase64: b64, mimeType: mime },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      return data;
+    };
+
+    try {
+      const data = await tryExtract(base64, mimeType);
       setTimetable(data);
       toast({ title: "Timetable extracted!", description: "Review and edit below." });
     } catch (e: any) {
+      // Retry with smaller image if it's an image processing error
+      if (isImageError(e.message || "")) {
+        try {
+          toast({ title: "Retrying with smaller image...", description: "First attempt failed, trying with reduced quality." });
+          const smaller = await compressImageFromBase64(base64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY);
+          const data = await tryExtract(smaller.base64, smaller.mimeType);
+          setTimetable(data);
+          toast({ title: "Timetable extracted!", description: "Review and edit below." });
+          return;
+        } catch (retryErr: any) {
+          // Fall through to show error
+        }
+      }
       const msg = e.message?.includes("fetch") || e.message?.includes("network")
         ? "Network error — try a smaller/cropped image or check your connection."
-        : e.message || "Extraction failed";
+        : e.message || "Extraction failed. Try a clearer screenshot or crop tightly around the timetable.";
       toast({ title: "Extraction failed", description: msg, variant: "destructive" });
     } finally {
       setTtLoading(false);
@@ -75,18 +98,36 @@ export default function AttendanceCalculator() {
   const extractAttendance = async ({ base64, mimeType }: { base64: string; mimeType: string }) => {
     setAttLoading(true);
     setAttImage(base64);
-    try {
+
+    const tryExtract = async (b64: string, mime: string) => {
       const { data, error } = await supabase.functions.invoke("extract-attendance", {
-        body: { imageBase64: base64, mimeType },
+        body: { imageBase64: b64, mimeType: mime },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      return data;
+    };
+
+    try {
+      const data = await tryExtract(base64, mimeType);
       setAttendance(data);
       toast({ title: "Attendance extracted!", description: "Review and edit below." });
     } catch (e: any) {
+      if (isImageError(e.message || "")) {
+        try {
+          toast({ title: "Retrying with smaller image...", description: "First attempt failed, trying with reduced quality." });
+          const smaller = await compressImageFromBase64(base64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY);
+          const data = await tryExtract(smaller.base64, smaller.mimeType);
+          setAttendance(data);
+          toast({ title: "Attendance extracted!", description: "Review and edit below." });
+          return;
+        } catch (retryErr: any) {
+          // Fall through
+        }
+      }
       const msg = e.message?.includes("fetch") || e.message?.includes("network")
         ? "Network error — try a smaller/cropped image or check your connection."
-        : e.message || "Extraction failed";
+        : e.message || "Extraction failed. Try a clearer screenshot or crop tightly around the attendance data.";
       toast({ title: "Extraction failed", description: msg, variant: "destructive" });
     } finally {
       setAttLoading(false);
