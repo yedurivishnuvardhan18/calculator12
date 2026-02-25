@@ -1,1 +1,7 @@
 project_id = "bfeqdjzwnjumkvlgmdue"
+
+[functions.extract-timetable]
+verify_jwt = false
+
+[functions.extract-attendance]
+verify_jwt = false
