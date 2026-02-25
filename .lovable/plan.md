@@ -1,92 +1,121 @@
 
+Goal: stop the repeated “Extraction failed — Failed to send a request to the Edge Function” error and make `.txt` uploads work even if the browser can’t reach backend functions.
 
-## Approach: GITAM Portal Data Bridge (Bookmarklet + Smart Import)
+What I found from investigation:
+- The backend functions are currently healthy and text-capable:
+  - direct calls to `extract-timetable` and `extract-attendance` return `200`
+  - response headers include `X-Function-Version: 2026-02-25-text-support-v2`
+- In your failing browser attempt, request body was correctly built (`textContent`), but it ended with `Failed to fetch`.
+- That specific failure means the request likely failed before function execution (browser/network/CORS preflight layer), because there is no matching function execution log at that request time.
+- I also noticed the failing payload was attendance-style text sent to `extract-timetable` (step 1). That won’t cause `Failed to fetch`, but it’s a UX mismatch we should guard against.
 
-Since a full Chrome extension can't be built/deployed from Lovable, we'll create a **bookmarklet-based extraction system** that achieves the same goal — credentials never leave the student's browser.
+Do I know what the issue is?
+Yes:
+1) Primary issue: browser-side transport/preflight failure to backend function endpoint (not extraction logic).
+2) Secondary issue: fragile dependency on backend for `.txt`, so any temporary network/preflight issue breaks the entire flow.
 
-### How It Works
+Implementation plan (fix + practical alternative):
 
-```text
-+---------------------------+       Copy/Paste or       +---------------------------+
-|   GITAM Portal            |    Bookmarklet Click      |   Your Web App            |
-|   (student logged in)     | ----------------------->  |   (habbittrackerpro)      |
-|                           |    Extracted JSON data     |                           |
-|   - Grades page           |                           |   - Dashboard display     |
-|   - Attendance page       |                           |   - Charts & analytics    |
-+---------------------------+                           |   - PDF/CSV export        |
-                                                        +---------------------------+
-```
+1. Harden backend function CORS/preflight handling (both functions)
+Files:
+- `supabase/functions/extract-timetable/index.ts`
+- `supabase/functions/extract-attendance/index.ts`
 
-### Plan
+Changes:
+- In `OPTIONS` handler, echo requested headers dynamically:
+  - read `access-control-request-headers` from request
+  - return that value in `Access-Control-Allow-Headers`
+- Always return explicit:
+  - `Access-Control-Allow-Methods: POST, OPTIONS`
+  - `Access-Control-Max-Age` (preflight cache)
+- Keep `Access-Control-Allow-Origin: *` and ensure all success/error responses include full CORS headers.
+- Add lightweight request tracing logs for method/origin/header list so future transport issues are diagnosable quickly.
 
-**1. Create a Bookmarklet Generator Page (`/import`)**
+Why:
+- Prevents failures when client/runtime adds headers not present in hardcoded allowlist.
+- Reduces intermittent browser-side “Failed to fetch” preflight breaks.
 
-A new page in the app that:
-- Shows step-by-step instructions for using the bookmarklet
-- Provides a draggable "Extract My Data" bookmarklet button
-- The bookmarklet is a small JavaScript snippet that:
-  - Runs on the GITAM portal page while the student is logged in
-  - Scrapes grades/attendance from the visible DOM
-  - Copies the structured JSON to clipboard automatically
-- Includes a "Paste Extracted Data" area that accepts the JSON
+2. Add deterministic local parser for `.txt` files (network-independent fallback and default path)
+New file:
+- `src/lib/attendance-text-parser.ts`
 
-**2. Smart Data Import Component**
+Implement:
+- `parseAttendanceText(text): SubjectAttendance[] | null`
+  - robust line parser for rows like:
+    `CODE  Subject Name  Present  Total  Percentage`
+  - support irregular spaces and missing `%` symbol
+  - sanitize control chars (`\f`, repeated whitespace)
+- `parseTimetableText(text): TimetableSchedule | null`
+  - support common formats:
+    - `Monday: CS101, MA101, ...`
+    - table-like day rows
+  - normalize day aliases (Mon/Monday, Tue/Tuesday, etc.)
+- Return confidence/validity signals (minimum parsed rows, required days).
 
-- Large textarea or "Paste JSON" button
-- Parses the bookmarklet output (grades + attendance)
-- Validates structure and shows preview before importing
-- Populates the existing grade calculator and attendance calculator
+Why:
+- `.txt` extraction should not rely on backend AI for common structured files.
+- Eliminates this class of network-related blocking for `.txt`.
 
-**3. Enhanced Dashboard (`/dashboard`)**
+3. Use local parser first for text uploads, then backend AI fallback only if parsing confidence is low
+File:
+- `src/pages/AttendanceCalculator.tsx`
 
-- Combined view of grades + attendance after import
-- Semester filter dropdown
-- Subject cards showing: name, code, internals, externals, total grade, attendance %
-- Warning badges for attendance below 75%
-- GPA/CGPA calculation using existing calculator logic
-- Visual charts (bar chart for grades, pie chart for attendance)
+Changes:
+- In `extractTimetable` and `extractAttendance`:
+  - if `result.type === "text"`:
+    - attempt local parser first
+    - if success: set state immediately and show “Parsed locally” toast
+    - if fail: call backend function as fallback
+- Keep image flow unchanged (AI extraction + image retry logic).
+- Improve transport error messages:
+  - map function-fetch errors to: “Couldn’t reach backend service. We’ll keep local parsing for .txt; check connection or retry.”
 
-**4. Export Options**
+Why:
+- Makes `.txt` flow fast and resilient.
+- Backend remains available for complex/unstructured text.
 
-- PDF download (using existing jsPDF setup)
-- CSV download
-- Both filtered by selected semester
+4. Add guardrails for wrong-file-in-wrong-step UX
+File:
+- `src/pages/AttendanceCalculator.tsx` (or parser helper)
 
-**5. Bookmarklet Scripts**
+Changes:
+- If step 1 text strongly matches attendance table (has `present`, `total`, `percentage` columns):
+  - show clear toast: “This looks like attendance data—please upload it in Step 2.”
+  - optionally offer auto-step switch (if existing UI pattern supports it).
+- If step 2 text looks timetable-like, do equivalent warning.
 
-Two small JavaScript snippets (generated in the app, not deployed separately):
-- `extract-grades.js` — reads grades table from GITAM portal DOM
-- `extract-attendance.js` — reads attendance table from GITAM portal DOM
-- These run entirely in the student's browser on the GITAM domain
+Why:
+- Prevents confusion from uploading attendance text into timetable extractor.
 
-### Security Model
+5. Keep manual-edit alternative always usable
+Existing components already support manual editing:
+- `TimetableEditor`
+- `AttendanceEditor`
 
-- Zero credential handling — student is already logged into GITAM in their browser
-- Bookmarklet only reads visible DOM data (same as the student seeing it)
-- No data is sent to any server — clipboard transfer only
-- Imported data stays in browser localStorage (or optionally saved to backend if authenticated)
+Small UX additions:
+- add hint text near uploader:
+  - “If upload fails, you can paste/edit data manually below.”
+- ensure editor remains visible for quick manual entry when extraction fails.
 
-### Technical Details
+Why:
+- Gives user progress path even during transient network issues.
 
-**New files:**
-- `src/pages/ImportData.tsx` — bookmarklet instructions + paste import page
-- `src/pages/Dashboard.tsx` — combined grades + attendance dashboard
-- `src/lib/gitam-data-parser.ts` — parser for bookmarklet JSON output
-- `src/lib/bookmarklet-scripts.ts` — generates the bookmarklet JS code
-- `src/components/dashboard/GradeCard.tsx` — individual subject grade display
-- `src/components/dashboard/AttendanceWarning.tsx` — below-75% alerts
-- `src/components/dashboard/SemesterFilter.tsx` — semester dropdown
-- `src/components/dashboard/ExportButtons.tsx` — PDF/CSV export
+Validation checklist (end-to-end):
+1) Timetable `.txt` with clean format:
+- parses locally, no backend call required, editor fills.
+2) Attendance `.txt` with copied portal text (including odd spacing/form feed):
+- parses locally or falls back and still succeeds.
+3) Simulated backend unreachable case:
+- `.txt` still works via local parser.
+4) Image uploads still work:
+- AI extraction + retry unchanged.
+5) Wrong-step upload:
+- user gets clear corrective prompt.
+6) Regression:
+- step navigation, calculations, and PDF generation remain intact.
 
-**Modified files:**
-- `src/App.tsx` — add `/import` and `/dashboard` routes
-- `src/components/Navbar.tsx` — add navigation links
-
-**No database changes needed** — data lives in localStorage or existing calculator state.
-
-### Limitations
-
-- Bookmarklets require the student to be on the correct GITAM portal page
-- If GITAM changes their DOM structure, the bookmarklet scripts need updating
-- This is not a Chrome extension (no auto-run, no background process)
-- Student must manually trigger extraction each time
+Scope and risk:
+- No database schema changes required.
+- No auth flow changes required.
+- Main risk is parser strictness; mitigated by backend fallback for ambiguous text.
+- This is the most reliable path because it fixes transport fragility and removes backend dependency for `.txt` at the same time.
