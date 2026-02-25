@@ -10,13 +10,30 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: { ...corsHeaders, "Access-Control-Allow-Methods": "POST, OPTIONS" } });
 
   try {
-    const { imageBase64, mimeType: rawMime } = await req.json();
-    if (!imageBase64) throw new Error("No image provided");
-    const allowedMimes = ["image/jpeg", "image/png", "image/webp"];
-    const mimeType = allowedMimes.includes(rawMime) ? rawMime : "image/jpeg";
+    const { imageBase64, mimeType: rawMime, textContent } = await req.json();
+    if (!imageBase64 && !textContent) throw new Error("No image or text provided");
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    const userContent: any[] = [];
+    if (textContent) {
+      userContent.push({
+        type: "text",
+        text: `Extract the attendance data from this text. For each subject, extract the subject code, subject name, classes present (attended), total classes conducted, and attendance percentage. Return using the extract_attendance tool.\n\nText data:\n${textContent}`,
+      });
+    } else {
+      const allowedMimes = ["image/jpeg", "image/png", "image/webp"];
+      const mimeType = allowedMimes.includes(rawMime) ? rawMime : "image/jpeg";
+      userContent.push({
+        type: "text",
+        text: "Extract the attendance data from this image. For each subject, extract the subject code, subject name, classes present (attended), total classes conducted, and attendance percentage. Return using the extract_attendance tool.",
+      });
+      userContent.push({
+        type: "image_url",
+        image_url: { url: `data:${mimeType};base64,${imageBase64}` },
+      });
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -29,22 +46,9 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content:
-              "You are an OCR extraction expert. Extract the attendance data from the provided image. Return structured data using the provided tool.",
+            content: "You are an OCR extraction expert. Extract the attendance data from the provided input. Return structured data using the provided tool.",
           },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Extract the attendance data from this image. For each subject, extract the subject code, subject name, classes present (attended), total classes conducted, and attendance percentage. Return using the extract_attendance tool.",
-              },
-              {
-                type: "image_url",
-                image_url: { url: `data:${mimeType};base64,${imageBase64}` },
-              },
-            ],
-          },
+          { role: "user", content: userContent },
         ],
         tools: [
           {

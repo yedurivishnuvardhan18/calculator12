@@ -6,8 +6,8 @@ import { addMonths } from "date-fns";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AttendanceStepIndicator } from "@/components/attendance/AttendanceStepIndicator";
-import { ImageUploader } from "@/components/attendance/ImageUploader";
-import { compressImageFromBase64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY } from "@/components/attendance/ImageUploader";
+import { ImageUploader, compressImageFromBase64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY } from "@/components/attendance/ImageUploader";
+import type { FileUploadResult } from "@/components/attendance/ImageUploader";
 import { TimetableEditor } from "@/components/attendance/TimetableEditor";
 import { AttendanceEditor } from "@/components/attendance/AttendanceEditor";
 import { DateRangeConfig } from "@/components/attendance/DateRangeConfig";
@@ -32,11 +32,13 @@ export default function AttendanceCalculator() {
   // Step 1
   const [timetable, setTimetable] = useState<TimetableSchedule>({});
   const [ttImage, setTtImage] = useState<string | null>(null);
+  const [ttText, setTtText] = useState<string | null>(null);
   const [ttLoading, setTtLoading] = useState(false);
 
   // Step 2
   const [attendance, setAttendance] = useState<SubjectAttendance[]>([]);
   const [attImage, setAttImage] = useState<string | null>(null);
+  const [attText, setAttText] = useState<string | null>(null);
   const [attLoading, setAttLoading] = useState(false);
 
   // Step 3
@@ -55,79 +57,99 @@ export default function AttendanceCalculator() {
   const isImageError = (msg: string) =>
     msg.includes("image") || msg.includes("Unable to process") || msg.includes("INVALID_ARGUMENT");
 
-  const extractTimetable = async ({ base64, mimeType }: { base64: string; mimeType: string }) => {
+  const extractTimetable = async (result: FileUploadResult) => {
     setTtLoading(true);
-    setTtImage(base64);
+    if (result.type === "image") {
+      setTtImage(result.base64);
+      setTtText(null);
+    } else {
+      setTtText(result.textContent);
+      setTtImage(null);
+    }
 
-    const tryExtract = async (b64: string, mime: string) => {
+    const buildBody = (r: FileUploadResult) =>
+      r.type === "text"
+        ? { textContent: r.textContent }
+        : { imageBase64: r.base64, mimeType: r.mimeType };
+
+    try {
       const { data, error } = await supabase.functions.invoke("extract-timetable", {
-        body: { imageBase64: b64, mimeType: mime },
+        body: buildBody(result),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      return data;
-    };
-
-    try {
-      const data = await tryExtract(base64, mimeType);
       setTimetable(data);
       toast({ title: "Timetable extracted!", description: "Review and edit below." });
     } catch (e: any) {
-      // Retry with smaller image if it's an image processing error
-      if (isImageError(e.message || "")) {
+      // Retry with smaller image only for image inputs
+      if (result.type === "image" && isImageError(e.message || "")) {
         try {
-          toast({ title: "Retrying with smaller image...", description: "First attempt failed, trying with reduced quality." });
-          const smaller = await compressImageFromBase64(base64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY);
-          const data = await tryExtract(smaller.base64, smaller.mimeType);
+          toast({ title: "Retrying with smaller image..." });
+          const smaller = await compressImageFromBase64(result.base64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY);
+          const { data, error } = await supabase.functions.invoke("extract-timetable", {
+            body: { imageBase64: smaller.base64, mimeType: smaller.mimeType },
+          });
+          if (error) throw error;
+          if (data?.error) throw new Error(data.error);
           setTimetable(data);
           toast({ title: "Timetable extracted!", description: "Review and edit below." });
           return;
-        } catch (retryErr: any) {
-          // Fall through to show error
+        } catch {
+          // Fall through
         }
       }
       const msg = e.message?.includes("fetch") || e.message?.includes("network")
-        ? "Network error — try a smaller/cropped image or check your connection."
-        : e.message || "Extraction failed. Try a clearer screenshot or crop tightly around the timetable.";
+        ? "Network error — check your connection and try again."
+        : e.message || "Extraction failed.";
       toast({ title: "Extraction failed", description: msg, variant: "destructive" });
     } finally {
       setTtLoading(false);
     }
   };
 
-  const extractAttendance = async ({ base64, mimeType }: { base64: string; mimeType: string }) => {
+  const extractAttendance = async (result: FileUploadResult) => {
     setAttLoading(true);
-    setAttImage(base64);
+    if (result.type === "image") {
+      setAttImage(result.base64);
+      setAttText(null);
+    } else {
+      setAttText(result.textContent);
+      setAttImage(null);
+    }
 
-    const tryExtract = async (b64: string, mime: string) => {
+    const buildBody = (r: FileUploadResult) =>
+      r.type === "text"
+        ? { textContent: r.textContent }
+        : { imageBase64: r.base64, mimeType: r.mimeType };
+
+    try {
       const { data, error } = await supabase.functions.invoke("extract-attendance", {
-        body: { imageBase64: b64, mimeType: mime },
+        body: buildBody(result),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      return data;
-    };
-
-    try {
-      const data = await tryExtract(base64, mimeType);
       setAttendance(data);
       toast({ title: "Attendance extracted!", description: "Review and edit below." });
     } catch (e: any) {
-      if (isImageError(e.message || "")) {
+      if (result.type === "image" && isImageError(e.message || "")) {
         try {
-          toast({ title: "Retrying with smaller image...", description: "First attempt failed, trying with reduced quality." });
-          const smaller = await compressImageFromBase64(base64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY);
-          const data = await tryExtract(smaller.base64, smaller.mimeType);
+          toast({ title: "Retrying with smaller image..." });
+          const smaller = await compressImageFromBase64(result.base64, RETRY_MAX_DIMENSION, RETRY_JPEG_QUALITY);
+          const { data, error } = await supabase.functions.invoke("extract-attendance", {
+            body: { imageBase64: smaller.base64, mimeType: smaller.mimeType },
+          });
+          if (error) throw error;
+          if (data?.error) throw new Error(data.error);
           setAttendance(data);
           toast({ title: "Attendance extracted!", description: "Review and edit below." });
           return;
-        } catch (retryErr: any) {
+        } catch {
           // Fall through
         }
       }
       const msg = e.message?.includes("fetch") || e.message?.includes("network")
-        ? "Network error — try a smaller/cropped image or check your connection."
-        : e.message || "Extraction failed. Try a clearer screenshot or crop tightly around the attendance data.";
+        ? "Network error — check your connection and try again."
+        : e.message || "Extraction failed.";
       toast({ title: "Extraction failed", description: msg, variant: "destructive" });
     } finally {
       setAttLoading(false);
@@ -157,7 +179,6 @@ export default function AttendanceCalculator() {
   return (
     <main className="min-h-screen bg-background">
       <div className="container max-w-4xl py-6 px-4">
-        {/* Header */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-2">
           <h1 className="text-2xl sm:text-3xl font-display font-bold">
             <span className="text-pop-cyan">Smart</span> Attendance Calculator
@@ -176,16 +197,16 @@ export default function AttendanceCalculator() {
             transition={{ duration: 0.2 }}
             className="space-y-4"
           >
-            {/* Step 1: Timetable */}
             {step === 1 && (
               <>
                 <ImageUploader
-                  label="Upload Timetable Image"
-                  description="Drag & drop or click to upload your weekly timetable"
-                  onImageSelected={extractTimetable}
+                  label="Upload Timetable"
+                  description="Drag & drop or click to upload your weekly timetable (image or .txt file)"
+                  onFileSelected={extractTimetable}
                   isLoading={ttLoading}
                   preview={ttImage}
-                  onClear={() => { setTtImage(null); setTimetable({}); }}
+                  previewText={ttText}
+                  onClear={() => { setTtImage(null); setTtText(null); setTimetable({}); }}
                 />
                 {Object.keys(timetable).length > 0 && (
                   <TimetableEditor schedule={timetable} onChange={setTimetable} />
@@ -193,25 +214,23 @@ export default function AttendanceCalculator() {
               </>
             )}
 
-            {/* Step 2: Attendance */}
             {step === 2 && (
               <>
                 <ImageUploader
-                  label="Upload Attendance Image"
-                  description="Drag & drop or click to upload your attendance summary"
-                  onImageSelected={extractAttendance}
+                  label="Upload Attendance"
+                  description="Drag & drop or click to upload your attendance summary (image or .txt file)"
+                  onFileSelected={extractAttendance}
                   isLoading={attLoading}
                   preview={attImage}
-                  onClear={() => { setAttImage(null); setAttendance([]); }}
+                  previewText={attText}
+                  onClear={() => { setAttImage(null); setAttText(null); setAttendance([]); }}
                 />
                 <AttendanceEditor subjects={attendance} onChange={setAttendance} />
               </>
             )}
 
-            {/* Step 3: Config */}
             {step === 3 && <DateRangeConfig config={config} onChange={setConfig} />}
 
-            {/* Step 4: Results */}
             {step === 4 && subjectResults.length > 0 && (
               <>
                 <ResultsDashboard
@@ -230,7 +249,6 @@ export default function AttendanceCalculator() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation */}
         <div className="flex justify-between mt-6 pb-8">
           <Button variant="outline" onClick={goBack} disabled={step === 1}>
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
