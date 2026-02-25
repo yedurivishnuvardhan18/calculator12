@@ -45,8 +45,15 @@ export function ImageUploader({ label, description, onImageSelected, isLoading, 
       <Card className="border-2 border-accent pop-shadow">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="font-display font-semibold text-sm text-accent">{label} ✓</span>
-            {onClear && (
+            <div className="flex items-center gap-2">
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 text-primary animate-spin" />
+              ) : null}
+              <span className="font-display font-semibold text-sm text-accent">
+                {isLoading ? "Extracting data..." : `${label} ✓`}
+              </span>
+            </div>
+            {onClear && !isLoading && (
               <Button variant="ghost" size="icon" onClick={onClear} className="h-7 w-7">
                 <X className="w-4 h-4" />
               </Button>
