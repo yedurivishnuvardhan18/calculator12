@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Calculator, CheckSquare, CalendarCheck, Sun, Moon, Menu, X, Globe, MessageSquare, Coffee } from "lucide-react";
+import { Calculator, CheckSquare, CalendarCheck, Sun, Moon, Menu, X, Globe, MessageSquare, Coffee, Upload, LayoutDashboard } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
@@ -9,6 +9,8 @@ const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
   { to: "/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
+  { to: "/import", label: "Import", icon: Upload },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];
 
