@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 interface ImageUploaderProps {
   label: string;
   description: string;
-  onImageSelected: (base64: string) => void;
+  onImageSelected: (image: { base64: string; mimeType: string }) => void;
   isLoading?: boolean;
   preview?: string | null;
   onClear?: () => void;
@@ -18,7 +18,7 @@ const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.8;
 const MAX_BASE64_LENGTH = 4 * 1024 * 1024; // ~3MB decoded
 
-function compressImage(file: File): Promise<string> {
+function compressImage(file: File): Promise<{ base64: string; mimeType: string }> {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
     const url = URL.createObjectURL(file);
@@ -35,13 +35,14 @@ function compressImage(file: File): Promise<string> {
       canvas.height = height;
       const ctx = canvas.getContext("2d")!;
       ctx.drawImage(img, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+      const mimeType = "image/jpeg";
+      const dataUrl = canvas.toDataURL(mimeType, JPEG_QUALITY);
       const base64 = dataUrl.split(",")[1];
       if (base64.length > MAX_BASE64_LENGTH) {
         reject(new Error("Image is still too large after compression. Please use a smaller or cropped image."));
         return;
       }
-      resolve(base64);
+      resolve({ base64, mimeType });
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -58,8 +59,8 @@ export function ImageUploader({ label, description, onImageSelected, isLoading, 
   const processFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
     try {
-      const base64 = await compressImage(file);
-      onImageSelected(base64);
+      const result = await compressImage(file);
+      onImageSelected(result);
     } catch (e: any) {
       toast({ title: "Image error", description: e.message, variant: "destructive" });
     }

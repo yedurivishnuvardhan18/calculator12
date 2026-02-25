@@ -51,12 +51,12 @@ export default function AttendanceCalculator() {
     [subjectResults, config.targetPercentage]
   );
 
-  const extractTimetable = async (base64: string) => {
+  const extractTimetable = async ({ base64, mimeType }: { base64: string; mimeType: string }) => {
     setTtLoading(true);
     setTtImage(base64);
     try {
       const { data, error } = await supabase.functions.invoke("extract-timetable", {
-        body: { imageBase64: base64 },
+        body: { imageBase64: base64, mimeType },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -72,12 +72,12 @@ export default function AttendanceCalculator() {
     }
   };
 
-  const extractAttendance = async (base64: string) => {
+  const extractAttendance = async ({ base64, mimeType }: { base64: string; mimeType: string }) => {
     setAttLoading(true);
     setAttImage(base64);
     try {
       const { data, error } = await supabase.functions.invoke("extract-attendance", {
-        body: { imageBase64: base64 },
+        body: { imageBase64: base64, mimeType },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);

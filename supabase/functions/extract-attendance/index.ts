@@ -10,8 +10,10 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: { ...corsHeaders, "Access-Control-Allow-Methods": "POST, OPTIONS" } });
 
   try {
-    const { imageBase64 } = await req.json();
+    const { imageBase64, mimeType: rawMime } = await req.json();
     if (!imageBase64) throw new Error("No image provided");
+    const allowedMimes = ["image/jpeg", "image/png", "image/webp"];
+    const mimeType = allowedMimes.includes(rawMime) ? rawMime : "image/jpeg";
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -39,7 +41,7 @@ serve(async (req) => {
               },
               {
                 type: "image_url",
-                image_url: { url: `data:image/png;base64,${imageBase64}` },
+                image_url: { url: `data:${mimeType};base64,${imageBase64}` },
               },
             ],
           },
@@ -82,6 +84,11 @@ serve(async (req) => {
     if (!response.ok) {
       const errText = await response.text();
       console.error("AI gateway error:", response.status, errText);
+      if (response.status === 400 && errText.includes("Unable to process input image")) {
+        return new Response(JSON.stringify({ error: "This image could not be read. Try a clearer screenshot or crop tightly around the attendance data." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
