@@ -4,9 +4,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import coffeeCup from "@/assets/coffee-cup.png";
 
 const STORAGE_KEY = "ht_coffee_dismissed";
+const DISMISS_DURATION = 10 * 60 * 1000; // 10 minutes
 
 export function FloatingCoffee() {
-  const [dismissed, setDismissed] = useState(() => localStorage.getItem(STORAGE_KEY) === "1");
+  const [dismissed, setDismissed] = useState(() => {
+    const dismissedAt = localStorage.getItem(STORAGE_KEY);
+    if (!dismissedAt) return false;
+    const elapsed = Date.now() - Number(dismissedAt);
+    if (elapsed >= DISMISS_DURATION) {
+      localStorage.removeItem(STORAGE_KEY);
+      return false;
+    }
+    return true;
+  });
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [nearBin, setNearBin] = useState(false);
@@ -15,10 +25,28 @@ export function FloatingCoffee() {
   const binRef = useRef<HTMLDivElement>(null);
   const coffeeRef = useRef<HTMLDivElement>(null);
 
-  // Set initial position to bottom-right
+  // Set initial position to bottom-right (smaller on mobile)
   useEffect(() => {
-    setPosition({ x: window.innerWidth - 100, y: window.innerHeight - 140 });
+    setPosition({ x: window.innerWidth - 80, y: window.innerHeight - 120 });
   }, []);
+
+  // Re-appear after 10 minutes
+  useEffect(() => {
+    if (!dismissed) return;
+    const dismissedAt = Number(localStorage.getItem(STORAGE_KEY) || Date.now());
+    const remaining = DISMISS_DURATION - (Date.now() - dismissedAt);
+    if (remaining <= 0) {
+      setDismissed(false);
+      localStorage.removeItem(STORAGE_KEY);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setDismissed(false);
+      localStorage.removeItem(STORAGE_KEY);
+      setPosition({ x: window.innerWidth - 80, y: window.innerHeight - 120 });
+    }, remaining);
+    return () => clearTimeout(timer);
+  }, [dismissed]);
 
   const checkNearBin = useCallback((cx: number, cy: number) => {
     if (!binRef.current) return false;
@@ -48,7 +76,7 @@ export function FloatingCoffee() {
   const onPointerUp = useCallback(() => {
     if (nearBin) {
       setDismissed(true);
-      localStorage.setItem(STORAGE_KEY, "1");
+      localStorage.setItem(STORAGE_KEY, String(Date.now()));
     } else if (!hasMoved) {
       window.open("https://razorpay.me/@teamdino", "_blank", "noopener,noreferrer");
     }
@@ -130,7 +158,7 @@ export function FloatingCoffee() {
           <img
             src={coffeeCup}
             alt="Buy me a coffee"
-            className="w-20 h-20 object-contain drop-shadow-lg pointer-events-none"
+            className="w-14 h-14 sm:w-20 sm:h-20 object-contain drop-shadow-lg pointer-events-none"
             draggable={false}
           />
         </motion.div>
