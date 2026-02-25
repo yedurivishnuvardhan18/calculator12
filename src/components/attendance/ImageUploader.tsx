@@ -1,24 +1,28 @@
 import { useCallback, useState, useRef } from "react";
-import { Upload, Image, Loader2, X } from "lucide-react";
+import { Upload, Image, FileText, Loader2, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
+export type FileUploadResult =
+  | { type: "image"; base64: string; mimeType: string }
+  | { type: "text"; textContent: string };
+
 interface ImageUploaderProps {
   label: string;
   description: string;
-  onImageSelected: (image: { base64: string; mimeType: string }) => void;
+  onFileSelected: (result: FileUploadResult) => void;
   isLoading?: boolean;
   preview?: string | null;
+  previewText?: string | null;
   onClear?: () => void;
 }
 
 const MAX_DIMENSION = 1024;
 const JPEG_QUALITY = 0.6;
-const MAX_BASE64_LENGTH = 1.5 * 1024 * 1024; // ~1.1MB decoded
+const MAX_BASE64_LENGTH = 1.5 * 1024 * 1024;
 
-// For retry with even smaller image
 export const RETRY_MAX_DIMENSION = 800;
 export const RETRY_JPEG_QUALITY = 0.4;
 
@@ -81,19 +85,44 @@ function compressImage(file: File): Promise<{ base64: string; mimeType: string }
   });
 }
 
-export function ImageUploader({ label, description, onImageSelected, isLoading, preview, onClear }: ImageUploaderProps) {
+function readTextFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Could not read text file."));
+    reader.readAsText(file);
+  });
+}
+
+export function ImageUploader({ label, description, onFileSelected, isLoading, preview, previewText, onClear }: ImageUploaderProps) {
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const processFile = useCallback(async (file: File) => {
-    if (!file.type.startsWith("image/")) return;
-    try {
-      const result = await compressImage(file);
-      onImageSelected(result);
-    } catch (e: any) {
-      toast({ title: "Image error", description: e.message, variant: "destructive" });
+    if (file.name.endsWith(".txt") || file.type === "text/plain") {
+      try {
+        const text = await readTextFile(file);
+        if (!text.trim()) {
+          toast({ title: "Empty file", description: "The text file appears to be empty.", variant: "destructive" });
+          return;
+        }
+        onFileSelected({ type: "text", textContent: text });
+      } catch (e: any) {
+        toast({ title: "File error", description: e.message, variant: "destructive" });
+      }
+      return;
     }
-  }, [onImageSelected]);
+    if (file.type.startsWith("image/")) {
+      try {
+        const result = await compressImage(file);
+        onFileSelected({ type: "image", base64: result.base64, mimeType: result.mimeType });
+      } catch (e: any) {
+        toast({ title: "Image error", description: e.message, variant: "destructive" });
+      }
+      return;
+    }
+    toast({ title: "Unsupported file", description: "Please upload an image or .txt file.", variant: "destructive" });
+  }, [onFileSelected]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -107,15 +136,14 @@ export function ImageUploader({ label, description, onImageSelected, isLoading, 
     if (file) processFile(file);
   }, [processFile]);
 
+  // Show image preview
   if (preview) {
     return (
       <Card className="border-2 border-accent pop-shadow">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 text-primary animate-spin" />
-              ) : null}
+              {isLoading ? <Loader2 className="w-4 h-4 text-primary animate-spin" /> : null}
               <span className="font-display font-semibold text-sm text-accent">
                 {isLoading ? "Extracting data..." : `${label} ✓`}
               </span>
@@ -127,6 +155,33 @@ export function ImageUploader({ label, description, onImageSelected, isLoading, 
             )}
           </div>
           <img src={`data:image/jpeg;base64,${preview}`} alt={label} className="w-full rounded-lg max-h-48 object-contain bg-muted" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show text preview
+  if (previewText) {
+    return (
+      <Card className="border-2 border-accent pop-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              {isLoading ? <Loader2 className="w-4 h-4 text-primary animate-spin" /> : null}
+              <FileText className="w-4 h-4 text-accent" />
+              <span className="font-display font-semibold text-sm text-accent">
+                {isLoading ? "Extracting data..." : `${label} ✓`}
+              </span>
+            </div>
+            {onClear && !isLoading && (
+              <Button variant="ghost" size="icon" onClick={onClear} className="h-7 w-7">
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+          <pre className="text-xs text-muted-foreground bg-muted rounded-lg p-3 max-h-48 overflow-auto whitespace-pre-wrap">
+            {previewText.slice(0, 500)}{previewText.length > 500 ? "..." : ""}
+          </pre>
         </CardContent>
       </Card>
     );
@@ -160,14 +215,14 @@ export function ImageUploader({ label, description, onImageSelected, isLoading, 
               <p className="text-xs text-muted-foreground mt-1">{description}</p>
             </div>
             <Button variant="outline" size="sm" className="mt-1">
-              <Image className="w-4 h-4 mr-1" /> Choose Image
+              <Image className="w-4 h-4 mr-1" /> Choose File
             </Button>
           </>
         )}
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.txt,text/plain"
           className="hidden"
           onChange={handleChange}
         />
