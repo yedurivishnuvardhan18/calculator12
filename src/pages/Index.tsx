@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from "react";
-import { Plus, Download, Eye, KeyRound, UserPlus, LogOut, Zap } from "lucide-react";
+import { Plus, Download, Eye, KeyRound, UserPlus, LogOut, Zap, Flame, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -415,36 +415,84 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="text-lg">Weekly Tracking</CardTitle>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[140px]">Habit</TableHead>
-                    {DAYS.map((d) => (
-                      <TableHead key={d} className="w-[60px] text-center sm:w-[80px]">{d}</TableHead>
+            <CardContent>
+              {/* Desktop: Table layout */}
+              <div className="hidden sm:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[140px]">Habit</TableHead>
+                      {DAYS.map((d) => (
+                        <TableHead key={d} className="w-[80px] text-center">{d}</TableHead>
+                      ))}
+                      <TableHead className="w-[70px] text-center">Streak</TableHead>
+                      <TableHead className="w-[50px] text-center"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {habits.map((habit, hIdx) => (
+                      <HabitRow
+                        key={`${habit}-${hIdx}`}
+                        habit={habit}
+                        hIdx={hIdx}
+                        checkRow={checkData[hIdx] ?? []}
+                        streak={streaks[hIdx] ?? 0}
+                        onToggle={toggleCheck}
+                        onRemove={removeHabit}
+                        onRename={renameHabit}
+                        onDragStart={handleDragStart}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                      />
                     ))}
-                    <TableHead className="w-[70px] text-center">Streak</TableHead>
-                    <TableHead className="w-[50px] text-center"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {habits.map((habit, hIdx) => (
-                    <HabitRow
-                      key={`${habit}-${hIdx}`}
-                      habit={habit}
-                      hIdx={hIdx}
-                      checkRow={checkData[hIdx] ?? []}
-                      streak={streaks[hIdx] ?? 0}
-                      onToggle={toggleCheck}
-                      onRemove={removeHabit}
-                      onRename={renameHabit}
-                      onDragStart={handleDragStart}
-                      onDragOver={handleDragOver}
-                      onDrop={handleDrop}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile: Card layout */}
+              <div className="sm:hidden space-y-4">
+                {habits.map((habit, hIdx) => (
+                  <div
+                    key={`${habit}-${hIdx}`}
+                    className="rounded-xl border bg-card p-4 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-sm text-foreground truncate max-w-[200px]">{habit}</span>
+                      <div className="flex items-center gap-2">
+                        {(streaks[hIdx] ?? 0) > 0 && (
+                          <span className="flex items-center gap-1 text-xs font-semibold text-warning">
+                            <Flame className="h-3.5 w-3.5" />
+                            {streaks[hIdx]}d
+                          </span>
+                        )}
+                        <button
+                          onClick={() => removeHabit(hIdx)}
+                          className="rounded-full p-1.5 transition-colors hover:bg-destructive/20"
+                          aria-label={`Remove ${habit}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1">
+                      {DAYS.map((d, dIdx) => (
+                        <button
+                          key={dIdx}
+                          onClick={() => toggleCheck(hIdx, dIdx)}
+                          className={`flex flex-col items-center gap-1 rounded-lg py-2 text-xs font-medium transition-all ${
+                            checkData[hIdx]?.[dIdx]
+                              ? "bg-primary/15 text-primary border border-primary/30"
+                              : "bg-muted/50 text-muted-foreground border border-transparent hover:bg-muted"
+                          }`}
+                        >
+                          <span className="text-[10px]">{d}</span>
+                          <span className="text-sm">{checkData[hIdx]?.[dIdx] ? "✓" : "○"}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         )}
@@ -458,7 +506,7 @@ const Index = () => {
                   <CardTitle className="text-lg">Daily Completion</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+                  <div className="grid grid-cols-7 gap-1.5 sm:grid-cols-7 sm:gap-2">
                     {DAYS.map((day, i) => (
                       <div
                         key={day}

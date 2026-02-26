@@ -52,6 +52,24 @@ export type Database = {
           },
         ]
       }
+      results_cache: {
+        Row: {
+          fetched_at: string
+          payload: Json
+          reg: string
+        }
+        Insert: {
+          fetched_at?: string
+          payload: Json
+          reg: string
+        }
+        Update: {
+          fetched_at?: string
+          payload?: Json
+          reg?: string
+        }
+        Relationships: []
+      }
       user_codes: {
         Row: {
           code: string
