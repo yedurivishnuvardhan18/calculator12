@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      gitam_cache: {
+        Row: {
+          fetched_at: string
+          key: string
+          payload: Json
+          ttl_seconds: number
+        }
+        Insert: {
+          fetched_at?: string
+          key: string
+          payload: Json
+          ttl_seconds?: number
+        }
+        Update: {
+          fetched_at?: string
+          key?: string
+          payload?: Json
+          ttl_seconds?: number
+        }
+        Relationships: []
+      }
       habit_entries: {
         Row: {
           completed: boolean
