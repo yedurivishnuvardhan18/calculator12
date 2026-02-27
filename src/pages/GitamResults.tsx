@@ -1,8 +1,73 @@
-import { useState } from "react";
-import { Search, Loader2, BookOpen, ClipboardList } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useRef } from "react";
+import { Search, Loader2, BookOpen, ClipboardList, RefreshCw } from "lucide-react";
 
 const SEMESTERS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+// Resilient fetch wrapper with timeout + retry
+async function invokeProxy(
+  endpoint: "results" | "attendance",
+  body: Record<string, string>,
+  signal?: AbortSignal
+): Promise<{ data: any; error: string | null }> {
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const url = `https://${projectId}.supabase.co/functions/v1/gitam-proxy/${endpoint}`;
+
+  const maxRetries = 2;
+  const timeoutMs = 25000;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    // Merge external signal
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    try {
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: anonKey,
+          Authorization: `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({ ...body, action: endpoint }),
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+
+      const json = await resp.json();
+      if (!resp.ok && json?.error) {
+        return { data: null, error: json.error + (json.hint ? ` (${json.hint})` : "") };
+      }
+      if (json?.error) {
+        return { data: null, error: json.error + (json.hint ? ` (${json.hint})` : "") };
+      }
+      return { data: json, error: null };
+    } catch (e: any) {
+      clearTimeout(timer);
+      const isTransient =
+        e.name === "AbortError" ||
+        e.message?.includes("Failed to fetch") ||
+        e.message?.includes("NetworkError") ||
+        e.message?.includes("network");
+
+      if (isTransient && attempt < maxRetries) {
+        // backoff: 1s, 2s
+        await new Promise((r) => setTimeout(r, (attempt + 1) * 1000));
+        continue;
+      }
+
+      if (e.name === "AbortError") {
+        return { data: null, error: "Request timed out. Please try again." };
+      }
+      return { data: null, error: "Network error. Check your connection and try again." };
+    }
+  }
+  return { data: null, error: "Request failed after retries. Please try again." };
+}
 
 // Grade badge color map
 const gradeClass: Record<string, string> = {
@@ -60,30 +125,28 @@ export default function GitamResults() {
   const [results, setResults] = useState<any>(null);
   const [attendance, setAttendance] = useState<any>(null);
 
+  const prevResults = useRef<any>(null);
+  const prevAttendance = useRef<any>(null);
+
   async function search() {
     if (!reg.trim()) return;
     setLoading(true);
     setError("");
-    setResults(null);
-    setAttendance(null);
 
     try {
       const endpoint = tab === "results" ? "results" : "attendance";
       const body = tab === "results" ? { reg, sem } : { reg };
 
-      const { data, error: fnError } = await supabase.functions.invoke(
-        `gitam-proxy/${endpoint}`,
-        { body }
-      );
+      const { data, error: fetchErr } = await invokeProxy(endpoint, body);
 
-      if (fnError) {
-        setError(fnError.message || "Request failed");
-      } else if (data?.error) {
-        setError(data.error + (data.hint ? ` (${data.hint})` : ""));
+      if (fetchErr) {
+        setError(fetchErr);
       } else if (tab === "results") {
         setResults(data);
+        prevResults.current = data;
       } else {
         setAttendance(data);
+        prevAttendance.current = data;
       }
     } catch (e: any) {
       setError(e.message || "Unknown error");
@@ -169,8 +232,11 @@ export default function GitamResults() {
 
         {/* Error */}
         {error && (
-          <div className="mt-3 px-4 py-3 rounded-lg font-mono text-xs bg-red-400/10 border border-red-400 text-red-400">
-            {error}
+          <div className="mt-3 px-4 py-3 rounded-lg font-mono text-xs bg-destructive/10 border border-destructive text-destructive flex items-center justify-between gap-2">
+            <span>{error}</span>
+            <button onClick={search} className="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded bg-destructive/20 hover:bg-destructive/30 transition-colors">
+              <RefreshCw className="w-3 h-3" /> Retry
+            </button>
           </div>
         )}
       </div>
