@@ -12,6 +12,8 @@ const ATD_SUBJECT = `${BASE}/student/getsubject`;
 const ATD_OVERALL = `${BASE}/student/getoverallatd`;
 const ATD_PAGE = `${BASE}/Student/Attendance`;
 
+const UPSTREAM_TIMEOUT_MS = 15000;
+
 function makeHeaders(referer?: string): Record<string, string> {
   const cookie = Deno.env.get("GITAM_SESSION_COOKIE") || "";
   return {
@@ -29,6 +31,18 @@ function makeHeaders(referer?: string): Record<string, string> {
     "sec-fetch-mode": "cors",
     "sec-fetch-site": "same-origin",
   };
+}
+
+// Upstream fetch with timeout
+async function fetchWithTimeout(url: string, opts: RequestInit, timeoutMs = UPSTREAM_TIMEOUT_MS): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch(url, { ...opts, signal: controller.signal });
+    return resp;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function getSupabase() {
@@ -191,13 +205,18 @@ async function handleResults(body: any) {
 
   const cached = await cacheGet(`marks:${reg}`);
   if (cached) {
+    console.log(`[results] cache HIT for ${reg}`);
     const result = filterBySem(cached, sem);
     return json({ ...result, _cached: true });
   }
 
+  console.log(`[results] cache MISS for ${reg}, fetching upstream`);
+  const t0 = Date.now();
   try {
     const url = `${API_MARKS}?regdno=${encodeURIComponent(reg)}`;
-    const resp = await fetch(url, { headers: makeHeaders() });
+    const resp = await fetchWithTimeout(url, { headers: makeHeaders() });
+    const elapsed = Date.now() - t0;
+    console.log(`[results] upstream responded in ${elapsed}ms, status=${resp.status}`);
     if (resp.status === 401 || resp.status === 403) {
       return json({ error: "Session expired. Update GITAM_SESSION_COOKIE secret." }, 401);
     }
@@ -212,6 +231,12 @@ async function handleResults(body: any) {
     await cacheSet(`marks:${reg}`, data);
     return json(filterBySem(data, sem));
   } catch (e: any) {
+    const elapsed = Date.now() - t0;
+    if (e.name === "AbortError") {
+      console.log(`[results] upstream TIMEOUT after ${elapsed}ms`);
+      return json({ error: "Upstream timeout. Please retry in a few seconds." }, 504);
+    }
+    console.log(`[results] upstream ERROR after ${elapsed}ms: ${e.message}`);
     return json({ error: `Request failed: ${e.message}` }, 502);
   }
 }
@@ -222,15 +247,23 @@ async function handleAttendance(body: any) {
   if (!reg) return json({ error: "Registration number is required" }, 400);
 
   const cached = await cacheGet(`atd:${reg}`);
-  if (cached) return json({ ...cached, _cached: true });
+  if (cached) {
+    console.log(`[attendance] cache HIT for ${reg}`);
+    return json({ ...cached, _cached: true });
+  }
+
+  console.log(`[attendance] cache MISS for ${reg}, fetching upstream`);
 
   // 1. Subject-wise
   const subwise: any[] = [];
   let currentSem = "?";
+  const t0 = Date.now();
   try {
-    const r = await fetch(`${ATD_SUBJECT}?regno=${encodeURIComponent(reg)}`, {
+    const r = await fetchWithTimeout(`${ATD_SUBJECT}?regno=${encodeURIComponent(reg)}`, {
       headers: makeHeaders(ATD_PAGE),
     });
+    const elapsed = Date.now() - t0;
+    console.log(`[attendance/subject] upstream responded in ${elapsed}ms, status=${r.status}`);
     const ct = r.headers.get("content-type") || "";
     if (r.status === 200 && ct.includes("application/json")) {
       const raw: any[] = await r.json();
@@ -263,7 +296,14 @@ async function handleAttendance(body: any) {
         }
       }
     }
-  } catch (_) {}
+  } catch (e: any) {
+    const elapsed = Date.now() - t0;
+    if (e.name === "AbortError") {
+      console.log(`[attendance/subject] upstream TIMEOUT after ${elapsed}ms`);
+      return json({ error: "Upstream timeout fetching attendance. Please retry in a few seconds." }, 504);
+    }
+    console.log(`[attendance/subject] upstream ERROR after ${elapsed}ms: ${e.message}`);
+  }
 
   if (!subwise.length) {
     return json({
@@ -276,9 +316,12 @@ async function handleAttendance(body: any) {
   // 2. Overall per semester
   const overallSems: any[] = [];
   try {
-    const r2 = await fetch(`${ATD_OVERALL}?regno=${encodeURIComponent(reg)}`, {
+    const t1 = Date.now();
+    const r2 = await fetchWithTimeout(`${ATD_OVERALL}?regno=${encodeURIComponent(reg)}`, {
       headers: makeHeaders(ATD_PAGE),
     });
+    const elapsed2 = Date.now() - t1;
+    console.log(`[attendance/overall] upstream responded in ${elapsed2}ms, status=${r2.status}`);
     const ct2 = r2.headers.get("content-type") || "";
     if (r2.status === 200 && ct2.includes("application/json")) {
       const raw2: any[] = await r2.json();
@@ -294,7 +337,10 @@ async function handleAttendance(body: any) {
         overallSems.sort((a, b) => (parseInt(a.semester) || 0) - (parseInt(b.semester) || 0));
       }
     }
-  } catch (_) {}
+  } catch (e: any) {
+    // Non-critical: overall sems is optional
+    console.log(`[attendance/overall] error: ${e.message}`);
+  }
 
   const pcts = subwise.map((s) => s.percentage);
   const avg = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
@@ -329,18 +375,25 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const url = new URL(req.url);
-  const path = url.pathname.split("/").pop(); // "results" or "attendance"
-
   if (req.method !== "POST") {
     return json({ error: "POST required" }, 405);
   }
 
   try {
     const body = await req.json();
-    if (path === "results") return await handleResults(body);
-    if (path === "attendance") return await handleAttendance(body);
-    return json({ error: "Unknown endpoint. Use /results or /attendance" }, 404);
+
+    // Determine action: path-based or body-based fallback
+    const url = new URL(req.url);
+    const pathAction = url.pathname.split("/").pop(); // "results" or "attendance"
+    const action = (pathAction === "results" || pathAction === "attendance")
+      ? pathAction
+      : body.action; // fallback to body.action
+
+    console.log(`[gitam-proxy] action=${action}`);
+
+    if (action === "results") return await handleResults(body);
+    if (action === "attendance") return await handleAttendance(body);
+    return json({ error: "Unknown endpoint. Use /results or /attendance, or pass action in body." }, 404);
   } catch (e: any) {
     return json({ error: e.message }, 500);
   }
