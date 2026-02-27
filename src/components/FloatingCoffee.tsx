@@ -17,6 +17,7 @@ export function FloatingCoffee() {
     }
     return true;
   });
+  const [positioned, setPositioned] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [nearBin, setNearBin] = useState(false);
@@ -25,9 +26,17 @@ export function FloatingCoffee() {
   const binRef = useRef<HTMLDivElement>(null);
   const coffeeRef = useRef<HTMLDivElement>(null);
 
-  // Set initial position to bottom-right (smaller on mobile)
+  // Set initial position to bottom-right, safely within viewport
   useEffect(() => {
-    setPosition({ x: window.innerWidth - 80, y: window.innerHeight - 120 });
+    const updatePos = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      setPosition({ x: Math.max(8, vw - 80), y: Math.max(8, vh - 100) });
+      setPositioned(true);
+    };
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    return () => window.removeEventListener("resize", updatePos);
   }, []);
 
   // Re-appear after 10 minutes
@@ -43,7 +52,7 @@ export function FloatingCoffee() {
     const timer = setTimeout(() => {
       setDismissed(false);
       localStorage.removeItem(STORAGE_KEY);
-      setPosition({ x: window.innerWidth - 80, y: window.innerHeight - 120 });
+      setPosition({ x: Math.max(8, window.innerWidth - 80), y: Math.max(8, window.innerHeight - 100) });
     }, remaining);
     return () => clearTimeout(timer);
   }, [dismissed]);
@@ -84,7 +93,7 @@ export function FloatingCoffee() {
     setNearBin(false);
   }, [nearBin, hasMoved]);
 
-  if (dismissed) return null;
+  if (dismissed || !positioned) return null;
 
   return (
     <>
