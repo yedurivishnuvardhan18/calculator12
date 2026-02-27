@@ -1,0 +1,8 @@
+CREATE TABLE public.gitam_cache (
+  key TEXT PRIMARY KEY,
+  payload JSONB NOT NULL,
+  fetched_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  ttl_seconds INTEGER NOT NULL DEFAULT 604800
+);
+
+ALTER TABLE public.gitam_cache ENABLE ROW LEVEL SECURITY;
