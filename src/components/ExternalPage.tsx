@@ -9,7 +9,7 @@ export function ExternalPage({ url }: ExternalPageProps) {
   const [loading, setLoading] = useState(true);
 
   return (
-    <div className="relative w-full" style={{ height: "calc(100vh - 3.5rem - 4rem)" }}>
+    <div className="relative w-full" style={{ height: "calc(100dvh - 3.5rem - 4rem)" }}>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
           <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />

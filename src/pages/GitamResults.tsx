@@ -156,7 +156,7 @@ export default function GitamResults() {
   }
 
   return (
-    <main className="relative z-[1] max-w-[960px] mx-auto px-4 sm:px-6 pt-8 pb-24">
+    <main className="relative z-[1] max-w-[960px] mx-auto px-3 sm:px-6 pt-6 sm:pt-8 pb-24">
       {/* Grid background effect */}
       <div className="fixed inset-0 z-0 pointer-events-none" style={{
         backgroundImage: "linear-gradient(rgba(110,231,183,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(110,231,183,.04) 1px, transparent 1px)",
@@ -164,10 +164,10 @@ export default function GitamResults() {
       }} />
 
       {/* Header */}
-      <header className="flex items-center gap-4 pb-8 border-b border-border mb-8">
-        <div className="w-11 h-11 bg-emerald-400 flex-shrink-0" style={{ clipPath: "polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%)" }} />
+      <header className="flex items-center gap-3 sm:gap-4 pb-6 sm:pb-8 border-b border-border mb-6 sm:mb-8">
+        <div className="w-9 h-9 sm:w-11 sm:h-11 bg-emerald-400 flex-shrink-0" style={{ clipPath: "polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%)" }} />
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight">
             GITAM <span className="text-emerald-400">Portal</span>
           </h1>
           <p className="font-mono text-[0.7rem] text-muted-foreground tracking-widest uppercase mt-1">
@@ -177,7 +177,7 @@ export default function GitamResults() {
       </header>
 
       {/* Search card */}
-      <div className="bg-card border border-border rounded-xl p-6 relative overflow-hidden">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-indigo-400" />
 
         {/* Tabs */}
@@ -252,9 +252,9 @@ function ResultsView({ data }: { data: any }) {
   return (
     <div className="mt-8 animate-in fade-in slide-in-from-bottom-2">
       {/* Student banner */}
-      <div className="bg-card border border-border rounded-xl p-6 mb-6 relative overflow-hidden">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-indigo-400" />
-        <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{data.student_name}</div>
+        <div className="text-lg sm:text-2xl font-extrabold tracking-tight">{data.student_name}</div>
         <div className="font-mono text-xs text-muted-foreground mt-1">
           {data.regid} · Semester {data.semid}
         </div>
@@ -332,7 +332,7 @@ function AttendanceView({ data }: { data: any }) {
   return (
     <div className="mt-8 animate-in fade-in slide-in-from-bottom-2">
       {/* Summary stats */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
         <StatCard value={`${s.average_pct}%`} label="Average" className={sc.text} />
         <StatCard value={s.below_75} label="Below 75%" className="text-red-400" />
         <StatCard value={s.below_85} label="75-84%" className="text-amber-400" />
@@ -374,9 +374,9 @@ function Pill({ label, value, highlight }: { label: string; value: string; highl
 
 function StatCard({ value, label, className }: { value: any; label: string; className?: string }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4 flex-1 min-w-[110px] text-center">
-      <div className={`font-mono text-2xl font-bold leading-none ${className}`}>{value}</div>
-      <div className="font-mono text-[0.65rem] text-muted-foreground mt-1.5 uppercase tracking-wider">{label}</div>
+    <div className="bg-card border border-border rounded-xl p-3 sm:p-4 flex-1 min-w-0 text-center">
+      <div className={`font-mono text-xl sm:text-2xl font-bold leading-none ${className}`}>{value}</div>
+      <div className="font-mono text-[0.6rem] sm:text-[0.65rem] text-muted-foreground mt-1 sm:mt-1.5 uppercase tracking-wider">{label}</div>
     </div>
   );
 }

@@ -506,14 +506,14 @@ const Index = () => {
                   <CardTitle className="text-lg">Daily Completion</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-7 gap-1.5 sm:grid-cols-7 sm:gap-2">
+                  <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7 sm:gap-2">
                     {DAYS.map((day, i) => (
                       <div
                         key={day}
                         className={`rounded-lg border p-3 text-center transition-all hover:shadow-sm ${getPctColor(dailyPcts[i])}`}
                       >
-                        <div className="text-xs font-medium text-muted-foreground">{day}</div>
-                        <div className="mt-1 text-lg font-bold text-foreground sm:text-xl">{dailyPcts[i]}%</div>
+                        <div className="text-[10px] sm:text-xs font-medium text-muted-foreground">{day}</div>
+                        <div className="mt-1 text-base font-bold text-foreground sm:text-xl">{dailyPcts[i]}%</div>
                       </div>
                     ))}
                   </div>
