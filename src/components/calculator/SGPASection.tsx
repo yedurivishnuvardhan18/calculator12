@@ -174,67 +174,64 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-2 sm:pt-4">
+            {/* Primary action */}
+            <div className="pt-2 sm:pt-4">
               <Button 
                 variant="outline" 
                 onClick={onShowCGPA} 
                 size="lg"
-                className="w-full sm:w-auto sm:flex-1 rounded-full border-3 border-pop-orange font-bold font-display text-pop-orange hover:bg-pop-orange hover:text-white transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                className="w-full rounded-full border-3 border-pop-orange font-bold font-display text-pop-orange hover:bg-pop-orange hover:text-white transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
               >
                 <TrendingUp className="w-5 h-5 mr-2" />
                 Calculate CGPA (Optional)
               </Button>
+            </div>
+
+            {/* Action buttons grid */}
+            <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-row sm:gap-3">
               <Button 
                 onClick={() => generateGradeCard(courses, result!, cgpaData)}
                 size="lg"
-                className="w-full sm:w-auto sm:flex-1 rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                className="rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
               >
-                <Download className="w-5 h-5 mr-2" />
-                Download Grade Card
+                <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                Download
               </Button>
               <Button
                 onClick={() => setShowSavePrompt(true)}
                 size="lg"
-                className="w-full sm:w-auto sm:flex-1 rounded-full bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                className="rounded-full bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
               >
-                <Save className="w-5 h-5 mr-2" />
-                Save Grade Card
+                <Save className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                Save
               </Button>
-            </div>
-
-            {/* Share Buttons */}
-            <div className="flex flex-col items-center gap-2 pt-1">
-              <p className="text-xs text-muted-foreground font-medium">Share your results</p>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full border-2 border-pop-green/40 text-pop-green hover:bg-pop-green hover:text-white text-xs font-bold"
-                  onClick={() => {
-                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}!\nTotal Credits: ${result?.totalCredits} | Grade Points: ${result?.totalGradePoints.toFixed(0)}\n${result && result.sgpa >= 9 ? '🔥 Outstanding!' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
-                    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-                    window.open(url, '_blank');
-                  }}
-                >
-                  WhatsApp
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full border-2 border-pop-cyan/40 text-pop-cyan hover:bg-pop-cyan hover:text-white text-xs font-bold"
-                  onClick={() => {
-                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}! ${result && result.sgpa >= 9 ? '🔥' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
-                    navigator.clipboard.writeText(text);
-                    // Use native share if available
-                    if (navigator.share) {
-                      navigator.share({ title: 'My Grade Card', text });
-                    }
-                  }}
-                >
-                  <Share2 className="w-3.5 h-3.5 mr-1" />
-                  Share
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full border-2 border-pop-green/40 text-pop-green hover:bg-pop-green hover:text-white font-bold font-display text-xs sm:text-sm sm:flex-1"
+                onClick={() => {
+                  const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}!\nTotal Credits: ${result?.totalCredits} | Grade Points: ${result?.totalGradePoints.toFixed(0)}\n${result && result.sgpa >= 9 ? '🔥 Outstanding!' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
+                  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                  window.open(url, '_blank');
+                }}
+              >
+                WhatsApp
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full border-2 border-pop-cyan/40 text-pop-cyan hover:bg-pop-cyan hover:text-white font-bold font-display text-xs sm:text-sm sm:flex-1"
+                onClick={() => {
+                  const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}! ${result && result.sgpa >= 9 ? '🔥' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
+                  navigator.clipboard.writeText(text);
+                  if (navigator.share) {
+                    navigator.share({ title: 'My Grade Card', text });
+                  }
+                }}
+              >
+                <Share2 className="w-3.5 h-3.5 mr-1" />
+                Share
+              </Button>
             </div>
           </div>
         )}

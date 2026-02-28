@@ -179,7 +179,7 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
               <span className="bg-card px-4 py-2 rounded-full border-2 border-foreground/10 inline-block">
                 Total Credits Completed: <strong className="text-foreground">{result.totalCredits}</strong>
               </span>
-              <div className="flex flex-wrap items-center justify-center gap-3">
+              <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-row sm:gap-3">
                 <Button
                   onClick={() => {
                     const sgpaResult = calculateSGPA(courses.filter(c => c.finalGradePoint !== null && c.name.trim() !== ''));
@@ -193,18 +193,18 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
                     }
                   }}
                   size="lg"
-                  className="rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                  className="rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
                 >
-                  <Download className="w-5 h-5 mr-2" />
-                  Download Grade Card
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                  Download
                 </Button>
                 <Button
                   onClick={() => setShowSavePrompt(true)}
                   size="lg"
-                  className="rounded-full bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                  className="rounded-full bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
                 >
-                  <Save className="w-5 h-5 mr-2" />
-                  Save Grade Card
+                  <Save className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                  Save
                 </Button>
                 <Button
                   onClick={async () => {
@@ -220,9 +220,9 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
                   }}
                   size="lg"
                   variant="outline"
-                  className="rounded-full border-2 border-pop-cyan text-pop-cyan hover:bg-pop-cyan hover:text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                  className="col-span-2 sm:col-span-1 rounded-full border-2 border-pop-cyan text-pop-cyan hover:bg-pop-cyan hover:text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
                 >
-                  <Share2 className="w-5 h-5 mr-2" />
+                  <Share2 className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
                   Share Results
                 </Button>
               </div>
