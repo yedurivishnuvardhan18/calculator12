@@ -325,18 +325,19 @@ export function CourseCard({
               </p>
             )}
             {!isCLAD && (
-              <label className="flex items-center gap-2 mt-2 cursor-pointer group">
-                <input
-                  id={`hasLab-${course.id}`}
-                  type="checkbox"
-                  checked={course.hasLab || false}
-                  onChange={(e) => handleLabToggle(e.target.checked)}
-                  className="w-4 h-4 rounded border-2 border-foreground/20 accent-pop-cyan"
-                />
-                <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground transition-colors">
-                  🔬 This course has Lab
-                </span>
-              </label>
+              <button
+                type="button"
+                onClick={() => handleLabToggle(!course.hasLab)}
+                className={cn(
+                  "flex items-center gap-2 mt-2 px-3 py-2 rounded-xl border-2 transition-all duration-200 text-xs font-bold w-full sm:w-auto",
+                  course.hasLab
+                    ? "border-pop-cyan bg-pop-cyan/15 text-pop-cyan shadow-sm"
+                    : "border-foreground/15 bg-muted/30 text-muted-foreground hover:border-pop-cyan/50 hover:text-foreground"
+                )}
+              >
+                <FlaskConical className="w-4 h-4" />
+                <span>{course.hasLab ? "Lab Enabled ✓" : "Has Lab Component?"}</span>
+              </button>
             )}
           </div>
           <div className="space-y-2">
