@@ -7,7 +7,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
-  { to: "/gitam-results", label: "TeamDino", icon: GraduationCap },
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
   { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];

@@ -9,7 +9,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import GradeCalculator from "./pages/GradeCalculator";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import GitamResults from "./pages/GitamResults";
+// import GitamResults from "./pages/GitamResults";
 import { ExternalPage } from "./components/ExternalPage";
 import { FloatingCoffee } from "./components/FloatingCoffee";
 
@@ -26,7 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<GradeCalculator />} />
             <Route path="/habits" element={<Index />} />
-            <Route path="/gitam-results" element={<GitamResults />} />
+            {/* <Route path="/gitam-results" element={<GitamResults />} /> */}
             <Route path="/external/feedback" element={<ExternalPage url="https://docs.google.com/forms/d/e/1FAIpQLSffSEUgxpJZ4i14s1E0cFQmheKTlS6uKGajijuL3YMBUY4txg/viewform?usp=publish-editor" />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
