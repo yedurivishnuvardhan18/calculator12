@@ -1,43 +1,75 @@
 
-Goal: fix the roll-number save failure so SGPA/CGPA cards save reliably from both the popup and Save/Load panel.
+Goal
+Eliminate the persistent “TypeError: Failed to fetch” experience during roll-number save by making saves resilient to client/network/cache issues and giving clear, actionable feedback to users.
 
-What I found:
-1. The app saves with:
-   - `upsert(..., { onConflict: "roll_number" })`
-   - in both `SavePromptDialog.tsx` and `RollNumberSave.tsx`.
-2. The database currently has a unique index on `UPPER(roll_number)` (expression index), not on plain `roll_number`.
-3. `on_conflict=roll_number` requires a real unique constraint/index on that exact column. With the current expression index, upsert conflict targeting does not match, so save fails.
-4. RLS policies are already permissive in the backend, so this is not an RLS blockage now.
+What I verified
+1) Backend schema/access is currently correct in the Test backend:
+- `saved_grade_cards` has a plain unique index on `roll_number`.
+- Row-level access rules for insert/select/update are permissive for this public feature.
+2) A live browser save test inserted `TESTFAIL1` successfully in the database.
+3) This means the core save path can work, but users can still hit client-side fetch failures (network/runtime/cache path), which currently surfaces as a confusing generic failure.
 
-Implementation plan:
+Proposed implementation
+1) Create a single shared save/load backend helper layer
+- Add a small utility (e.g., `src/lib/grade-card-storage.ts`) used by both:
+  - `SavePromptDialog.tsx`
+  - `RollNumberSave.tsx`
+- Centralize:
+  - roll normalization (`trim + uppercase`)
+  - validation (5–20 alphanumeric)
+  - structured error mapping
+  - retry logic
+- Benefit: both save entry points behave identically and are easier to debug.
 
-1) Fix database uniqueness to match app upsert behavior
-- Add a migration that:
-  - normalizes existing values to uppercase (`UPDATE ... SET roll_number = UPPER(TRIM(roll_number))`),
-  - safely removes duplicates if any exist after normalization (keep latest `updated_at`),
-  - drops the expression index `idx_saved_grade_cards_roll`,
-  - creates a plain unique index (or unique constraint) on `roll_number`.
-- Keep current RLS policies as-is (public save/load is intended for this feature).
+2) Add robust retry + timeout for save/load operations
+- Wrap save and load calls with:
+  - timeout guard (e.g., 10–12s)
+  - retry on transient network failures (`Failed to fetch`, abort, timeout), max 2 retries with short backoff
+- Do not retry on clear validation/server logic errors.
+- Benefit: temporary connection hiccups no longer instantly fail the user.
 
-2) Make frontend save payloads consistently normalized
-- In `SavePromptDialog.tsx`, normalize roll number before validation and save using the same approach as `RollNumberSave.tsx` (`trim().toUpperCase()`).
-- Keep regex validation 5–20 alphanumeric, but validate against normalized value to avoid whitespace edge cases.
+3) Improve user-facing error messages for fetch failures
+- Replace raw “TypeError Failed to fetch” with user-friendly messaging:
+  - “Couldn’t reach the backend right now. Please retry.”
+  - plus short hint: “If this keeps happening, refresh once and try again.”
+- Preserve technical detail in console logs for debugging.
+- Benefit: users get understandable guidance instead of low-level error text.
 
-3) Improve error visibility (so users see the actual reason if backend rejects save)
-- In both `SavePromptDialog.tsx` and `RollNumberSave.tsx`, surface backend message in toast when available (instead of generic “Failed to save” only).
-- This helps future debugging without needing repeated guesswork.
+4) Add an immediate local backup fallback when remote save fails
+- If remote save still fails after retries, store the same payload in local storage under a dedicated fallback key by roll number.
+- Show clear toast:
+  - “Saved locally on this device. Cloud save failed; retry when online.”
+- On next successful remote save, clear local fallback entry for that roll.
+- Benefit: users do not lose work even during persistent connectivity issues.
 
-4) Verify both save entry points end-to-end
-- Test from SGPA popup:
-  - calculate SGPA → popup appears → save with roll number.
-- Test from CGPA popup:
-  - calculate CGPA → popup appears → save with roll number.
-- Test from top-right Save/Load panel:
-  - save then load same roll number.
-- Confirm overwrite behavior works (same roll number updates existing record).
-- Confirm invalid roll numbers are blocked as before.
+5) Add “recover local backup” behavior in Load flow
+- If cloud load fails or record not found, check local fallback for the entered roll.
+- Offer to restore local backup if present.
+- Benefit: safer recovery path and better UX under unstable networks.
 
-Technical notes:
-- This fix aligns backend indexing with current API contract (`onConflict: "roll_number"`), which is the cleanest and most reliable approach.
-- No auth model changes are required for this grade-card save feature.
-- No changes needed in generated integration files.
+6) Add lightweight diagnostics (non-intrusive)
+- Log one concise diagnostic object on save/load failure:
+  - operation (`save`/`load`)
+  - normalized roll
+  - error category (`network`, `timeout`, `validation`, `backend`)
+  - retry count
+  - online status (`navigator.onLine` when available)
+- Benefit: future debugging becomes much faster without noisy logs.
+
+7) Verify end-to-end across both entry points
+- Save via SGPA popup.
+- Save via top-right Save/Load panel.
+- Load via Save/Load panel.
+- Overwrite same roll (upsert behavior).
+- Simulate offline/network failure path to confirm local backup + recovery behavior.
+- Verify on both Preview and Published builds.
+
+Why this approach
+- Current backend configuration is not the blocker anymore; failures are likely happening in client connectivity/runtime paths for some users.
+- This plan makes the feature resilient even when network calls intermittently fail, while preserving the intended cloud-backed roll-number flow.
+
+Technical notes
+- No changes to generated integration files.
+- No auth model changes (public roll-number save/load remains as designed).
+- Keep current database schema/index/policies unless new evidence appears.
+- Main changes are frontend reliability and shared storage utilities.
