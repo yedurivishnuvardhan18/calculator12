@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Calculator, ArrowRight, Download, Share2 } from "lucide-react";
+import { TrendingUp, Calculator, ArrowRight, Download, Share2, Save } from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import confetti from "canvas-confetti";
 import { generateGradeCard } from "@/lib/gradecard-generator";
@@ -197,6 +197,14 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Download Grade Card
+                </Button>
+                <Button
+                  onClick={() => setShowSavePrompt(true)}
+                  size="lg"
+                  className="rounded-full bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                >
+                  <Save className="w-5 h-5 mr-2" />
+                  Save Grade Card
                 </Button>
                 <Button
                   onClick={async () => {

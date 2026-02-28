@@ -1,7 +1,7 @@
 import { Course, calculateSGPA } from "@/types/calculator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calculator, TrendingUp, Award, Download, Share2 } from "lucide-react";
+import { Calculator, TrendingUp, Award, Download, Share2, Save } from "lucide-react";
 import { generateGradeCard } from "@/lib/gradecard-generator";
 import { useState, useEffect, useRef } from "react";
 import { GradeBadge } from "./GradeBadge";
@@ -191,6 +191,14 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
               >
                 <Download className="w-5 h-5 mr-2" />
                 Download Grade Card
+              </Button>
+              <Button
+                onClick={() => setShowSavePrompt(true)}
+                size="lg"
+                className="w-full sm:w-auto sm:flex-1 rounded-full bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+              >
+                <Save className="w-5 h-5 mr-2" />
+                Save Grade Card
               </Button>
             </div>
 
