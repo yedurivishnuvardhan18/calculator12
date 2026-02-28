@@ -31,7 +31,7 @@ export function FloatingCoffee() {
     const updatePos = () => {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      setPosition({ x: Math.max(8, vw - 80), y: Math.max(8, vh - 100) });
+      setPosition({ x: Math.max(8, vw / 2 - 28), y: Math.max(8, vh / 2 - 28) });
       setPositioned(true);
     };
     updatePos();
@@ -52,7 +52,7 @@ export function FloatingCoffee() {
     const timer = setTimeout(() => {
       setDismissed(false);
       localStorage.removeItem(STORAGE_KEY);
-      setPosition({ x: Math.max(8, window.innerWidth - 80), y: Math.max(8, window.innerHeight - 100) });
+      setPosition({ x: Math.max(8, window.innerWidth / 2 - 28), y: Math.max(8, window.innerHeight / 2 - 28) });
     }, remaining);
     return () => clearTimeout(timer);
   }, [dismissed]);
