@@ -3,29 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookmarkPlus, Search, Loader2, Check, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { Course, createNewCourse } from "@/types/calculator";
+import { Course } from "@/types/calculator";
 import { toast } from "sonner";
+import { normalizeRoll, isValidRoll, saveGradeCard, loadGradeCard, GradeCardPayload } from "@/lib/grade-card-storage";
 
 interface RollNumberSaveProps {
   courses: Course[];
   showCGPA: boolean;
-  cgpaData: {
-    cgpa: number;
-    previousCGPA: number;
-    previousCredits: number;
-    newTotalCredits: number;
-  } | null;
-  onLoad: (data: {
-    courses: Course[];
-    showCGPA: boolean;
-    cgpaData: {
-      cgpa: number;
-      previousCGPA: number;
-      previousCredits: number;
-      newTotalCredits: number;
-    } | null;
-  }) => void;
+  cgpaData: GradeCardPayload["cgpaData"];
+  onLoad: (data: GradeCardPayload) => void;
 }
 
 export function RollNumberSave({ courses, showCGPA, cgpaData, onLoad }: RollNumberSaveProps) {
@@ -34,69 +20,48 @@ export function RollNumberSave({ courses, showCGPA, cgpaData, onLoad }: RollNumb
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"idle" | "save" | "load">("idle");
 
-  const sanitizedRoll = rollNumber.trim().toUpperCase();
-  const isValidRoll = /^[A-Z0-9]{5,20}$/.test(sanitizedRoll);
+  const sanitized = normalizeRoll(rollNumber);
+  const valid = isValidRoll(sanitized);
 
   const hasValidCourses = courses.some(
     (c) => c.finalGradePoint !== null && c.name.trim() !== ""
   );
 
   const handleSave = async () => {
-    if (!isValidRoll || !hasValidCourses) return;
+    if (!valid || !hasValidCourses) return;
     setLoading(true);
-    try {
-      const { error } = await supabase
-        .from("saved_grade_cards")
-        .upsert(
-          {
-            roll_number: sanitizedRoll,
-            courses: JSON.parse(JSON.stringify(courses)),
-            show_cgpa: showCGPA,
-            cgpa_data: cgpaData ? JSON.parse(JSON.stringify(cgpaData)) : null,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "roll_number" }
-        );
+    setMode("save");
+    const result = await saveGradeCard(sanitized, { courses, showCGPA, cgpaData });
+    setLoading(false);
 
-      if (error) throw error;
-      toast.success(`Grade card saved for ${sanitizedRoll}! 🎉`);
+    if (result.ok) {
+      toast.success(`Grade card saved for ${sanitized}! 🎉`);
       setMode("idle");
-    } catch (err: any) {
-      const msg = err?.message || "Failed to save. Please try again.";
-      toast.error(msg);
-    } finally {
-      setLoading(false);
+    } else if (result.localFallback) {
+      toast.warning("Saved locally on this device. Cloud save failed — retry when online.", { duration: 6000 });
+      setMode("idle");
+    } else {
+      toast.error(result.error ?? "Failed to save.");
+      setMode("idle");
     }
   };
 
   const handleLoad = async () => {
-    if (!isValidRoll) return;
+    if (!valid) return;
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("saved_grade_cards")
-        .select("*")
-        .eq("roll_number", sanitizedRoll)
-        .maybeSingle();
+    setMode("load");
+    const result = await loadGradeCard(sanitized);
+    setLoading(false);
 
-      if (error) throw error;
-      if (!data) {
-        toast.error(`No saved grade card found for ${sanitizedRoll}`);
-        return;
-      }
-
-      onLoad({
-        courses: data.courses as unknown as Course[],
-        showCGPA: data.show_cgpa,
-        cgpaData: data.cgpa_data as unknown as RollNumberSaveProps["cgpaData"],
-      });
-      toast.success(`Grade card loaded for ${sanitizedRoll}! 📋`);
+    if (result.ok && result.data) {
+      onLoad(result.data);
+      const suffix = result.localFallback ? " (from local backup)" : "";
+      toast.success(`Grade card loaded for ${sanitized}!${suffix} 📋`);
       setMode("idle");
       setIsOpen(false);
-    } catch {
-      toast.error("Failed to load. Please try again.");
-    } finally {
-      setLoading(false);
+    } else {
+      toast.error(result.error ?? "Failed to load.");
+      setMode("idle");
     }
   };
 
@@ -145,7 +110,7 @@ export function RollNumberSave({ courses, showCGPA, cgpaData, onLoad }: RollNumb
               className="rounded-xl border-2 border-foreground/10 focus:border-pop-purple h-10 uppercase font-mono"
             />
 
-            {!isValidRoll && rollNumber.length > 0 && (
+            {!valid && rollNumber.length > 0 && (
               <p className="text-[10px] text-destructive font-medium">
                 Enter a valid roll number (5-20 alphanumeric characters)
               </p>
@@ -153,8 +118,8 @@ export function RollNumberSave({ courses, showCGPA, cgpaData, onLoad }: RollNumb
 
             <div className="flex gap-2">
               <Button
-                onClick={() => { setMode("save"); handleSave(); }}
-                disabled={!isValidRoll || !hasValidCourses || loading}
+                onClick={handleSave}
+                disabled={!valid || !hasValidCourses || loading}
                 size="sm"
                 className="flex-1 rounded-xl bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display text-xs transition-all"
               >
@@ -166,8 +131,8 @@ export function RollNumberSave({ courses, showCGPA, cgpaData, onLoad }: RollNumb
                 Save
               </Button>
               <Button
-                onClick={() => { setMode("load"); handleLoad(); }}
-                disabled={!isValidRoll || loading}
+                onClick={handleLoad}
+                disabled={!valid || loading}
                 size="sm"
                 variant="outline"
                 className="flex-1 rounded-xl border-2 border-pop-cyan font-bold font-display text-xs text-pop-cyan hover:bg-pop-cyan hover:text-white transition-all"
