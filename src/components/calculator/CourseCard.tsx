@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Trash2, BookOpen, Lock, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GradeBadge } from "./GradeBadge";
@@ -325,19 +326,24 @@ export function CourseCard({
               </p>
             )}
             {!isCLAD && (
-              <button
-                type="button"
-                onClick={() => handleLabToggle(!course.hasLab)}
-                className={cn(
-                  "flex items-center gap-2 mt-2 px-3 py-2 rounded-xl border-2 transition-all duration-200 text-xs font-bold w-full sm:w-auto",
-                  course.hasLab
-                    ? "border-pop-cyan bg-pop-cyan/15 text-pop-cyan shadow-sm"
-                    : "border-foreground/15 bg-muted/30 text-muted-foreground hover:border-pop-cyan/50 hover:text-foreground"
-                )}
-              >
-                <FlaskConical className="w-4 h-4" />
-                <span>{course.hasLab ? "Lab Enabled ✓" : "Has Lab Component?"}</span>
-              </button>
+              <div className="flex items-center gap-2.5 mt-2">
+                <Switch
+                  id={`hasLab-${course.id}`}
+                  checked={course.hasLab || false}
+                  onCheckedChange={(checked) => handleLabToggle(checked)}
+                  className="data-[state=checked]:bg-pop-cyan"
+                />
+                <Label
+                  htmlFor={`hasLab-${course.id}`}
+                  className={cn(
+                    "text-xs font-bold cursor-pointer flex items-center gap-1.5 transition-colors",
+                    course.hasLab ? "text-pop-cyan" : "text-muted-foreground"
+                  )}
+                >
+                  <FlaskConical className="w-3.5 h-3.5" />
+                  {course.hasLab ? "Lab Enabled" : "Has Lab?"}
+                </Label>
+              </div>
             )}
           </div>
           <div className="space-y-2">
