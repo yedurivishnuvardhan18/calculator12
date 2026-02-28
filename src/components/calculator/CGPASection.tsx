@@ -3,11 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Calculator, ArrowRight, Download, Share2, Save } from "lucide-react";
+import { TrendingUp, Calculator, ArrowRight, Download } from "lucide-react";
 import { useState, useEffect, useRef, useMemo } from "react";
 import confetti from "canvas-confetti";
 import { generateGradeCard } from "@/lib/gradecard-generator";
-import { SavePromptDialog } from "./SavePromptDialog";
 
 interface CGPASectionProps {
   currentSGPA: number;
@@ -20,7 +19,6 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
   const [previousCGPA, setPreviousCGPA] = useState<string>('');
   const [previousCredits, setPreviousCredits] = useState<string>('');
   const [showResult, setShowResult] = useState(false);
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
   const hasTriggeredConfetti = useRef(false);
 
   const canCalculate = previousCGPA !== '' && previousCredits !== '' && 
@@ -35,7 +33,6 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
   useEffect(() => {
     if (showResult && result && !hasTriggeredConfetti.current) {
       hasTriggeredConfetti.current = true;
-      setShowSavePrompt(true);
       const colors = ['#FF8C42', '#FFE66D', '#FF6B9D', '#4ECDC4', '#A855F7', '#10B981'];
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors });
       setTimeout(() => {
@@ -179,7 +176,7 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
               <span className="bg-card px-4 py-2 rounded-full border-2 border-foreground/10 inline-block">
                 Total Credits Completed: <strong className="text-foreground">{result.totalCredits}</strong>
               </span>
-              <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-row sm:gap-3">
+              <div>
                 <Button
                   onClick={() => {
                     const sgpaResult = calculateSGPA(courses.filter(c => c.finalGradePoint !== null && c.name.trim() !== ''));
@@ -193,51 +190,15 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
                     }
                   }}
                   size="lg"
-                  className="rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
+                  className="rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
                 >
-                  <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-                  Download
-                </Button>
-                <Button
-                  onClick={() => setShowSavePrompt(true)}
-                  size="lg"
-                  className="rounded-full bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
-                >
-                  <Save className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-                  Save
-                </Button>
-                <Button
-                  onClick={async () => {
-                    const text = `📊 My Updated CGPA: ${result.cgpa.toFixed(2)}\n📈 Previous CGPA: ${previousCGPA}\n🎓 SGPA this sem: ${currentSGPA.toFixed(2)}\n📚 Total Credits: ${result.totalCredits}\n\nCalculated on TeamDino Grade Calculator ✨`;
-                    if (navigator.share) {
-                      try {
-                        await navigator.share({ title: "My CGPA Results", text });
-                      } catch {}
-                    } else {
-                      await navigator.clipboard.writeText(text);
-                      alert("Results copied to clipboard!");
-                    }
-                  }}
-                  size="lg"
-                  variant="outline"
-                  className="col-span-2 sm:col-span-1 rounded-full border-2 border-pop-cyan text-pop-cyan hover:bg-pop-cyan hover:text-white font-bold font-display text-xs sm:text-sm transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95 sm:flex-1"
-                >
-                  <Share2 className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-                  Share Results
+                  <Download className="w-5 h-5 mr-2" />
+                  Download Grade Card
                 </Button>
               </div>
             </div>
           </div>
         )}
-
-        <SavePromptDialog
-          open={showSavePrompt}
-          onClose={() => setShowSavePrompt(false)}
-          type="cgpa"
-          courses={courses}
-          showCGPA={true}
-          cgpaData={showResult && result ? { cgpa: result.cgpa, previousCGPA: parseFloat(previousCGPA), previousCredits: parseInt(previousCredits), newTotalCredits: result.totalCredits } : null}
-        />
       </CardContent>
     </Card>
   );

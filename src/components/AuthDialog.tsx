@@ -34,9 +34,6 @@ function validateCode(code: string): { valid: boolean; error?: string } {
   if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
     return { valid: false, error: "Code can only contain letters, numbers, hyphens, and underscores." };
   }
-  if (/^\d+$/.test(trimmed)) {
-    return { valid: false, error: "Code cannot be all numbers. Please include at least one letter." };
-  }
   return { valid: true };
 }
 
