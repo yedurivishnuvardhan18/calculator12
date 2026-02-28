@@ -62,7 +62,8 @@ export function RollNumberSave({ courses, showCGPA, cgpaData, onLoad }: RollNumb
       toast.success(`Grade card saved for ${sanitizedRoll}! 🎉`);
       setMode("idle");
     } catch (err: any) {
-      toast.error("Failed to save. Please try again.");
+      const msg = err?.message || "Failed to save. Please try again.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

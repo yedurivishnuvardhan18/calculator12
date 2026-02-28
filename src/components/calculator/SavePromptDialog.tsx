@@ -27,7 +27,8 @@ export function SavePromptDialog({ open, onClose, type, courses, showCGPA, cgpaD
   const [rollNumber, setRollNumber] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const isValidRoll = /^[A-Za-z0-9]{5,20}$/.test(rollNumber);
+  const sanitizedRoll = rollNumber.trim().toUpperCase();
+  const isValidRoll = /^[A-Z0-9]{5,20}$/.test(sanitizedRoll);
 
   const handleSave = async () => {
     if (!isValidRoll) return;
@@ -37,7 +38,7 @@ export function SavePromptDialog({ open, onClose, type, courses, showCGPA, cgpaD
         .from("saved_grade_cards")
         .upsert(
           {
-            roll_number: rollNumber.toUpperCase(),
+            roll_number: sanitizedRoll,
             courses: JSON.parse(JSON.stringify(courses)),
             show_cgpa: showCGPA,
             cgpa_data: cgpaData ? JSON.parse(JSON.stringify(cgpaData)) : null,
@@ -48,8 +49,9 @@ export function SavePromptDialog({ open, onClose, type, courses, showCGPA, cgpaD
       if (error) throw error;
       toast.success("Grade card saved successfully! 🎉");
       handleClose();
-    } catch {
-      toast.error("Failed to save. Please try again.");
+    } catch (err: any) {
+      const msg = err?.message || "Failed to save. Please try again.";
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
