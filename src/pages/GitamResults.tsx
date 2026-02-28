@@ -168,10 +168,10 @@ export default function GitamResults() {
         <div className="w-9 h-9 sm:w-11 sm:h-11 bg-emerald-400 flex-shrink-0" style={{ clipPath: "polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%)" }} />
         <div>
           <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight">
-            GITAM <span className="text-emerald-400">Portal</span>
+            Team<span className="text-emerald-400">Dino</span>
           </h1>
           <p className="font-mono text-[0.7rem] text-muted-foreground tracking-widest uppercase mt-1">
-            Results & Attendance · glearn.gitam.edu
+            Results & Attendance · teamdino.in
           </p>
         </div>
       </header>
