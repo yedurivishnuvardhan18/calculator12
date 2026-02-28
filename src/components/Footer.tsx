@@ -10,17 +10,9 @@ export function Footer() {
           <span className="text-white font-display font-semibold text-sm">TeamDino</span>
         </div>
 
-        <div className="flex flex-col items-center gap-1">
-          <p className="text-[hsl(220,10%,55%)] text-xs italic text-center">
-            Copyright © 2026 TeamDino | All rights reserved
-          </p>
-          <p className="text-[hsl(220,10%,40%)] text-[10px] text-center">
-            Built with{" "}
-            <a href="https://lovable.dev" target="_blank" rel="noopener noreferrer" className="underline hover:text-[hsl(220,10%,60%)] transition-colors">
-              Lovable
-            </a>
-          </p>
-        </div>
+        <p className="text-[hsl(220,10%,55%)] text-xs italic text-center">
+          Copyright © 2026 TeamDino | All rights reserved
+        </p>
 
         <div className="flex items-center gap-3">
           <a
