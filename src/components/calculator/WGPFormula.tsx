@@ -17,11 +17,11 @@ export function WGPFormula({
   labMarks = null,
   finalGradePoint = null,
 }: WGPFormulaProps) {
-  const theoryContribution = (wgp / 10) * 100 * 0.70;
+  const rawWGP = assessments.reduce((sum, a) => sum + a.gradePoint! * a.weight, 0);
+  const theoryContribution = (rawWGP / 10) * 100 * 0.70;
   const labContribution = labMarks !== null ? labMarks * 0.30 : null;
   const finalPercentage = labContribution !== null ? theoryContribution + labContribution : null;
 
-  const rawWGP = assessments.reduce((sum, a) => sum + a.gradePoint! * a.weight, 0);
   const ceiledWGP = Math.min(10, Math.ceil(rawWGP));
 
   return (
@@ -66,7 +66,7 @@ export function WGPFormula({
               Final GP = [(WGP ÷ 10 × 100 × 0.70) + (Lab × 0.30)] ÷ 10
             </div>
             <div className="text-muted-foreground whitespace-nowrap">
-              Theory = ({wgp.toFixed(2)} ÷ 10) × 100 × 0.70 = {theoryContribution.toFixed(2)}
+              Theory = ({rawWGP.toFixed(2)} ÷ 10) × 100 × 0.70 = {theoryContribution.toFixed(2)}
             </div>
             <div className="text-muted-foreground whitespace-nowrap">
               Lab = {labMarks} × 0.30 = {labContribution?.toFixed(2)}

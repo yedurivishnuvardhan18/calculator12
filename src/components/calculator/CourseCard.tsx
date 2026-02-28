@@ -130,7 +130,7 @@ export function CourseCard({
       if (wgp !== null) {
         let effectiveGP = wgp;
         if (course.hasLab && course.labMarks !== null) {
-          effectiveGP = calculateFinalGradePointWithLab(wgp, course.labMarks);
+          effectiveGP = calculateFinalGradePointWithLab(rawWGP!, course.labMarks);
         }
         const grade = getGradeFromWGP(effectiveGP);
         finalGradePoint = effectiveGP;
@@ -163,7 +163,7 @@ export function CourseCard({
       if (wgp !== null) {
         let effectiveGP = wgp;
         if (course.hasLab && course.labMarks !== null) {
-          effectiveGP = calculateFinalGradePointWithLab(wgp, course.labMarks);
+          effectiveGP = calculateFinalGradePointWithLab(rawWGP!, course.labMarks);
         }
         const grade = getGradeFromWGP(effectiveGP);
         finalGradePoint = effectiveGP;
@@ -188,7 +188,7 @@ export function CourseCard({
     if (wgp !== null) {
       let effectiveGP = wgp;
       if (course.hasLab && course.labMarks !== null) {
-        effectiveGP = calculateFinalGradePointWithLab(wgp, course.labMarks);
+        effectiveGP = calculateFinalGradePointWithLab(rawWGP!, course.labMarks);
       }
       const grade = getGradeFromWGP(effectiveGP);
       finalGradePoint = effectiveGP;
