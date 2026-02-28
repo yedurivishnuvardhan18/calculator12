@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 // import GitamResults from "./pages/GitamResults";
 import { ExternalPage } from "./components/ExternalPage";
 import { FloatingCoffee } from "./components/FloatingCoffee";
+import { CoffeePopup } from "./components/CoffeePopup";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           </Routes>
           <Footer />
           <FloatingCoffee />
+          <CoffeePopup />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
