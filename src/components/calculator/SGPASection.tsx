@@ -1,7 +1,7 @@
 import { Course, calculateSGPA } from "@/types/calculator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calculator, TrendingUp, Award, Download } from "lucide-react";
+import { Calculator, TrendingUp, Award, Download, Share2 } from "lucide-react";
 import { generateGradeCard } from "@/lib/gradecard-generator";
 import { useState, useEffect, useRef } from "react";
 import { GradeBadge } from "./GradeBadge";
@@ -30,11 +30,24 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
     if (showResult && result && !hasTriggeredConfetti.current) {
       hasTriggeredConfetti.current = true;
       const colors = ['#FF6B9D', '#FFE66D', '#4ECDC4', '#A855F7', '#FF8C42', '#10B981'];
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors });
-      setTimeout(() => {
-        confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, colors });
-        confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, colors });
-      }, 250);
+      
+      if (result.sgpa >= 9) {
+        // 🎉 Extra celebration for high SGPA!
+        confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors, scalar: 1.2 });
+        setTimeout(() => {
+          confetti({ particleCount: 80, angle: 60, spread: 70, origin: { x: 0 }, colors });
+          confetti({ particleCount: 80, angle: 120, spread: 70, origin: { x: 1 }, colors });
+        }, 200);
+        setTimeout(() => {
+          confetti({ particleCount: 60, spread: 90, origin: { y: 0.7 }, colors, scalar: 1.5 });
+        }, 500);
+      } else {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors });
+        setTimeout(() => {
+          confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, colors });
+          confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, colors });
+        }, 250);
+      }
     }
   }, [showResult, result]);
 
@@ -141,6 +154,11 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
             <div className="flex flex-col items-center gap-3 sm:gap-5 p-5 sm:p-8 bg-gradient-to-br from-pop-green/10 to-pop-cyan/10 rounded-3xl border-3 border-pop-green/30 pop-shadow-lg">
               <div className="text-center">
                 <div className="text-5xl sm:text-7xl font-black font-display text-pop-green drop-shadow-md animate-pop-in">{result?.sgpa.toFixed(2)}</div>
+                {result && result.sgpa >= 9 && (
+                  <div className="text-pop-pink font-bold text-sm sm:text-base mt-1 animate-fade-in">
+                    🔥 Outstanding performance! 🔥
+                  </div>
+                )}
                 <div className="text-muted-foreground mt-2 text-xs sm:text-sm font-medium">Your SGPA for this semester 🎉</div>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
@@ -171,6 +189,41 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
                 <Download className="w-5 h-5 mr-2" />
                 Download Grade Card
               </Button>
+            </div>
+
+            {/* Share Buttons */}
+            <div className="flex flex-col items-center gap-2 pt-1">
+              <p className="text-xs text-muted-foreground font-medium">Share your results</p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full border-2 border-pop-green/40 text-pop-green hover:bg-pop-green hover:text-white text-xs font-bold"
+                  onClick={() => {
+                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}!\nTotal Credits: ${result?.totalCredits} | Grade Points: ${result?.totalGradePoints.toFixed(0)}\n${result && result.sgpa >= 9 ? '🔥 Outstanding!' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
+                    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                    window.open(url, '_blank');
+                  }}
+                >
+                  WhatsApp
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full border-2 border-pop-cyan/40 text-pop-cyan hover:bg-pop-cyan hover:text-white text-xs font-bold"
+                  onClick={() => {
+                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}! ${result && result.sgpa >= 9 ? '🔥' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
+                    navigator.clipboard.writeText(text);
+                    // Use native share if available
+                    if (navigator.share) {
+                      navigator.share({ title: 'My Grade Card', text });
+                    }
+                  }}
+                >
+                  <Share2 className="w-3.5 h-3.5 mr-1" />
+                  Share
+                </Button>
+              </div>
             </div>
           </div>
         )}

@@ -7,7 +7,7 @@ import { SGPASection } from "@/components/calculator/SGPASection";
 import { CGPASection } from "@/components/calculator/CGPASection";
 import { GradeChart } from "@/components/calculator/GradeChart";
 import { Button } from "@/components/ui/button";
-import { Plus, GraduationCap, Sparkles } from "lucide-react";
+import { Plus, GraduationCap, Sparkles, RotateCcw } from "lucide-react";
 import { usePersistedGrades } from "@/hooks/use-persisted-grades";
 
 export default function GradeCalculator() {
@@ -15,6 +15,12 @@ export default function GradeCalculator() {
 
   const addCourse = () => {
     setCourses((prev) => [...prev, createNewCourse()]);
+  };
+
+  const resetAll = () => {
+    setCourses([createNewCourse()]);
+    setShowCGPA(false);
+    setCGPAData(null);
   };
 
   const removeCourse = (index: number) => {
@@ -139,6 +145,19 @@ export default function GradeCalculator() {
               Add Another Course
             </Button>
           </motion.div>
+          {courses.length > 1 && (
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-2">
+              <Button
+                onClick={resetAll}
+                variant="ghost"
+                size="sm"
+                className="rounded-full text-muted-foreground hover:text-destructive font-bold text-xs"
+              >
+                <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+                Reset All Courses
+              </Button>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* SGPA Section */}
