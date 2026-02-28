@@ -5,6 +5,7 @@ import { CourseCard } from "@/components/calculator/CourseCard";
 import { StepIndicator } from "@/components/calculator/StepIndicator";
 import { SGPASection } from "@/components/calculator/SGPASection";
 import { CGPASection } from "@/components/calculator/CGPASection";
+import { RollNumberSave } from "@/components/calculator/RollNumberSave";
 import { GradeChart } from "@/components/calculator/GradeChart";
 import { Button } from "@/components/ui/button";
 import { Plus, GraduationCap, Sparkles, RotateCcw } from "lucide-react";
@@ -34,6 +35,15 @@ export default function GradeCalculator() {
   const handleCGPACalculated = useCallback(
     (data: { cgpa: number; previousCGPA: number; previousCredits: number; newTotalCredits: number } | null) => {
       setCGPAData(data);
+    },
+    []
+  );
+
+  const handleLoadSaved = useCallback(
+    (data: { courses: Course[]; showCGPA: boolean; cgpaData: typeof cgpaData }) => {
+      setCourses(data.courses);
+      setShowCGPA(data.showCGPA);
+      setCGPAData(data.cgpaData);
     },
     []
   );
@@ -68,22 +78,36 @@ export default function GradeCalculator() {
   return (
     <div className="min-h-screen bg-background abstract-dots">
       <div className="container max-w-4xl py-5 sm:py-10 px-4 sm:px-6 space-y-5 sm:space-y-8">
-        {/* Header */}
-        <motion.div
-          className="text-center space-y-3"
-          initial={{ opacity: 0, scale: 0.5, rotate: -5 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        >
-          <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-pop-pink/20 via-pop-purple/15 to-pop-cyan/20 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
-            <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-pop-pink animate-float" />
-            <h1 className="text-xl sm:text-3xl font-black font-display">Grade Calculator</h1>
-            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-pop-yellow" />
-          </div>
-          <p className="text-muted-foreground text-xs sm:text-base font-medium max-w-lg mx-auto">
-            Calculate your WGP, SGPA, and CGPA with step-by-step breakdowns ✨
-          </p>
-        </motion.div>
+        {/* Header with Save/Load */}
+        <div className="flex items-start justify-between gap-3">
+          <motion.div
+            className="text-center flex-1 space-y-3"
+            initial={{ opacity: 0, scale: 0.5, rotate: -5 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          >
+            <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-pop-pink/20 via-pop-purple/15 to-pop-cyan/20 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
+              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-pop-pink animate-float" />
+              <h1 className="text-xl sm:text-3xl font-black font-display">Grade Calculator</h1>
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-pop-yellow" />
+            </div>
+            <p className="text-muted-foreground text-xs sm:text-base font-medium max-w-lg mx-auto">
+              Calculate your WGP, SGPA, and CGPA with step-by-step breakdowns ✨
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <RollNumberSave
+              courses={courses}
+              showCGPA={showCGPA}
+              cgpaData={cgpaData}
+              onLoad={handleLoadSaved}
+            />
+          </motion.div>
+        </div>
 
         {/* Step Indicator */}
         <motion.div
