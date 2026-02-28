@@ -200,7 +200,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
                   size="sm"
                   className="rounded-full border-2 border-pop-green/40 text-pop-green hover:bg-pop-green hover:text-white text-xs font-bold"
                   onClick={() => {
-                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}!\nTotal Credits: ${result?.totalCredits} | Grade Points: ${result?.totalGradePoints.toFixed(0)}\n${result && result.sgpa >= 9 ? '🔥 Outstanding!' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
+                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}!\nTotal Credits: ${result?.totalCredits} | Grade Points: ${result?.totalGradePoints.toFixed(0)}\n${result && result.sgpa >= 9 ? '🔥 Outstanding!' : '✨'}\nCalculated on TeamDino - Work Smart`;
                     const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                     window.open(url, '_blank');
                   }}
@@ -212,7 +212,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
                   size="sm"
                   className="rounded-full border-2 border-pop-cyan/40 text-pop-cyan hover:bg-pop-cyan hover:text-white text-xs font-bold"
                   onClick={() => {
-                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}! ${result && result.sgpa >= 9 ? '🔥' : '✨'}\nCalculated on habbittrackerpro.lovable.app`;
+                    const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}! ${result && result.sgpa >= 9 ? '🔥' : '✨'}\nCalculated on TeamDino - Work Smart`;
                     navigator.clipboard.writeText(text);
                     // Use native share if available
                     if (navigator.share) {
