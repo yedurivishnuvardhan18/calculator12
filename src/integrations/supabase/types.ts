@@ -91,6 +91,36 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_grade_cards: {
+        Row: {
+          cgpa_data: Json | null
+          courses: Json
+          id: string
+          roll_number: string
+          saved_at: string
+          show_cgpa: boolean
+          updated_at: string
+        }
+        Insert: {
+          cgpa_data?: Json | null
+          courses: Json
+          id?: string
+          roll_number: string
+          saved_at?: string
+          show_cgpa?: boolean
+          updated_at?: string
+        }
+        Update: {
+          cgpa_data?: Json | null
+          courses?: Json
+          id?: string
+          roll_number?: string
+          saved_at?: string
+          show_cgpa?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_codes: {
         Row: {
           code: string
