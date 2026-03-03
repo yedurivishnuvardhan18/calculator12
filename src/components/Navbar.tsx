@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
+  { to: "/learn", label: "Learn", icon: GraduationCap },
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
   { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];
