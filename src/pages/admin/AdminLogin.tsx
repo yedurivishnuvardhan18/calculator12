@@ -37,11 +37,22 @@ export default function AdminLogin() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      toast({ title: "Signup failed", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Account created", description: "Check your email to verify, then log in." });
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        toast({ title: "Signup failed", description: error.message, variant: "destructive" });
+      } else {
+        // Auto-login after signup since auto-confirm is enabled
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+        if (loginError) {
+          toast({ title: "Account created", description: "Please log in with your credentials." });
+        } else {
+          toast({ title: "Account created", description: "Welcome!" });
+          navigate("/admin");
+        }
+      }
+    } catch {
+      toast({ title: "Network error", description: "Could not reach the server. Please try again.", variant: "destructive" });
     }
     setLoading(false);
   };
