@@ -11,6 +11,7 @@ const navItems = [
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
   { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];
+// Admin routes are intentionally excluded from navigation
 
 const externalLinks = [
   { href: "https://teamdino.in", label: "TeamDino", icon: Globe },
