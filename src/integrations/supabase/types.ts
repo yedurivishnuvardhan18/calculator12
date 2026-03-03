@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      branches: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       gitam_cache: {
         Row: {
           fetched_at: string
@@ -73,6 +91,41 @@ export type Database = {
           },
         ]
       }
+      modules: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          module_number: number
+          subject_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_number: number
+          subject_id: string
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_number?: number
+          subject_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modules_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       results_cache: {
         Row: {
           fetched_at: string
@@ -120,6 +173,112 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      semesters: {
+        Row: {
+          branch_id: string
+          created_at: string
+          id: string
+          number: number
+        }
+        Insert: {
+          branch_id: string
+          created_at?: string
+          id?: string
+          number: number
+        }
+        Update: {
+          branch_id?: string
+          created_at?: string
+          id?: string
+          number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "semesters_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subjects: {
+        Row: {
+          branch_id: string
+          code: string
+          created_at: string
+          id: string
+          name: string
+          semester_id: string
+        }
+        Insert: {
+          branch_id: string
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+          semester_id: string
+        }
+        Update: {
+          branch_id?: string
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+          semester_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subjects_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subjects_semester_id_fkey"
+            columns: ["semester_id"]
+            isOneToOne: false
+            referencedRelation: "semesters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topics: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          module_id: string
+          order_index: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_id: string
+          order_index?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_id?: string
+          order_index?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topics_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_codes: {
         Row: {
@@ -170,6 +329,44 @@ export type Database = {
             columns: ["user_code_id"]
             isOneToOne: false
             referencedRelation: "user_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      videos: {
+        Row: {
+          created_at: string
+          id: string
+          order_index: number
+          title: string
+          topic_id: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_index?: number
+          title: string
+          topic_id: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_index?: number
+          title?: string
+          topic_id?: string
+          youtube_id?: string
+          youtube_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
