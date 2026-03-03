@@ -9,13 +9,13 @@ import { toast } from "@/hooks/use-toast";
 import { Lock, UserPlus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const ADMIN_SECRET_CODE = "yeduri";
+
 
 export default function AdminLogin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [secretCode, setSecretCode] = useState("");
+  
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -32,10 +32,6 @@ export default function AdminLogin() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (secretCode !== ADMIN_SECRET_CODE) {
-      toast({ title: "Invalid code", description: "The secret admin code is incorrect.", variant: "destructive" });
-      return;
-    }
     setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({ email, password });
@@ -96,10 +92,6 @@ export default function AdminLogin() {
                 <div>
                   <Label htmlFor="signup-password">Password</Label>
                   <Input id="signup-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-                </div>
-                <div>
-                  <Label htmlFor="secret-code">Secret Code</Label>
-                  <Input id="secret-code" type="password" placeholder="Enter admin code" value={secretCode} onChange={e => setSecretCode(e.target.value)} required />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   <UserPlus className="w-4 h-4 mr-2" />
