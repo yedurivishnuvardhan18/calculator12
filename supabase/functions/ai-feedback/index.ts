@@ -12,15 +12,22 @@ serve(async (req) => {
   }
 
   try {
-    const { studentName, grades, sgpa, cgpa } = await req.json();
+    const { studentName, grades, sgpa, cgpa, mode } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const gradesText = (grades || [])
-      .map((g: any) => `${g.course}: ${g.grade} (${g.credits} credits)`)
-      .join("\n");
+    const gradesText = typeof grades === "string"
+      ? grades
+      : (grades || []).map((g: any) => `${g.course}: ${g.grade} (${g.credits} credits)`).join("\n");
 
-    const prompt = `You are an academic advisor. Generate a brief, encouraging performance feedback for a student.
+    const prompt = mode === "roast"
+      ? `You are a savage but funny comedian roasting a student's grades. Be brutal but hilarious. Use Gen-Z slang and emojis.
+
+Student SGPA: ${sgpa || "N/A"}
+Grades: ${gradesText || "No data"}
+
+Write a 2-3 sentence absolutely savage roast of their grades. Be creative and funny. Don't be mean about the person, just their grades.`
+      : `You are an academic advisor. Generate a brief, encouraging performance feedback for a student.
 
 Student: ${studentName}
 SGPA: ${sgpa || "N/A"}
