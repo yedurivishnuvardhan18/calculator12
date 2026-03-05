@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { CommandPalette } from "./components/CommandPalette";
+import { BugReportButton } from "./components/BugReportButton";
 import GradeCalculator from "./pages/GradeCalculator";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -24,6 +27,7 @@ import AdminSubjects from "./pages/admin/AdminSubjects";
 import AdminModules from "./pages/admin/AdminModules";
 import AdminTopics from "./pages/admin/AdminTopics";
 import AdminVideos from "./pages/admin/AdminVideos";
+import GitamResults from "./pages/GitamResults";
 
 const queryClient = new QueryClient();
 
@@ -34,14 +38,16 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <CommandPalette />
           <Navbar />
           <Routes>
-            <Route path="/" element={<GradeCalculator />} />
-            <Route path="/habits" element={<Index />} />
-            <Route path="/learn" element={<Learn />} />
-            <Route path="/learn/:subjectId" element={<LearnSubject />} />
-            <Route path="/learn/:subjectId/:moduleId" element={<LearnModule />} />
-            <Route path="/learn/:subjectId/:moduleId/:topicId" element={<LearnTopic />} />
+            <Route path="/" element={<ErrorBoundary><GradeCalculator /></ErrorBoundary>} />
+            <Route path="/habits" element={<ErrorBoundary><Index /></ErrorBoundary>} />
+            <Route path="/learn" element={<ErrorBoundary><Learn /></ErrorBoundary>} />
+            <Route path="/learn/:subjectId" element={<ErrorBoundary><LearnSubject /></ErrorBoundary>} />
+            <Route path="/learn/:subjectId/:moduleId" element={<ErrorBoundary><LearnModule /></ErrorBoundary>} />
+            <Route path="/learn/:subjectId/:moduleId/:topicId" element={<ErrorBoundary><LearnTopic /></ErrorBoundary>} />
+            <Route path="/gitam-results" element={<ErrorBoundary><GitamResults /></ErrorBoundary>} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
@@ -57,6 +63,7 @@ const App = () => (
           <Footer />
           <FloatingCoffee />
           <CoffeePopup />
+          <BugReportButton />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

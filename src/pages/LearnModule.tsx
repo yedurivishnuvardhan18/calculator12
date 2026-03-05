@@ -27,8 +27,8 @@ export default function LearnModule() {
 
   if (loading) return (
     <main className="container max-w-4xl py-8 px-4">
-      <Skeleton className="h-8 w-48 mb-6" />
-      <div className="grid gap-3">{[1,2,3].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}</div>
+      <div className="h-8 w-48 mb-6 rounded skeleton-shimmer" />
+      <div className="grid gap-3">{[1,2,3].map(i => <div key={i} className="h-20 rounded-xl skeleton-shimmer" />)}</div>
     </main>
   );
 

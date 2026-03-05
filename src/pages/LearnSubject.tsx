@@ -35,9 +35,9 @@ export default function LearnSubject() {
 
   if (loading) return (
     <main className="container max-w-4xl py-8 px-4">
-      <Skeleton className="h-8 w-48 mb-2" />
-      <Skeleton className="h-5 w-32 mb-8" />
-      <div className="grid gap-4">{[1,2,3,4,5].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}</div>
+      <div className="h-8 w-48 mb-2 rounded skeleton-shimmer" />
+      <div className="h-5 w-32 mb-8 rounded skeleton-shimmer" />
+      <div className="grid gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-24 rounded-xl skeleton-shimmer" />)}</div>
     </main>
   );
 

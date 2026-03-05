@@ -6,6 +6,7 @@ import { StepIndicator } from "@/components/calculator/StepIndicator";
 import { SGPASection } from "@/components/calculator/SGPASection";
 import { CGPASection } from "@/components/calculator/CGPASection";
 import { GradeChart } from "@/components/calculator/GradeChart";
+import { InteractiveCharts } from "@/components/calculator/InteractiveCharts";
 import { Button } from "@/components/ui/button";
 import { Plus, GraduationCap, Sparkles, RotateCcw } from "lucide-react";
 import { usePersistedGrades } from "@/hooks/use-persisted-grades";
@@ -191,6 +192,15 @@ export default function GradeCalculator() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Interactive Charts */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          <InteractiveCharts courses={courses} />
+        </motion.div>
 
         {/* Footer */}
         <motion.div

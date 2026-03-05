@@ -54,7 +54,7 @@ export default function Learn() {
       <div className="grid gap-4 sm:grid-cols-2 mb-8">
         <div>
           <label className="text-sm font-medium mb-1.5 block">Branch</label>
-          {loading ? <Skeleton className="h-10 w-full" /> : (
+          {loading ? <div className="h-10 w-full rounded skeleton-shimmer" /> : (
             <Select value={selectedBranch} onValueChange={setSelectedBranch}>
               <SelectTrigger><SelectValue placeholder="Select branch" /></SelectTrigger>
               <SelectContent>
@@ -76,7 +76,7 @@ export default function Learn() {
 
       {loadingSubjects && (
         <div className="grid gap-4 sm:grid-cols-2">
-          {[1,2,3,4].map(i => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
+          {[1,2,3,4].map(i => <div key={i} className="h-28 w-full rounded-xl skeleton-shimmer" />)}
         </div>
       )}
 

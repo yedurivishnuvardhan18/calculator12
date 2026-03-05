@@ -26,8 +26,8 @@ export default function LearnTopic() {
 
   if (loading) return (
     <main className="container max-w-4xl py-8 px-4">
-      <Skeleton className="h-8 w-48 mb-4" />
-      <Skeleton className="aspect-video w-full rounded-xl" />
+      <div className="h-8 w-48 mb-4 rounded skeleton-shimmer" />
+      <div className="aspect-video w-full rounded-xl skeleton-shimmer" />
     </main>
   );
 

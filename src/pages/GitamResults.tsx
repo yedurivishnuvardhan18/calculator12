@@ -1,5 +1,7 @@
 import { useState, useRef } from "react";
 import { Search, Loader2, BookOpen, ClipboardList, RefreshCw } from "lucide-react";
+import { toast } from "@/components/ui/sonner";
+import { AiFeedbackModal } from "@/components/AiFeedbackModal";
 
 const SEMESTERS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
@@ -20,7 +22,6 @@ async function invokeProxy(
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    // Merge external signal
     if (signal) {
       signal.addEventListener("abort", () => controller.abort());
     }
@@ -55,7 +56,6 @@ async function invokeProxy(
         e.message?.includes("network");
 
       if (isTransient && attempt < maxRetries) {
-        // backoff: 1s, 2s
         await new Promise((r) => setTimeout(r, (attempt + 1) * 1000));
         continue;
       }
@@ -116,6 +116,76 @@ function CatBadge({ cat }: { cat: string }) {
   );
 }
 
+// Skeleton components for loading states
+function ResultsSkeleton() {
+  return (
+    <div className="mt-8 space-y-4">
+      {/* Banner skeleton */}
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-indigo-400" />
+        <div className="h-6 w-48 rounded skeleton-shimmer mb-2" />
+        <div className="h-4 w-32 rounded skeleton-shimmer mb-4" />
+        <div className="flex flex-wrap gap-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-7 w-24 rounded-full skeleton-shimmer" />
+          ))}
+        </div>
+      </div>
+      {/* Table skeleton */}
+      <div className="border border-border rounded-xl overflow-hidden">
+        <div className="bg-card px-4 py-3 border-b border-border">
+          <div className="flex gap-4">
+            <div className="h-3 w-24 rounded skeleton-shimmer" />
+            <div className="h-3 w-16 rounded skeleton-shimmer" />
+            <div className="h-3 w-12 rounded skeleton-shimmer" />
+            <div className="h-3 w-12 rounded skeleton-shimmer" />
+          </div>
+        </div>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="px-4 py-4 border-b border-border last:border-b-0 flex gap-4">
+            <div className="flex-1 space-y-2">
+              <div className="h-4 w-40 rounded skeleton-shimmer" />
+              <div className="h-3 w-20 rounded skeleton-shimmer" />
+            </div>
+            <div className="h-5 w-10 rounded skeleton-shimmer" />
+            <div className="h-5 w-8 rounded skeleton-shimmer" />
+            <div className="h-5 w-10 rounded skeleton-shimmer" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AttendanceSkeleton() {
+  return (
+    <div className="mt-8 space-y-4">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-card border border-border rounded-xl p-3 sm:p-4 flex-1 min-w-0 text-center">
+            <div className="h-6 w-16 rounded skeleton-shimmer mx-auto mb-2" />
+            <div className="h-3 w-12 rounded skeleton-shimmer mx-auto" />
+          </div>
+        ))}
+      </div>
+      <div className="space-y-2">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-card border border-border rounded-xl px-4 py-3">
+            <div className="flex justify-between mb-2">
+              <div className="space-y-1.5">
+                <div className="h-4 w-36 rounded skeleton-shimmer" />
+                <div className="h-3 w-20 rounded skeleton-shimmer" />
+              </div>
+              <div className="h-5 w-12 rounded skeleton-shimmer" />
+            </div>
+            <div className="h-1.5 rounded-full skeleton-shimmer" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function GitamResults() {
   const [tab, setTab] = useState<"results" | "attendance">("results");
   const [reg, setReg] = useState("");
@@ -141,15 +211,20 @@ export default function GitamResults() {
 
       if (fetchErr) {
         setError(fetchErr);
+        toast.error(fetchErr);
       } else if (tab === "results") {
         setResults(data);
         prevResults.current = data;
+        toast.success("Results fetched successfully!");
       } else {
         setAttendance(data);
         prevAttendance.current = data;
+        toast.success("Attendance data loaded!");
       }
     } catch (e: any) {
-      setError(e.message || "Unknown error");
+      const msg = e.message || "Unknown error";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -241,22 +316,42 @@ export default function GitamResults() {
         )}
       </div>
 
+      {/* Loading skeletons */}
+      {loading && tab === "results" && <ResultsSkeleton />}
+      {loading && tab === "attendance" && <AttendanceSkeleton />}
+
       {/* Results display */}
-      {results && <ResultsView data={results} />}
-      {attendance && <AttendanceView data={attendance} />}
+      {!loading && results && <ResultsView data={results} />}
+      {!loading && attendance && <AttendanceView data={attendance} />}
     </main>
   );
 }
 
 function ResultsView({ data }: { data: any }) {
+  const grades = (data.sem_table || []).map((r: any) => ({
+    course: r.course_name,
+    grade: r.grade,
+    credits: r.credits,
+  }));
+
   return (
     <div className="mt-8 animate-in fade-in slide-in-from-bottom-2">
       {/* Student banner */}
       <div className="bg-card border border-border rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-indigo-400" />
-        <div className="text-lg sm:text-2xl font-extrabold tracking-tight">{data.student_name}</div>
-        <div className="font-mono text-xs text-muted-foreground mt-1">
-          {data.regid} · Semester {data.semid}
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-lg sm:text-2xl font-extrabold tracking-tight">{data.student_name}</div>
+            <div className="font-mono text-xs text-muted-foreground mt-1">
+              {data.regid} · Semester {data.semid}
+            </div>
+          </div>
+          <AiFeedbackModal
+            studentName={data.student_name}
+            grades={grades}
+            sgpa={data.sgpa}
+            cgpa={data.cgpa}
+          />
         </div>
         <div className="flex flex-wrap gap-2 mt-4">
           <Pill label="SGPA" value={data.sgpa} highlight />
