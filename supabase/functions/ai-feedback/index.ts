@@ -20,14 +20,36 @@ serve(async (req) => {
       ? grades
       : (grades || []).map((g: any) => `${g.course}: ${g.grade} (${g.credits} credits)`).join("\n");
 
-    const prompt = mode === "roast"
-      ? `You are a savage but funny comedian roasting a student's grades. Be brutal but hilarious. Use Gen-Z slang and emojis.
+    let prompt: string;
+    let systemPrompt: string;
+
+    if (mode === "roast-telugu") {
+      systemPrompt = "You are a hilarious Telugu comedian who roasts students' grades. You write in Telugu but using English letters (Tenglish/Manglish). You are savage, funny, and use popular Telugu expressions, movie references, and Gen-Z Telugu slang. Always use emojis generously.";
+      prompt = `Roast this student's grades in Telugu written in English letters (Tenglish). Be SAVAGE but HILARIOUS. Use Telugu movie dialogues, popular Telugu expressions like "Enti ra", "Emanna", "Brathuku", "Amma", etc. Mix Telugu and English naturally like how Telugu students actually talk.
 
 Student SGPA: ${sgpa || "N/A"}
 Grades: ${gradesText || "No data"}
 
-Write a 2-3 sentence absolutely savage roast of their grades. Be creative and funny. Don't be mean about the person, just their grades.`
-      : `You are an academic advisor. Generate a brief, encouraging performance feedback for a student.
+Write a 3-4 sentence absolutely SAVAGE Telugu roast in English letters. Include:
+- Telugu movie references or dialogues twisted for grades (like Baahubali, Pushpa, RRR, Ala Vaikunthapurramloo, etc.)
+- Common Telugu parent reactions ("Mee nanna chuste...", "Relatives ki em cheppali...")
+- Telugu college student slang
+- Lots of emojis
+
+Example style: "Enti ra nee SGPA chusi calculator kuda shock ayyindi! 😱 Mee nanna chuste 'Naaku pillalu levu' antadu! 💀"
+
+IMPORTANT: Write ONLY in Telugu using English letters. Do NOT use Telugu script. Keep it fun and relatable for Telugu engineering students.`;
+    } else if (mode === "roast") {
+      systemPrompt = "You are a savage but funny comedian roasting a student's grades. Be brutal but hilarious.";
+      prompt = `You are a savage but funny comedian roasting a student's grades. Be brutal but hilarious. Use Gen-Z slang and emojis.
+
+Student SGPA: ${sgpa || "N/A"}
+Grades: ${gradesText || "No data"}
+
+Write a 2-3 sentence absolutely savage roast of their grades. Be creative and funny. Don't be mean about the person, just their grades.`;
+    } else {
+      systemPrompt = "You are an academic advisor providing student feedback.";
+      prompt = `You are an academic advisor. Generate a brief, encouraging performance feedback for a student.
 
 Student: ${studentName}
 SGPA: ${sgpa || "N/A"}
@@ -36,6 +58,7 @@ Grades:
 ${gradesText || "No grade data available."}
 
 Write 3-4 sentences of constructive feedback highlighting strengths and areas for improvement. Be specific about subjects. Keep it professional and encouraging.`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -46,7 +69,7 @@ Write 3-4 sentences of constructive feedback highlighting strengths and areas fo
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: "You are a helpful academic advisor providing student feedback." },
+          { role: "system", content: systemPrompt },
           { role: "user", content: prompt },
         ],
       }),
