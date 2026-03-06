@@ -386,8 +386,8 @@ export function CourseCard({
 
         {/* Grading Mode Toggle */}
         {!isCLAD && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold font-display text-muted-foreground">Grading:</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-bold font-display text-muted-foreground shrink-0">Grading:</span>
             <div className="inline-flex rounded-full border-2 border-foreground/10 overflow-hidden">
               <button
                 type="button"

@@ -32,8 +32,12 @@ export function FloatingCoffee() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const isMobile = vw < 640;
-      const size = isMobile ? 56 : 80; // w-14=56px, sm:w-20=80px
-      setPosition({ x: Math.max(8, vw / 2 - size / 2), y: Math.max(8, vh / 2 - size / 2) });
+      const size = isMobile ? 56 : 80;
+      // Position bottom-right corner on mobile, center on desktop
+      setPosition({
+        x: isMobile ? vw - size - 16 : Math.max(8, vw / 2 - size / 2),
+        y: isMobile ? vh - size - 80 : Math.max(8, vh / 2 - size / 2),
+      });
       setPositioned(true);
     };
     updatePos();
@@ -54,9 +58,14 @@ export function FloatingCoffee() {
     const timer = setTimeout(() => {
       setDismissed(false);
       localStorage.removeItem(STORAGE_KEY);
-      const isMobile = window.innerWidth < 640;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const isMobile = vw < 640;
       const size = isMobile ? 56 : 80;
-      setPosition({ x: Math.max(8, window.innerWidth / 2 - size / 2), y: Math.max(8, window.innerHeight / 2 - size / 2) });
+      setPosition({
+        x: isMobile ? vw - size - 16 : Math.max(8, vw / 2 - size / 2),
+        y: isMobile ? vh - size - 80 : Math.max(8, vh / 2 - size / 2),
+      });
     }, remaining);
     return () => clearTimeout(timer);
   }, [dismissed]);
