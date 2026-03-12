@@ -16,6 +16,7 @@ const STORAGE_KEY = "whatif_calculator_state";
 interface FutureSemester {
   credits: number;
   sgpa: number;
+  semNumber: number;
 }
 
 interface SavedState {
