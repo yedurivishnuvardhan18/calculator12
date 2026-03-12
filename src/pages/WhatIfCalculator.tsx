@@ -75,7 +75,7 @@ export default function WhatIfCalculator() {
   const [currentCGPA, setCurrentCGPA] = useState(0);
   const [completedCredits, setCompletedCredits] = useState(0);
   const [futureCount, setFutureCount] = useState(1);
-  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0 }]);
+  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 1 }]);
   const [targetCGPA, setTargetCGPA] = useState(8.0);
   const [loaded, setLoaded] = useState(false);
 
