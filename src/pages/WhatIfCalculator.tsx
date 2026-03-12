@@ -16,6 +16,7 @@ const STORAGE_KEY = "whatif_calculator_state";
 interface FutureSemester {
   credits: number;
   sgpa: number;
+  semNumber: number;
 }
 
 interface SavedState {
@@ -74,7 +75,7 @@ export default function WhatIfCalculator() {
   const [currentCGPA, setCurrentCGPA] = useState(0);
   const [completedCredits, setCompletedCredits] = useState(0);
   const [futureCount, setFutureCount] = useState(1);
-  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0 }]);
+  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 1 }]);
   const [targetCGPA, setTargetCGPA] = useState(8.0);
   const [loaded, setLoaded] = useState(false);
 
@@ -97,7 +98,7 @@ export default function WhatIfCalculator() {
     setFutureSemesters(prev => {
       if (prev.length === futureCount) return prev;
       if (prev.length < futureCount) {
-        return [...prev, ...Array.from({ length: futureCount - prev.length }, () => ({ credits: 20, sgpa: 7.0 }))];
+        return [...prev, ...Array.from({ length: futureCount - prev.length }, (_, j) => ({ credits: 20, sgpa: 7.0, semNumber: prev.length + j + 1 }))];
       }
       return prev.slice(0, futureCount);
     });
@@ -233,7 +234,7 @@ export default function WhatIfCalculator() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4].map(n => (
+                    {[1, 2, 3, 4, 5, 6, 7].map(n => (
                       <SelectItem key={n} value={String(n)}>{n}</SelectItem>
                     ))}
                   </SelectContent>
@@ -254,7 +255,15 @@ export default function WhatIfCalculator() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-card-foreground">Semester {i + 1}</span>
+                     <Input
+                       type="number"
+                       min={1}
+                       value={sem.semNumber ?? i + 1}
+                       onChange={e => updateFutureSem(i, "semNumber", Math.max(1, parseInt(e.target.value) || 1))}
+                       className="w-20 h-7 text-sm font-semibold text-center"
+                       placeholder="Sem #"
+                     />
+                     <span className="font-semibold text-card-foreground text-sm">Semester</span>
                       <Badge variant="secondary" className="bg-primary/20 text-primary text-xs">🎯 What-If</Badge>
                     </div>
                   </div>
