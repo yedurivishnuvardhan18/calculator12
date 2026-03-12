@@ -1,99 +1,62 @@
 
 
-## Plan: Add Voice Input to Grade Calculator
+## Plan: Simplified What-If CGPA Predictor
 
-### Understanding the Input System
+### Concept Change
+Instead of asking SGPA for every past semester, the user enters just **2 values** for their history:
+- **Current CGPA** (e.g., 7.76)
+- **Total Credits Completed** (e.g., 100)
 
-The grade calculator has these input types:
-1. **Grade select dropdowns** (Sessional 1, Sessional 2, Learning Engagement) — these are `<select>` elements with options like O, A+, A, B+, B, C, P, I, Ab/R
-2. **Numeric inputs**: Course name (text), Credits (number), Marks (number, 0-100), Lab marks (number, 0-100), Absolute marks (number), Max marks (number)
-3. **CGPA inputs**: Previous CGPA (number, 0-10), Previous Credits (number)
-4. **CLAD grade select**: Another dropdown for CLAD courses
+Then they select how many **upcoming semesters** to simulate (1-4), enter credits and a What-If SGPA for each, and instantly see their predicted CGPA.
 
-Voice input makes most sense on the **select dropdowns** (speak "A plus" to select A+) and **numeric inputs** (speak "eighty five" to enter 85).
+### New File
 
-### New Files
+**`src/pages/WhatIfCalculator.tsx`**
 
-**`src/hooks/use-voice-input.ts`** — Custom hook wrapping Web Speech API
-- Singleton SpeechRecognition instance (only one active at a time)
-- States: idle, listening, success, error
-- Word-to-number parser (handles "eighty five", "seventy five point five", etc.)
-- Grade label parser (handles "A plus" → "A+", "B plus" → "B+", "O" → "O", etc.)
-- Auto-stop after 5s silence
-- Browser support detection (`window.SpeechRecognition || window.webkitSpeechRecognition`)
-- Returns `{ isListening, startListening, status, isSupported }`
+**Section 1 — Current Standing (2 inputs)**
+- "Your Current CGPA" — number input (0-10)
+- "Total Credits Completed" — number input
 
-**`src/components/calculator/VoiceMicButton.tsx`** — Reusable mic button component
-- Props: `onResult(value: string)`, `type: 'number' | 'grade'`, `min?`, `max?`
-- Grey mic icon default → Red pulsing when listening → Green check on success → Red X on error
-- "Listening..." text shown below input when active
-- Tooltip: "Click to speak your grade"
-- Pulsing ripple animation via Tailwind keyframes
-- Hidden entirely if browser doesn't support Web Speech API
+**Section 2 — Future Semesters**
+- "How many upcoming semesters to predict?" — dropdown (1, 2, 3, 4)
+- For each future semester: a row with editable credits (default 20) + SGPA slider (0-10) with number input side by side
+- Highlighted in indigo/purple with "🎯 What-If" tag
 
-**`src/components/calculator/VoiceModeBar.tsx`** — Global voice mode toggle
-- Toggle button at top of grade calculator: "Voice Mode 🎤"
-- When ON: banner "Voice Mode Active — Say your subject and grade 🎤"
-- Cycles through inputs sequentially, highlights current field with glow
-- Parses compound speech like "Math 85, Science 90"
-- Auto-triggers calculation when all fields filled
+**Section 3 — Scenario Comparison**
+- 3 columns: Pessimistic 😴 / Realistic 😐 / Optimistic 🔥
+- Each column auto-fills What-If SGPAs (e.g., -1.0 / as-is / +1.0 from entered values)
+- Shows resulting CGPA per column
+
+**Section 4 — Live Results Card**
+- Big CGPA number, previous vs new comparison with delta arrow
+- Progress bar colored by tier (Outstanding/Distinction/Good/Average/Needs Improvement)
+- Milestone proximity message
+
+**Section 5 — Reverse Calculator**
+- "What SGPA do I need to reach CGPA [___]?"
+- Shows required SGPA, "Achievable ✅" or "Not possible ❌"
+
+**Section 6 — Save & Share**
+- localStorage persistence, WhatsApp share
+
+**Formula:**
+```
+New CGPA = (Current CGPA × Completed Credits + Σ(Future SGPA × Future Credits)) / (Completed Credits + Σ(Future Credits))
+```
 
 ### Modified Files
 
-**`src/index.css`** — Add voice-related keyframes
-- `@keyframes voice-pulse` for the red pulsing ripple effect
-- `@keyframes voice-success` for the green flash on input fields
-- `.voice-active-glow` class for highlighting current field in voice mode
+**`src/components/Navbar.tsx`** — Add nav item: `{ to: "/what-if", label: "What-If Calculator", icon: Target }`
 
-**`src/components/calculator/CourseCard.tsx`** — Add mic buttons
-- Import `VoiceMicButton`
-- Add mic button next to each grade `<select>` dropdown (Sessional 1, 2, LE)
-- Add mic button next to marks inputs, lab marks input, absolute marks inputs
-- Add mic button next to course name and credits inputs
-- On voice result: call existing `updateAssessmentGrade()` / `updateAssessmentMarks()` / `onUpdate()` handlers
-- No layout changes — mic button sits inline or absolutely positioned
-
-**`src/components/calculator/CGPASection.tsx`** — Add mic buttons
-- Add mic button next to Previous CGPA and Previous Credits inputs
-
-**`src/pages/GradeCalculator.tsx`** — Add VoiceModeBar
-- Import and render `<VoiceModeBar />` between the header and step indicator
-- Pass courses + setCourses for sequential voice filling
-
-### Animation Details (in `src/index.css`)
-
-```css
-@keyframes voice-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-@keyframes voice-success-flash {
-  0% { background-color: inherit; }
-  50% { background-color: rgba(16, 185, 129, 0.2); }
-  100% { background-color: inherit; }
-}
-```
-
-### Voice Parsing Logic (in hook)
-
-- Numbers: "zero" through "one hundred", decimals ("point five" → .5)
-- Grades: "O" → O, "A plus" → A+, "A" → A, "B plus" → B+, "B" → B, "C" → C, "P" → P
-- Validation: numbers clamped to min/max, show error toast if out of range
-- Toast notifications via sonner for all states (success, error, permission denied)
+**`src/App.tsx`** — Add route: `<Route path="/what-if" element={<WhatIfCalculator />} />`
 
 ### File Summary
 
 | Action | File |
 |--------|------|
-| Create | `src/hooks/use-voice-input.ts` |
-| Create | `src/components/calculator/VoiceMicButton.tsx` |
-| Create | `src/components/calculator/VoiceModeBar.tsx` |
-| Edit | `src/index.css` (voice animations) |
-| Edit | `src/components/calculator/CourseCard.tsx` (mic buttons) |
-| Edit | `src/components/calculator/CGPASection.tsx` (mic buttons) |
-| Edit | `src/pages/GradeCalculator.tsx` (voice mode bar) |
+| Create | `src/pages/WhatIfCalculator.tsx` |
+| Edit | `src/components/Navbar.tsx` (add nav item) |
+| Edit | `src/App.tsx` (add route + import) |
 
-No new dependencies needed — Web Speech API is built into browsers.
+No new dependencies. No database changes. Pure client-side math.
 
