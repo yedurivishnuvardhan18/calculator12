@@ -28,6 +28,7 @@ import AdminModules from "./pages/admin/AdminModules";
 import AdminTopics from "./pages/admin/AdminTopics";
 import AdminVideos from "./pages/admin/AdminVideos";
 import GitamResults from "./pages/GitamResults";
+import WhatIfCalculator from "./pages/WhatIfCalculator";
 
 const queryClient = new QueryClient();
 
