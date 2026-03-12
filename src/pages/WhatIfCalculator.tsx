@@ -98,7 +98,7 @@ export default function WhatIfCalculator() {
     setFutureSemesters(prev => {
       if (prev.length === futureCount) return prev;
       if (prev.length < futureCount) {
-        return [...prev, ...Array.from({ length: futureCount - prev.length }, () => ({ credits: 20, sgpa: 7.0 }))];
+        return [...prev, ...Array.from({ length: futureCount - prev.length }, (_, j) => ({ credits: 20, sgpa: 7.0, semNumber: prev.length + j + 1 }))];
       }
       return prev.slice(0, futureCount);
     });
