@@ -75,10 +75,13 @@ export default function WhatIfCalculator() {
   const [gradingScale, setGradingScale] = useState(10);
   const [currentCGPA, setCurrentCGPA] = useState(0);
   const [completedCredits, setCompletedCredits] = useState(0);
+  const [currentSemester, setCurrentSemester] = useState(1);
   const [futureCount, setFutureCount] = useState(1);
-  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 1 }]);
+  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 2 }]);
   const [targetCGPA, setTargetCGPA] = useState(8.0);
   const [loaded, setLoaded] = useState(false);
+
+  const maxFutureSemesters = 8 - currentSemester;
 
   // Load saved state
   useEffect(() => {
