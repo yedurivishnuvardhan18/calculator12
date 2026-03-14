@@ -284,15 +284,7 @@ export default function WhatIfCalculator() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                     <Input
-                       type="number"
-                       min={1}
-                       value={sem.semNumber ?? i + 1}
-                       onChange={e => updateFutureSem(i, "semNumber", Math.max(1, parseInt(e.target.value) || 1))}
-                       className="w-20 h-7 text-sm font-semibold text-center"
-                       placeholder="Sem #"
-                     />
-                     <span className="font-semibold text-card-foreground text-sm">Semester</span>
+                     <span className="font-semibold text-card-foreground text-sm">Semester {sem.semNumber}</span>
                       <Badge variant="secondary" className="bg-primary/20 text-primary text-xs">🎯 What-If</Badge>
                     </div>
                   </div>
