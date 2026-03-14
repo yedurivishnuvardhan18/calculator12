@@ -158,7 +158,7 @@ export default function WhatIfCalculator() {
   }, [targetCGPA, currentCGPA, completedCredits, futureSemesters]);
 
   const handleSave = () => {
-    const state: SavedState = { currentCGPA, completedCredits, futureSemesters, futureCount, gradingScale };
+    const state: SavedState = { currentCGPA, completedCredits, futureSemesters, futureCount, gradingScale, currentSemester };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     toast.success("Saved! Your data will be here next time 💾");
   };
