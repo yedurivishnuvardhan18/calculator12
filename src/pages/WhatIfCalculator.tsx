@@ -92,6 +92,7 @@ export default function WhatIfCalculator() {
       setFutureSemesters(saved.futureSemesters);
       setFutureCount(saved.futureCount);
       if (saved.gradingScale) setGradingScale(saved.gradingScale);
+      if (saved.currentSemester) setCurrentSemester(saved.currentSemester);
       setLoaded(true);
       toast.success("Welcome back! Your last session is loaded ✅");
     }
