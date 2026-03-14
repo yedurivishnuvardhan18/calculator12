@@ -190,7 +190,20 @@ export default function WhatIfCalculator() {
             <CardTitle className="text-lg text-card-foreground">📚 Your Current Standing</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Current Semester</Label>
+                <Select value={String(currentSemester)} onValueChange={v => setCurrentSemester(Number(v))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
+                      <SelectItem key={n} value={String(n)}>Semester {n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Current CGPA</Label>
                 <Input
