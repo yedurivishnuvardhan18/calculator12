@@ -25,6 +25,7 @@ interface SavedState {
   futureSemesters: FutureSemester[];
   futureCount: number;
   gradingScale: number;
+  currentSemester: number;
 }
 
 function getCGPATier(cgpa: number, scale: number) {
