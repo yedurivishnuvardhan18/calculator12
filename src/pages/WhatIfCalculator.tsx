@@ -259,9 +259,13 @@ export default function WhatIfCalculator() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7].map(n => (
-                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
-                    ))}
+                    {maxFutureSemesters > 0 ? (
+                      Array.from({ length: maxFutureSemesters }, (_, i) => i + 1).map(n => (
+                        <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="0" disabled>No remaining</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
