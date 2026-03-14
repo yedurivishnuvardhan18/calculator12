@@ -136,8 +136,8 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full bg-[hsl(240,15%,6%)] border-b border-[hsl(240,12%,14%)]">
-        <div ref={containerRef} className="container relative flex h-14 items-center justify-between md:justify-center gap-3">
+      <nav className="sticky top-0 z-50 w-full bg-[hsl(240,15%,6%)] border-b border-[hsl(240,12%,14%)] overflow-x-hidden">
+        <div ref={containerRef} className="container relative flex h-14 items-center justify-between md:justify-center gap-3 overflow-x-hidden">
           {/* Animated glow line — desktop only */}
           {!isMobile && activeIndex >= 0 && (
             <motion.div
