@@ -25,6 +25,7 @@ interface SavedState {
   futureSemesters: FutureSemester[];
   futureCount: number;
   gradingScale: number;
+  currentSemester: number;
 }
 
 function getCGPATier(cgpa: number, scale: number) {
@@ -74,10 +75,13 @@ export default function WhatIfCalculator() {
   const [gradingScale, setGradingScale] = useState(10);
   const [currentCGPA, setCurrentCGPA] = useState(0);
   const [completedCredits, setCompletedCredits] = useState(0);
+  const [currentSemester, setCurrentSemester] = useState(1);
   const [futureCount, setFutureCount] = useState(1);
-  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 1 }]);
+  const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 2 }]);
   const [targetCGPA, setTargetCGPA] = useState(8.0);
   const [loaded, setLoaded] = useState(false);
+
+  const maxFutureSemesters = 8 - currentSemester;
 
   // Load saved state
   useEffect(() => {
@@ -88,21 +92,29 @@ export default function WhatIfCalculator() {
       setFutureSemesters(saved.futureSemesters);
       setFutureCount(saved.futureCount);
       if (saved.gradingScale) setGradingScale(saved.gradingScale);
+      if (saved.currentSemester) setCurrentSemester(saved.currentSemester);
       setLoaded(true);
       toast.success("Welcome back! Your last session is loaded ✅");
     }
   }, []);
 
-  // Sync future semesters count
+  // Clamp futureCount when currentSemester changes
+  useEffect(() => {
+    const max = 8 - currentSemester;
+    if (futureCount > max) setFutureCount(Math.max(1, max));
+  }, [currentSemester]);
+
+  // Sync future semesters count and auto-label semester numbers
   useEffect(() => {
     setFutureSemesters(prev => {
-      if (prev.length === futureCount) return prev;
-      if (prev.length < futureCount) {
-        return [...prev, ...Array.from({ length: futureCount - prev.length }, (_, j) => ({ credits: 20, sgpa: 7.0, semNumber: prev.length + j + 1 }))];
-      }
-      return prev.slice(0, futureCount);
+      const updated = prev.length === futureCount ? [...prev]
+        : prev.length < futureCount
+          ? [...prev, ...Array.from({ length: futureCount - prev.length }, () => ({ credits: 20, sgpa: 7.0, semNumber: 1 }))]
+          : prev.slice(0, futureCount);
+      // Auto-assign semester numbers based on currentSemester
+      return updated.map((s, i) => ({ ...s, semNumber: currentSemester + i + 1 }));
     });
-  }, [futureCount]);
+  }, [futureCount, currentSemester]);
 
   const updateFutureSem = useCallback((index: number, field: keyof FutureSemester, value: number) => {
     setFutureSemesters(prev => prev.map((s, i) => i === index ? { ...s, [field]: value } : s));
@@ -146,7 +158,7 @@ export default function WhatIfCalculator() {
   }, [targetCGPA, currentCGPA, completedCredits, futureSemesters]);
 
   const handleSave = () => {
-    const state: SavedState = { currentCGPA, completedCredits, futureSemesters, futureCount, gradingScale };
+    const state: SavedState = { currentCGPA, completedCredits, futureSemesters, futureCount, gradingScale, currentSemester };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     toast.success("Saved! Your data will be here next time 💾");
   };
@@ -178,7 +190,20 @@ export default function WhatIfCalculator() {
             <CardTitle className="text-lg text-card-foreground">📚 Your Current Standing</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Current Semester</Label>
+                <Select value={String(currentSemester)} onValueChange={v => setCurrentSemester(Number(v))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
+                      <SelectItem key={n} value={String(n)}>Semester {n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Current CGPA</Label>
                 <Input
@@ -234,9 +259,13 @@ export default function WhatIfCalculator() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7].map(n => (
-                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
-                    ))}
+                    {maxFutureSemesters > 0 ? (
+                      Array.from({ length: maxFutureSemesters }, (_, i) => i + 1).map(n => (
+                        <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="0" disabled>No remaining</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -255,15 +284,7 @@ export default function WhatIfCalculator() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                     <Input
-                       type="number"
-                       min={1}
-                       value={sem.semNumber ?? i + 1}
-                       onChange={e => updateFutureSem(i, "semNumber", Math.max(1, parseInt(e.target.value) || 1))}
-                       className="w-20 h-7 text-sm font-semibold text-center"
-                       placeholder="Sem #"
-                     />
-                     <span className="font-semibold text-card-foreground text-sm">Semester</span>
+                     <span className="font-semibold text-card-foreground text-sm">Semester {sem.semNumber}</span>
                       <Badge variant="secondary" className="bg-primary/20 text-primary text-xs">🎯 What-If</Badge>
                     </div>
                   </div>

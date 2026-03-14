@@ -1,65 +1,99 @@
 
 
-## Plan: What-If Semester Selector + Attendance Calculator
+## Plan: Add Voice Input to Grade Calculator
 
-### Part 1: What-If Calculator — Semester Selector
+### Understanding the Input System
 
-**Current behavior**: User manually enters CGPA/credits and can edit semester numbers freely.
-**New behavior**: User selects their current semester (1-8) from a dropdown. Future semesters auto-populate as the remaining ones (e.g., if current = 3, predict options are semesters 4-8). Remove the editable semester number input.
+The grade calculator has these input types:
+1. **Grade select dropdowns** (Sessional 1, Sessional 2, Learning Engagement) — these are `<select>` elements with options like O, A+, A, B+, B, C, P, I, Ab/R
+2. **Numeric inputs**: Course name (text), Credits (number), Marks (number, 0-100), Lab marks (number, 0-100), Absolute marks (number), Max marks (number)
+3. **CGPA inputs**: Previous CGPA (number, 0-10), Previous Credits (number)
+4. **CLAD grade select**: Another dropdown for CLAD courses
 
-**Changes to `src/pages/WhatIfCalculator.tsx`**:
-- Add `currentSemester` state (1-8 dropdown) in the "Current Standing" section
-- Derive `remainingSemesters = 8 - currentSemester` as max future count
-- Replace the "Semesters to predict" dropdown options with `1..remainingSemesters`
-- Auto-label future semester cards as `Semester {currentSemester + i + 1}` (read-only label, no editable input)
-- Remove the `semNumber` editable `Input` field from each future semester card
-- Persist `currentSemester` in localStorage saved state
+Voice input makes most sense on the **select dropdowns** (speak "A plus" to select A+) and **numeric inputs** (speak "eighty five" to enter 85).
 
-### Part 2: Attendance Calculator — New Page
+### New Files
 
-**New file: `src/pages/AttendanceCalculator.tsx`**
+**`src/hooks/use-voice-input.ts`** — Custom hook wrapping Web Speech API
+- Singleton SpeechRecognition instance (only one active at a time)
+- States: idle, listening, success, error
+- Word-to-number parser (handles "eighty five", "seventy five point five", etc.)
+- Grade label parser (handles "A plus" → "A+", "B plus" → "B+", "O" → "O", etc.)
+- Auto-stop after 5s silence
+- Browser support detection (`window.SpeechRecognition || window.webkitSpeechRecognition`)
+- Returns `{ isListening, startListening, status, isSupported }`
 
-A single-page calculator with 4 input sections and a live result panel. All values saved to localStorage, no submit button — everything updates live.
+**`src/components/calculator/VoiceMicButton.tsx`** — Reusable mic button component
+- Props: `onResult(value: string)`, `type: 'number' | 'grade'`, `min?`, `max?`
+- Grey mic icon default → Red pulsing when listening → Green check on success → Red X on error
+- "Listening..." text shown below input when active
+- Tooltip: "Click to speak your grade"
+- Pulsing ripple animation via Tailwind keyframes
+- Hidden entirely if browser doesn't support Web Speech API
 
-**Section 1 — Current Attendance**
-- Two large numeric inputs: "Classes Attended" and "Total Classes Held"
-- Validation: if attended > total, red border + clamp
+**`src/components/calculator/VoiceModeBar.tsx`** — Global voice mode toggle
+- Toggle button at top of grade calculator: "Voice Mode 🎤"
+- When ON: banner "Voice Mode Active — Say your subject and grade 🎤"
+- Cycles through inputs sequentially, highlights current field with glow
+- Parses compound speech like "Math 85, Science 90"
+- Auto-triggers calculation when all fields filled
 
-**Section 2 — Weekly Schedule**
-- 6 toggle buttons (Mon-Sat), each with a small number input for classes/day
-- Defaults: Mon-Fri = 6, Sat = 4
-- Toggle off = holiday (grayed out, count = 0)
+### Modified Files
 
-**Section 3 — College End Date**
-- Date input, default 3 months from today
+**`src/index.css`** — Add voice-related keyframes
+- `@keyframes voice-pulse` for the red pulsing ripple effect
+- `@keyframes voice-success` for the green flash on input fields
+- `.voice-active-glow` class for highlighting current field in voice mode
 
-**Section 4 — Target % Slider**
-- Range 50-100%, step 1, default 75%
+**`src/components/calculator/CourseCard.tsx`** — Add mic buttons
+- Import `VoiceMicButton`
+- Add mic button next to each grade `<select>` dropdown (Sessional 1, 2, LE)
+- Add mic button next to marks inputs, lab marks input, absolute marks inputs
+- Add mic button next to course name and credits inputs
+- On voice result: call existing `updateAssessmentGrade()` / `updateAssessmentMarks()` / `onUpdate()` handlers
+- No layout changes — mic button sits inline or absolutely positioned
 
-**Result Panel** (auto-updates on every change):
-1. **Circular SVG progress ring** — current %, colored green/amber/red vs target
-2. **3 stat chips** — Present/Total, Classes remaining, Weeks remaining
-3. **4 projection cards (2x2)** — "If attend all", "If bunk all", "Can bunk now", "Safe bunks in remaining"
-4. **Timeline strip (3 rows)** — Right now %, Best case %, Worst case %
-5. **Smart insight line** — auto-generated 1-2 sentence summary
-6. **Reset button** with confirm dialog
+**`src/components/calculator/CGPASection.tsx`** — Add mic buttons
+- Add mic button next to Previous CGPA and Previous Credits inputs
 
-**Calculation logic**: Uses the exact functions specified (countRemainingClasses, canBunk, mustAttend) plus projection formulas. All edge cases handled (total=0, attended>total, past end date, remClasses=0, impossible target).
+**`src/pages/GradeCalculator.tsx`** — Add VoiceModeBar
+- Import and render `<VoiceModeBar />` between the header and step indicator
+- Pass courses + setCourses for sequential voice filling
 
-**Changes to `src/components/Navbar.tsx`**:
-- Add nav item: `{ to: "/attendance", label: "Attendance", icon: ClipboardCheck }`
+### Animation Details (in `src/index.css`)
 
-**Changes to `src/App.tsx`**:
-- Import `AttendanceCalculator` and add route `<Route path="/attendance" ...>`
+```css
+@keyframes voice-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes voice-success-flash {
+  0% { background-color: inherit; }
+  50% { background-color: rgba(16, 185, 129, 0.2); }
+  100% { background-color: inherit; }
+}
+```
+
+### Voice Parsing Logic (in hook)
+
+- Numbers: "zero" through "one hundred", decimals ("point five" → .5)
+- Grades: "O" → O, "A plus" → A+, "A" → A, "B plus" → B+, "B" → B, "C" → C, "P" → P
+- Validation: numbers clamped to min/max, show error toast if out of range
+- Toast notifications via sonner for all states (success, error, permission denied)
 
 ### File Summary
 
 | Action | File |
 |--------|------|
-| Edit | `src/pages/WhatIfCalculator.tsx` (add semester selector, remove editable sem numbers) |
-| Create | `src/pages/AttendanceCalculator.tsx` (full attendance calculator) |
-| Edit | `src/components/Navbar.tsx` (add Attendance nav item) |
-| Edit | `src/App.tsx` (add /attendance route) |
+| Create | `src/hooks/use-voice-input.ts` |
+| Create | `src/components/calculator/VoiceMicButton.tsx` |
+| Create | `src/components/calculator/VoiceModeBar.tsx` |
+| Edit | `src/index.css` (voice animations) |
+| Edit | `src/components/calculator/CourseCard.tsx` (mic buttons) |
+| Edit | `src/components/calculator/CGPASection.tsx` (mic buttons) |
+| Edit | `src/pages/GradeCalculator.tsx` (voice mode bar) |
 
-No new dependencies. No database changes. Pure client-side math + localStorage.
+No new dependencies needed — Web Speech API is built into browsers.
 
