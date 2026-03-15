@@ -65,8 +65,34 @@ function loadState(): SavedState | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    // Validate all fields
+    const cs = Number(parsed.currentSemester);
+    const cg = Number(parsed.currentCGPA);
+    const cc = Number(parsed.completedCredits);
+    const gs = Number(parsed.gradingScale);
+    const fc = Number(parsed.futureCount);
+    if (!Number.isFinite(cs) || !Number.isFinite(cg) || !Number.isFinite(cc)) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+    return {
+      currentCGPA: Math.min(gs || 10, Math.max(0, cg)),
+      completedCredits: Math.max(0, Math.floor(cc)),
+      futureSemesters: Array.isArray(parsed.futureSemesters)
+        ? parsed.futureSemesters.map((s: any) => ({
+            credits: Math.max(1, Math.floor(Number(s?.credits) || 20)),
+            sgpa: Math.min(gs || 10, Math.max(0, Number(s?.sgpa) || 0)),
+            semNumber: Math.max(1, Math.floor(Number(s?.semNumber) || 1)),
+          }))
+        : [],
+      futureCount: Math.max(1, Math.floor(fc || 1)),
+      gradingScale: gs === 4 ? 4 : 10,
+      currentSemester: Math.min(8, Math.max(1, Math.floor(cs))),
+    };
   } catch {
+    localStorage.removeItem(STORAGE_KEY);
     return null;
   }
 }
