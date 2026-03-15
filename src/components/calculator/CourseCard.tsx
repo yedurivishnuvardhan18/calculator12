@@ -324,7 +324,7 @@ export function CourseCard({
                 placeholder="e.g. Mathematics"
                 className="bg-card rounded-2xl border-2 border-foreground/10 h-11 font-medium focus:border-primary transition-all"
               />
-              <VoiceMicButton type="text" onResult={(val) => onUpdate({ ...course, name: val })} />
+              <VoiceMicButton type="text" onResult={(val) => onUpdate({ ...course, name: sanitizeText(val, 100) })} />
             </div>
             {isCLAD && (
               <p className="text-xs text-muted-foreground bg-pop-yellow/20 px-3 py-1.5 rounded-full inline-block font-medium">
