@@ -320,7 +320,7 @@ export function CourseCard({
               <Input
                 id={`courseName-${course.id}`}
                 value={course.name}
-                onChange={(e) => onUpdate({ ...course, name: e.target.value })}
+                onChange={(e) => onUpdate({ ...course, name: sanitizeText(e.target.value, 100) })}
                 placeholder="e.g. Mathematics"
                 className="bg-card rounded-2xl border-2 border-foreground/10 h-11 font-medium focus:border-primary transition-all"
               />
