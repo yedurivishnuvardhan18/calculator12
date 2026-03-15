@@ -377,7 +377,7 @@ export function CourseCard({
                 max={10}
                 value={isCLAD ? 1 : course.credits}
                 disabled={isCLAD}
-                onChange={(e) => onUpdate({ ...course, credits: parseInt(e.target.value) })}
+                onChange={(e) => onUpdate({ ...course, credits: clampNumber(parseInt(e.target.value) || 1, 1, 10) })}
                 className="bg-card rounded-2xl border-2 border-foreground/10 h-11 font-medium"
               />
               {!isCLAD && <VoiceMicButton type="number" min={1} max={10} onResult={(val) => onUpdate({ ...course, credits: parseInt(val) })} />}
