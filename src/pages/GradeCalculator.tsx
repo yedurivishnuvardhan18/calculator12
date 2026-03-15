@@ -18,6 +18,10 @@ export default function GradeCalculator() {
   const { courses, setCourses, showCGPA, setShowCGPA, cgpaData, setCGPAData } = usePersistedGrades();
 
   const addCourse = () => {
+    if (courses.length >= MAX_COURSES) {
+      toast.error(`Maximum ${MAX_COURSES} courses allowed`);
+      return;
+    }
     setCourses((prev) => [...prev, createNewCourse()]);
   };
 

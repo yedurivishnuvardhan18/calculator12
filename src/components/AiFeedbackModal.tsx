@@ -54,7 +54,7 @@ export function AiFeedbackModal({ studentName, grades, sgpa, cgpa }: Props) {
   };
 
   const saveToConsole = () => {
-    console.log("[Saved Feedback]", { studentName, feedback });
+    // Feedback saved
     toast.success("Feedback saved!");
   };
 

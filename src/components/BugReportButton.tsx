@@ -20,7 +20,7 @@ export function BugReportButton() {
   const submit = () => {
     if (!report.trim()) return;
     setSending(true);
-    console.log("[Bug Report]", report);
+    // Bug report submitted
     setTimeout(() => {
       toast.success("Bug report submitted. Thank you!");
       setReport("");
