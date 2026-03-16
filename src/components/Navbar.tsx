@@ -11,8 +11,8 @@ import { Course, calculateSGPA, createNewCourse } from "@/types/calculator";
 
 const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
-  { to: "/what-if", label: "What-If Calculator", icon: Target },
-  { to: "/attendance", label: "Attendance", icon: ClipboardCheck },
+  { to: "/what-if", label: "Grade Predictor", icon: Target },
+  { to: "/attendance", label: "Attendance Calculator", icon: ClipboardCheck },
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
   { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];
