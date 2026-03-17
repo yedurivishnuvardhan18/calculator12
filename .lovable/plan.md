@@ -1,93 +1,99 @@
 
 
-## Plan: Math Lock Gamification, Sounds, Confetti, Memes & Adaptive Difficulty
+## Plan: Add Voice Input to Grade Calculator
 
-### Overview
-Add gamification layers on top of the existing MathPuzzleLock without changing existing UI, question banks, or level selection logic. New features are implemented as helper modules and integrated into the lock overlay.
+### Understanding the Input System
+
+The grade calculator has these input types:
+1. **Grade select dropdowns** (Sessional 1, Sessional 2, Learning Engagement) — these are `<select>` elements with options like O, A+, A, B+, B, C, P, I, Ab/R
+2. **Numeric inputs**: Course name (text), Credits (number), Marks (number, 0-100), Lab marks (number, 0-100), Absolute marks (number), Max marks (number)
+3. **CGPA inputs**: Previous CGPA (number, 0-10), Previous Credits (number)
+4. **CLAD grade select**: Another dropdown for CLAD courses
+
+Voice input makes most sense on the **select dropdowns** (speak "A plus" to select A+) and **numeric inputs** (speak "eighty five" to enter 85).
 
 ### New Files
 
-**`src/lib/mathlock-sounds.ts`** — Web Audio API sound effects
-- Functions: `playCorrectSound()`, `playWrongSound()`, `playUnlockFanfare()`, `playTickSound()`, `playStreakSound()`, `playRecordSound()`
-- `isMuted()` / `toggleMute()` using localStorage `mathlock_muted`
-- All sounds generated via OscillatorNode/GainNode (no external files)
+**`src/hooks/use-voice-input.ts`** — Custom hook wrapping Web Speech API
+- Singleton SpeechRecognition instance (only one active at a time)
+- States: idle, listening, success, error
+- Word-to-number parser (handles "eighty five", "seventy five point five", etc.)
+- Grade label parser (handles "A plus" → "A+", "B plus" → "B+", "O" → "O", etc.)
+- Auto-stop after 5s silence
+- Browser support detection (`window.SpeechRecognition || window.webkitSpeechRecognition`)
+- Returns `{ isListening, startListening, status, isSupported }`
 
-**`src/lib/mathlock-confetti.ts`** — Pure canvas confetti
-- `launchConfetti(canvas: HTMLCanvasElement)` — spawns particles in gold/red/blue/green/purple/pink, animates for 3s, fades out
-- Uses requestAnimationFrame, no external libs
+**`src/components/calculator/VoiceMicButton.tsx`** — Reusable mic button component
+- Props: `onResult(value: string)`, `type: 'number' | 'grade'`, `min?`, `max?`
+- Grey mic icon default → Red pulsing when listening → Green check on success → Red X on error
+- "Listening..." text shown below input when active
+- Tooltip: "Click to speak your grade"
+- Pulsing ripple animation via Tailwind keyframes
+- Hidden entirely if browser doesn't support Web Speech API
 
-**`src/lib/mathlock-gamification.ts`** — All gamification state read/write
-- XP: `getXP()`, `addXP(level)`, XP values per level (10/25/50)
-- Rank: `getRank(xp)` returns emoji+name for Bronze/Silver/Gold/Diamond/Legend thresholds
-- Streak: `getStreak()`, `updateStreak()` — tracks dates in `mathlock_streak` JSON, resets if gap > 1 day
-- Best times: `getBestTime(level)`, `setBestTime(level, seconds)` — returns whether new record
-- Lives: `getLives()`, `loseLife()`, `getRefillTime()` — 3 lives, refill every 10 min from last depletion timestamp
-- Performance/Adaptive: `recordSolve(level, timeMs, correct)`, `getStats()`, `getAutoLevel()` — tracks last N solves, computes avg time and accuracy, determines auto-level suggestions
-- Meme shuffle: `getNextMemeIndex(attemptNumber)` — Fisher-Yates shuffle stored in sessionStorage, pools by severity (1-20 mild, 21-60 medium, 61-100 savage)
-
-**`src/data/mathlock-memes.ts`** — 100 meme objects
-- Each: `{ keyword, caption, roast, emoji }` — all 100 from the spec
-- No images (meme keywords only, displayed as text cards with emoji)
+**`src/components/calculator/VoiceModeBar.tsx`** — Global voice mode toggle
+- Toggle button at top of grade calculator: "Voice Mode 🎤"
+- When ON: banner "Voice Mode Active — Say your subject and grade 🎤"
+- Cycles through inputs sequentially, highlights current field with glow
+- Parses compound speech like "Math 85, Science 90"
+- Auto-triggers calculation when all fields filled
 
 ### Modified Files
 
-**`src/components/MathPuzzleLock.tsx`** — Integrate all features into existing structure
+**`src/index.css`** — Add voice-related keyframes
+- `@keyframes voice-pulse` for the red pulsing ripple effect
+- `@keyframes voice-success` for the green flash on input fields
+- `.voice-active-glow` class for highlighting current field in voice mode
 
-Changes to `LockOverlay`:
-- Add state: `lives`, `xp`, `rank`, `streak`, `solveStartTime`, `showMeme`, `currentMeme`, `showConfetti`, `showXpFloat`, `showRankUp`, `showRecord`, `statsOpen`
-- Add canvas ref for confetti overlay
-- Add mute button (fixed top-right)
-- On correct: play sound, add XP, check rank up, check best time, update streak, record performance, launch confetti, show floating XP text, delay unlock to 2.5s
-- On wrong: play sound, lose life, show meme popup for 2.5s, then auto-dismiss
-- Lives system replaces the old 5-attempt cooldown: 0 lives = 60s cooldown, lives refill every 10 min
-- During cooldown: play tick sound each second
+**`src/components/calculator/CourseCard.tsx`** — Add mic buttons
+- Import `VoiceMicButton`
+- Add mic button next to each grade `<select>` dropdown (Sessional 1, 2, LE)
+- Add mic button next to marks inputs, lab marks input, absolute marks inputs
+- Add mic button next to course name and credits inputs
+- On voice result: call existing `updateAssessmentGrade()` / `updateAssessmentMarks()` / `onUpdate()` handlers
+- No layout changes — mic button sits inline or absolutely positioned
 
-Changes to `LevelSelection`:
-- Add XP bar at top: "Total XP: 320"
-- Add rank badge: "👑 Legend"
-- Add streak counter: "🔥 5 Day Streak!"
-- Add best times per level: "⚡ Best: 12s"
-- Add collapsible stats panel (avg time, accuracy, auto level, total solved)
-- Add "🧠 Adaptive Mode: ON" badge
-- Show adaptive level suggestion toast when threshold crossed
+**`src/components/calculator/CGPASection.tsx`** — Add mic buttons
+- Add mic button next to Previous CGPA and Previous Credits inputs
 
-Changes to `QuestionScreen`:
-- Replace attempt counter with hearts display: ❤️❤️❤️ (animate out on loss)
-- Show "❤️ refills in Xm" when lives < 3
-- Start timer on question load for best time tracking
-- Keep existing hint system, question tracker, cooldown display
+**`src/pages/GradeCalculator.tsx`** — Add VoiceModeBar
+- Import and render `<VoiceModeBar />` between the header and step indicator
+- Pass courses + setCourses for sequential voice filling
 
-Changes to `AccessGranted`:
-- Add full-screen confetti canvas
-- Show bouncing ✅ checkmark
-- Show floating "+25 XP! ✨" animation
-- Show rank if upgraded: "🎉 RANK UP! You are now 🥇 Gold!"
-- Show "🏆 NEW RECORD!" if applicable
-- Delay transition to 2.5s
+### Animation Details (in `src/index.css`)
 
-New sub-component `MemePopup`:
-- Dark overlay with bounce-in card
-- Shows caption (bold) + roast (italic) + emoji row (🤣💀😤🔥)
-- "Share this roast 😂" button (copies text to clipboard)
-- Auto-dismisses after 2.5s with slide-out animation
+```css
+@keyframes voice-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
 
-**`tailwind.config.ts`** — Add keyframes if needed for float-up, heart-pop animations
+@keyframes voice-success-flash {
+  0% { background-color: inherit; }
+  50% { background-color: rgba(16, 185, 129, 0.2); }
+  100% { background-color: inherit; }
+}
+```
 
-### Behavioral Notes
-- Lives system: 3 lives per refill cycle (10 min). Wrong answer = -1 life. 0 lives = 60s cooldown (same as existing). Lives state persisted in localStorage with timestamp.
-- Adaptive: After every 5 solves, check avg time. If Easy avg < 10s for 5 consecutive → suggest Medium. If Medium avg < 15s → suggest Hard. If Hard fails 3 in a row → suggest Medium. Store suggestion in `mathlock_autolevel`, show as toast on next level selection screen.
-- Memes: No actual images loaded. Each meme is rendered as a styled text card with the keyword as a title, caption as heading, roast as subtitle, and emoji reactions row. This avoids external image dependencies.
+### Voice Parsing Logic (in hook)
+
+- Numbers: "zero" through "one hundred", decimals ("point five" → .5)
+- Grades: "O" → O, "A plus" → A+, "A" → A, "B plus" → B+, "B" → B, "C" → C, "P" → P
+- Validation: numbers clamped to min/max, show error toast if out of range
+- Toast notifications via sonner for all states (success, error, permission denied)
 
 ### File Summary
 
 | Action | File |
 |--------|------|
-| Create | `src/lib/mathlock-sounds.ts` |
-| Create | `src/lib/mathlock-confetti.ts` |
-| Create | `src/lib/mathlock-gamification.ts` |
-| Create | `src/data/mathlock-memes.ts` |
-| Edit | `src/components/MathPuzzleLock.tsx` |
-| Edit | `tailwind.config.ts` (add float-up, heart-pop keyframes) |
+| Create | `src/hooks/use-voice-input.ts` |
+| Create | `src/components/calculator/VoiceMicButton.tsx` |
+| Create | `src/components/calculator/VoiceModeBar.tsx` |
+| Edit | `src/index.css` (voice animations) |
+| Edit | `src/components/calculator/CourseCard.tsx` (mic buttons) |
+| Edit | `src/components/calculator/CGPASection.tsx` (mic buttons) |
+| Edit | `src/pages/GradeCalculator.tsx` (voice mode bar) |
 
-No new dependencies. No database changes. No existing UI changes.
+No new dependencies needed — Web Speech API is built into browsers.
 
