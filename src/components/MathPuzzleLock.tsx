@@ -9,6 +9,7 @@ import {
 import {
   playCorrectSound, playWrongSound, playUnlockFanfare,
   playTickSound, playStreakSound, playRecordSound,
+  playOutOfLivesSound,
   isMuted, toggleMute,
 } from "@/lib/mathlock-sounds";
 import { launchConfetti } from "@/lib/mathlock-confetti";
@@ -91,8 +92,8 @@ function MemePopup({ memeIndex, onDismiss }: { memeIndex: number; onDismiss: () 
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setExiting(true), 2000);
-    const t2 = setTimeout(onDismiss, 2500);
+    const t1 = setTimeout(() => setExiting(true), 3500);
+    const t2 = setTimeout(onDismiss, 4000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [onDismiss]);
 
@@ -103,16 +104,20 @@ function MemePopup({ memeIndex, onDismiss }: { memeIndex: number; onDismiss: () 
   };
 
   return (
-    <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className={`max-w-sm w-full bg-white/10 border border-white/20 rounded-2xl p-6 text-center ${exiting ? "animate-slide-out-down" : "animate-bounce-in"}`}>
-        <div className="text-5xl mb-3">{meme.emoji}</div>
-        <div className="text-xs text-white/40 mb-2 uppercase tracking-wider">{meme.keyword}</div>
-        <h3 className="text-lg font-bold text-white mb-2">{meme.caption}</h3>
-        <p className="text-sm italic text-white/60 mb-4">{meme.roast}</p>
-        <div className="flex justify-center gap-3 text-2xl mb-4">
-          <span>🤣</span><span>💀</span><span>😤</span><span>🔥</span>
+    <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+      <div className={`max-w-md w-full bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-white/20 rounded-2xl p-8 text-center shadow-2xl ${exiting ? "animate-slide-out-down" : "animate-bounce-in"}`}>
+        <div className="text-6xl mb-4">{meme.emoji}</div>
+        <div className="text-[10px] text-white/30 mb-3 uppercase tracking-[0.2em] font-medium">{meme.keyword}</div>
+        <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-3 leading-tight">{meme.caption}</h3>
+        <div className="w-12 h-0.5 bg-white/20 mx-auto mb-3" />
+        <p className="text-base italic text-white/70 mb-5 leading-relaxed">{meme.roast}</p>
+        <div className="flex justify-center gap-4 text-3xl mb-5">
+          <span className="hover:scale-125 transition-transform cursor-default">🤣</span>
+          <span className="hover:scale-125 transition-transform cursor-default">💀</span>
+          <span className="hover:scale-125 transition-transform cursor-default">😤</span>
+          <span className="hover:scale-125 transition-transform cursor-default">🔥</span>
         </div>
-        <button onClick={handleShare} className="text-xs text-white/50 hover:text-white/80 transition-colors">
+        <button onClick={handleShare} className="text-sm text-white/50 hover:text-white/90 transition-colors bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg">
           Share this roast 😂
         </button>
       </div>
@@ -324,6 +329,7 @@ function LockOverlay({ onUnlock }: { onUnlock: () => void }) {
       setShowMeme(true);
 
       if (lifeResult.triggerCooldown) {
+        playOutOfLivesSound();
         const until = Date.now() + COOLDOWN_SECONDS * 1000;
         setCooldownEnd(until);
         sessionStorage.setItem(STORAGE_KEYS.cooldownUntil, String(until));

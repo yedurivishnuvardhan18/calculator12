@@ -137,3 +137,15 @@ export function playRecordSound() {
     });
   } catch {}
 }
+
+const OUT_OF_LIVES_SOUNDS = ["/sounds/faaah.mp3", "/sounds/anime-wow.mp3", "/sounds/frog-laugh.mp3"];
+
+export function playOutOfLivesSound() {
+  if (isMuted()) return;
+  try {
+    const src = OUT_OF_LIVES_SOUNDS[Math.floor(Math.random() * OUT_OF_LIVES_SOUNDS.length)];
+    const audio = new Audio(src);
+    audio.volume = 0.6;
+    audio.play().catch(() => {});
+  } catch {}
+}
