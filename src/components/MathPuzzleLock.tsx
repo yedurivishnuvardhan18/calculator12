@@ -9,6 +9,7 @@ import {
 import {
   playCorrectSound, playWrongSound, playUnlockFanfare,
   playTickSound, playStreakSound, playRecordSound,
+  playOutOfLivesSound,
   isMuted, toggleMute,
 } from "@/lib/mathlock-sounds";
 import { launchConfetti } from "@/lib/mathlock-confetti";
