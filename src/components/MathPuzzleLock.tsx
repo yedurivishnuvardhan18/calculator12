@@ -390,7 +390,7 @@ function LockOverlay({ onUnlock }: { onUnlock: () => void }) {
       {/* Meme popup */}
       {showMeme && <MemePopup memeIndex={currentMemeIdx} onDismiss={() => setShowMeme(false)} />}
 
-      {screen === "level" && <LevelSelection onSelect={selectLevel} />}
+      {screen === "level" && <LevelSelection onSelect={selectLevel} onSkip={onUnlock} />}
       {screen === "question" && currentQuestion && level && (
         <QuestionScreen
           level={level} question={currentQuestion}
@@ -409,8 +409,7 @@ function LockOverlay({ onUnlock }: { onUnlock: () => void }) {
   );
 }
 
-// ═══════════════ LEVEL SELECTION ═══════════════
-function LevelSelection({ onSelect }: { onSelect: (l: Level) => void }) {
+function LevelSelection({ onSelect, onSkip }: { onSelect: (l: Level) => void; onSkip: () => void }) {
   const xp = getXP();
   const rank = getRank(xp);
   const streak = getStreak();
@@ -477,6 +476,11 @@ function LevelSelection({ onSelect }: { onSelect: (l: Level) => void }) {
           );
         })}
       </div>
+
+      <button onClick={onSkip}
+        className="w-full mt-6 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 text-sm font-medium transition-all">
+        Skip Math Challenge →
+      </button>
 
       <StatsPanel />
     </div>
