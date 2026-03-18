@@ -14,7 +14,6 @@ import GradeCalculator from "./pages/GradeCalculator";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ExternalPage } from "./components/ExternalPage";
-import { FloatingCoffee } from "./components/FloatingCoffee";
 import { CoffeePopup } from "./components/CoffeePopup";
 import Learn from "./pages/Learn";
 import LearnSubject from "./pages/LearnSubject";
@@ -67,7 +66,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
-          <FloatingCoffee />
+          
           <CoffeePopup />
           <BugReportButton />
         </BrowserRouter>
