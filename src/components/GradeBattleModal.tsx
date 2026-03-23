@@ -135,7 +135,7 @@ export function GradeBattleModal({ open, onOpenChange, courses }: GradeBattleMod
 
   const handleShare = () => {
     const msg = getBattleMessage(winner, diff, friendName);
-    const text = `⚔️ Grade Battle Result!\n\nMe: ${mySGPA.toFixed(2)} SGPA (${myLevel.label})\n${friendName || "Friend"}: ${friendSGPANum.toFixed(2)} SGPA (${friendLevel.label})\n\n${msg}\n\nBattle on GradeGuru by TeamDino 🎓`;
+    const text = `⚔️ Grade Battle Result!\n\nMe: ${mySGPA.toFixed(2)} SGPA (${myLevel.label})\n${friendName || "Friend"}: ${friendSGPANum.toFixed(2)} SGPA (${friendLevel.label})\n\n${msg}\n\nBattle on GradeGuru 🎓`;
     if (navigator.share) {
       navigator.share({ title: "Grade Battle", text });
     } else {

@@ -149,7 +149,7 @@ export function Navbar() {
             />
           )}
 
-          <img src="/logo.png" alt="TeamDino logo" className="w-8 h-8 rounded-full" />
+          <img src="/logo.png" alt="GradeGuru logo" className="w-8 h-8 rounded-full" />
 
           {/* Desktop nav */}
           {!isMobile && navItems.map((item, i) => {
@@ -249,46 +249,7 @@ export function Navbar() {
                   );
                 })}
 
-                {/* Mobile Extra Features expandable */}
-                <button
-                  onClick={() => setMobileExtraOpen(v => !v)}
-                  className="inline-flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 text-[hsl(220,10%,55%)] hover:text-white hover:bg-[hsl(240,12%,12%)]"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Extra Features</span>
-                  <ChevronDown className={`w-3 h-3 ml-auto transition-transform duration-200 ${mobileExtraOpen ? "rotate-180" : ""}`} />
-                </button>
-
-                <AnimatePresence>
-                  {mobileExtraOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="ml-4 space-y-1 pb-1">
-                        {extraFeaturesItems.map((item) => (
-                          <button
-                            key={item.label}
-                            onClick={item.onClick}
-                            className="w-full flex items-start gap-3 px-4 py-3 rounded-lg text-left transition-colors duration-150 hover:bg-[hsl(240,12%,12%)]"
-                          >
-                            <span className="text-lg mt-0.5">{item.emoji}</span>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-white">{item.label}</span>
-                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-pop-pink/20 text-pop-pink leading-none">NEW</span>
-                              </div>
-                              <p className="text-xs text-[hsl(220,10%,50%)] mt-0.5">{item.description}</p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Extra Features hidden */}
 
                 {externalLinks.map((item) => (
                   <a

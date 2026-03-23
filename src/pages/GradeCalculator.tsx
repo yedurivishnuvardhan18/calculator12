@@ -226,7 +226,7 @@ export default function GradeCalculator() {
           transition={{ delay: 0.6 }}
         >
           <p className="text-xs text-muted-foreground font-medium">
-            Made with 💜 by TeamDino
+            Made with 💜 by GradeGuru
           </p>
         </motion.div>
       </div>

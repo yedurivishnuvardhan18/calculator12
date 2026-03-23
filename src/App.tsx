@@ -65,8 +65,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
-          <FloatingCoffee />
-          <CoffeePopup />
+          {/* FloatingCoffee and CoffeePopup removed */}
           <BugReportButton />
         </BrowserRouter>
       </TooltipProvider>

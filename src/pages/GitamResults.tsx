@@ -246,7 +246,7 @@ export default function GitamResults() {
             Team<span className="text-emerald-400">Dino</span>
           </h1>
           <p className="font-mono text-[0.7rem] text-muted-foreground tracking-widest uppercase mt-1">
-            Results & Attendance · teamdino.in
+            Results & Attendance · GradeGuru
           </p>
         </div>
       </header>
