@@ -11,16 +11,13 @@ import { Course, calculateSGPA, createNewCourse } from "@/types/calculator";
 
 const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
-  { to: "/what-if", label: "What-If Calculator", icon: Target },
-  { to: "/attendance", label: "Attendance", icon: ClipboardCheck },
+  { to: "/what-if", label: "CGPA Predictor", icon: Target },
+  { to: "/attendance", label: "Attendance Calculator", icon: ClipboardCheck },
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
   { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];
 
-const externalLinks = [
-  { href: "https://teamdino.in", label: "TeamDino", icon: Globe },
-  { href: "https://razorpay.me/@teamdino", label: "Buy Me a Coffee", icon: Coffee },
-];
+const externalLinks: { href: string; label: string; icon: typeof Globe }[] = [];
 
 function loadCoursesFromStorage(): Course[] {
   try {
@@ -177,54 +174,7 @@ export function Navbar() {
             );
           })}
 
-          {/* Desktop Extra Features dropdown */}
-          {!isMobile && (
-            <div ref={dropdownRef} className="relative">
-              <button
-                onClick={() => setExtraOpen(v => !v)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-                  extraOpen
-                    ? "text-[hsl(220,15%,80%)] bg-[hsl(240,12%,12%)]"
-                    : "text-[hsl(220,10%,55%)] hover:text-[hsl(220,15%,80%)] hover:bg-[hsl(240,12%,12%)]"
-                }`}
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Extra Features</span>
-                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${extraOpen ? "rotate-180" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {extraOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-full right-0 mt-2 w-72 rounded-xl border border-[hsl(240,12%,14%)] bg-[hsl(240,15%,8%)] shadow-xl overflow-hidden"
-                  >
-                    {extraFeaturesItems.map((item, i) => (
-                      <button
-                        key={item.label}
-                        onClick={item.onClick}
-                        className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-[hsl(240,12%,12%)] ${
-                          i < extraFeaturesItems.length - 1 ? "border-b border-[hsl(240,12%,14%)]" : ""
-                        }`}
-                      >
-                        <span className="text-lg mt-0.5">{item.emoji}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-white">{item.label}</span>
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-pop-pink/20 text-pop-pink leading-none">NEW</span>
-                          </div>
-                          <p className="text-xs text-[hsl(220,10%,50%)] mt-0.5">{item.description}</p>
-                        </div>
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
+          {/* Extra Features dropdown hidden */}
 
           {!isMobile && externalLinks.map((item) => (
             <a
