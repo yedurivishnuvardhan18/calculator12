@@ -6,12 +6,12 @@ export function Footer() {
     <footer className="w-full bg-[hsl(240,15%,6%)] border-t border-[hsl(240,12%,14%)] py-4">
       <div className="container flex flex-col md:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="TeamDino logo" className="w-7 h-7 rounded-full" />
-          <span className="text-white font-display font-semibold text-sm">TeamDino</span>
+          <img src="/logo.png" alt="GradeGuru logo" className="w-7 h-7 rounded-full" />
+          <span className="text-white font-display font-semibold text-sm">GradeGuru</span>
         </div>
 
         <p className="text-[hsl(220,10%,55%)] text-xs italic text-center">
-          Copyright © 2026 TeamDino | All rights reserved
+          Copyright © 2026 GradeGuru | All rights reserved
         </p>
 
         <div className="flex items-center gap-3">

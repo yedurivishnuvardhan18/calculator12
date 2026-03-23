@@ -55,7 +55,7 @@ export function CoffeePopup() {
           <div className="mx-auto mb-2">
             <img src={coffeeCup} alt="Coffee cup" className="w-20 h-20 object-contain drop-shadow-lg" />
           </div>
-          <DialogTitle className="text-xl font-bold">Enjoying TeamDino? ☕</DialogTitle>
+          <DialogTitle className="text-xl font-bold">Enjoying GradeGuru? ☕</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground mt-1">
             If this tool has been helpful, consider buying us a coffee! Your support keeps us building free tools for students.
           </DialogDescription>

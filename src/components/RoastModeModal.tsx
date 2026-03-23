@@ -108,7 +108,7 @@ export function RoastModeModal({ open, onOpenChange, courses }: RoastModeModalPr
   };
 
   const handleShare = () => {
-    const text = `🔥 Grade Roast!\n\nSGPA: ${result?.sgpa.toFixed(2)}\n\n${roast}\n\n— Roasted by GradeGuru (TeamDino) 💀`;
+    const text = `🔥 Grade Roast!\n\nSGPA: ${result?.sgpa.toFixed(2)}\n\n${roast}\n\n— Roasted by GradeGuru 💀`;
     if (navigator.share) {
       navigator.share({ title: "Grade Roast 🔥", text });
     } else {
