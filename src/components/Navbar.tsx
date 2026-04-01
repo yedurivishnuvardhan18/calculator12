@@ -14,6 +14,7 @@ const navItems = [
   { to: "/what-if", label: "CGPA Predictor", icon: Target },
   { to: "/attendance", label: "Attendance Calculator", icon: ClipboardCheck },
   { to: "/habits", label: "Habit Tracker", icon: CheckSquare },
+  { to: "/payments", label: "Payments", icon: CreditCard },
   { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];
 

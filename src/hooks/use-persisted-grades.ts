@@ -24,7 +24,7 @@ function sanitizeCourse(c: unknown): Course | null {
     return {
       id: typeof obj.id === "string" ? obj.id : crypto.randomUUID(),
       name: ensureString(obj.name, "", 100),
-      credits: clampNumber(ensureFinite(obj.credits, 3), 1, 10),
+      credits: clampNumber(ensureFinite(obj.credits, 0), 0, 10),
       assessments: Array.isArray(obj.assessments) ? obj.assessments.map((a: unknown) => {
         if (!a || typeof a !== "object") return { name: "", weight: 0, gradePoint: null, gradeLabel: null, marks: null };
         const ao = a as Record<string, unknown>;

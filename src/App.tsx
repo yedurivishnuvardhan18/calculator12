@@ -30,6 +30,8 @@ import AdminVideos from "./pages/admin/AdminVideos";
 import GitamResults from "./pages/GitamResults";
 import WhatIfCalculator from "./pages/WhatIfCalculator";
 import AttendanceCalculator from "./pages/AttendanceCalculator";
+import Payments from "./pages/Payments";
+import { PaymentPopup } from "./components/PaymentPopup";
 
 const queryClient = new QueryClient();
 
