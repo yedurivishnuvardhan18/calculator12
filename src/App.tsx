@@ -48,6 +48,7 @@ const App = () => (
             <Route path="/" element={<ErrorBoundary><GradeCalculator /></ErrorBoundary>} />
             <Route path="/what-if" element={<ErrorBoundary><WhatIfCalculator /></ErrorBoundary>} />
             <Route path="/attendance" element={<ErrorBoundary><AttendanceCalculator /></ErrorBoundary>} />
+            <Route path="/payments" element={<ErrorBoundary><Payments /></ErrorBoundary>} />
             <Route path="/habits" element={<ErrorBoundary><Index /></ErrorBoundary>} />
             <Route path="/learn" element={<ErrorBoundary><Learn /></ErrorBoundary>} />
             <Route path="/learn/:subjectId" element={<ErrorBoundary><LearnSubject /></ErrorBoundary>} />
