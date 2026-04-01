@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Target, Save, Share2, TrendingUp, TrendingDown, Award, ArrowRight } from "lucide-react";
+import { Target, Save, Share2, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
 
 const STORAGE_KEY = "whatif_calculator_state";
 
@@ -106,7 +106,7 @@ export default function WhatIfCalculator() {
   const [futureCount, setFutureCount] = useState(1);
   const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 2 }]);
   const [targetCGPA, setTargetCGPA] = useState(8.0);
-  const [loaded, setLoaded] = useState(false);
+  
 
   const maxFutureSemesters = 8 - currentSemester;
 
@@ -120,7 +120,6 @@ export default function WhatIfCalculator() {
       setFutureCount(saved.futureCount);
       if (saved.gradingScale) setGradingScale(saved.gradingScale);
       if (saved.currentSemester) setCurrentSemester(saved.currentSemester);
-      setLoaded(true);
       toast.success("Welcome back! Your last session is loaded ✅");
     }
   }, []);
@@ -152,29 +151,6 @@ export default function WhatIfCalculator() {
   const tier = projectedCGPA !== null ? getCGPATier(projectedCGPA, gradingScale) : null;
   const milestone = projectedCGPA !== null ? getMilestoneMessage(projectedCGPA, gradingScale) : null;
   const delta = projectedCGPA !== null ? projectedCGPA - currentCGPA : null;
-
-  // Scenarios
-  const scenarios = useMemo(() => {
-    const offsets = [-1.0, 0, 1.0];
-    const labels = [
-      { name: "Pessimistic", emoji: "😴" },
-      { name: "Realistic", emoji: "😐" },
-      { name: "Optimistic", emoji: "🔥" },
-    ];
-    return labels.map((l, i) => {
-      const adjusted = futureSemesters.map(s => ({
-        ...s,
-        sgpa: Math.max(0, Math.min(gradingScale, s.sgpa + offsets[i])),
-      }));
-      const cgpa = calcCGPA(currentCGPA, completedCredits, adjusted);
-      return { ...l, cgpa, semesters: adjusted };
-    });
-  }, [currentCGPA, completedCredits, futureSemesters, gradingScale]);
-
-  const applyScenario = (semesters: FutureSemester[]) => {
-    setFutureSemesters(semesters);
-    toast.success("Scenario applied!");
-  };
 
   // Reverse calculator
   const requiredSGPA = useMemo(() => {
@@ -356,43 +332,6 @@ export default function WhatIfCalculator() {
         </Card>
       </motion.div>
 
-      {/* Section 3: Scenario Comparison */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-card-foreground">🎯 Try Different Scenarios</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {scenarios.map((sc, i) => {
-                const scTier = sc.cgpa !== null ? getCGPATier(sc.cgpa, gradingScale) : null;
-                return (
-                  <button
-                    key={sc.name}
-                    onClick={() => applyScenario(sc.semesters)}
-                    className="p-4 rounded-xl border border-border bg-muted/50 hover:bg-muted transition-colors text-left space-y-2 group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{sc.emoji}</span>
-                      <span className="font-semibold text-sm text-card-foreground">{sc.name}</span>
-                    </div>
-                    {sc.semesters.map((s, j) => (
-                      <p key={j} className="text-xs text-muted-foreground">Sem {j + 1}: {s.sgpa.toFixed(1)}</p>
-                    ))}
-                    <div className="pt-1 border-t border-border">
-                      <span className={`text-2xl font-bold ${scTier?.color || "text-card-foreground"}`}>
-                        {sc.cgpa?.toFixed(2) ?? "—"}
-                      </span>
-                      <p className="text-xs text-muted-foreground mt-0.5">{scTier?.emoji} {scTier?.label}</p>
-                    </div>
-                    <p className="text-[10px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">Click to apply →</p>
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
 
       {/* Section 4: Results */}
       {projectedCGPA !== null && (

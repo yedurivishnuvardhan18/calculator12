@@ -7,9 +7,10 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, RotateCcw, BookOpen } from "lucide-react";
+import { CalendarIcon, RotateCcw, BookOpen, Plus, X, Info } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,8 +26,8 @@ import {
 const STORAGE_KEY = "attendance_calculator_state";
 
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const DEFAULT_DAY_CLASSES = [6, 6, 6, 6, 6, 4];
-const DEFAULT_DAY_ACTIVE = [true, true, true, true, true, true];
+const DEFAULT_DAY_CLASSES = [6, 6, 6, 6, 6, 0];
+const DEFAULT_DAY_ACTIVE = [true, true, true, true, true, false];
 
 function getDefaultEndDate(): string {
   const d = new Date();
@@ -41,6 +42,7 @@ interface SavedState {
   dayClasses: number[];
   endDate: string;
   target: number;
+  holidays: string[];
 }
 
 function loadState(): SavedState | null {
@@ -52,7 +54,7 @@ function loadState(): SavedState | null {
     const attended = Math.max(0, Math.floor(Number(parsed.attended) || 0));
     const total = Math.max(0, Math.floor(Number(parsed.total) || 0));
     return {
-      attended: Math.min(attended, total),
+      attended,
       total,
       dayActive: Array.isArray(parsed.dayActive) && parsed.dayActive.length === 6
         ? parsed.dayActive.map((v: unknown) => Boolean(v))
@@ -64,6 +66,9 @@ function loadState(): SavedState | null {
         ? parsed.endDate
         : getDefaultEndDate(),
       target: Math.min(100, Math.max(50, Math.floor(Number(parsed.target) || 75))),
+      holidays: Array.isArray(parsed.holidays)
+        ? parsed.holidays.filter((h: unknown) => typeof h === "string" && !isNaN(new Date(h).getTime()))
+        : [],
     };
   } catch {
     localStorage.removeItem(STORAGE_KEY);
@@ -75,19 +80,23 @@ function saveState(state: SavedState) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function countRemainingClasses(endDate: string, dayActive: boolean[], dayClasses: number[]): number {
+function countRemainingClasses(endDate: string, dayActive: boolean[], dayClasses: number[], holidays: string[]): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const end = new Date(endDate);
   end.setHours(0, 0, 0, 0);
+  const holidaySet = new Set(holidays);
   let totalClasses = 0;
   const d = new Date(today);
   d.setDate(d.getDate() + 1);
   while (d <= end) {
-    const dow = d.getDay();
-    const idx = dow - 1;
-    if (idx >= 0 && idx <= 5 && dayActive[idx]) {
-      totalClasses += dayClasses[idx];
+    const dateStr = d.toISOString().split("T")[0];
+    if (!holidaySet.has(dateStr)) {
+      const dow = d.getDay();
+      const idx = dow - 1;
+      if (idx >= 0 && idx <= 5 && dayActive[idx]) {
+        totalClasses += dayClasses[idx];
+      }
     }
     d.setDate(d.getDate() + 1);
   }
@@ -156,26 +165,8 @@ function CircularProgress({ percentage, target, size = 160 }: { percentage: numb
   return (
     <div className="relative inline-flex items-center justify-center">
       <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="hsl(var(--muted))"
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={color}
-          strokeWidth={strokeWidth}
-          fill="none"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          className="transition-all duration-700 ease-out"
-        />
+        <circle cx={size / 2} cy={size / 2} r={radius} stroke="hsl(var(--muted))" strokeWidth={strokeWidth} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={radius} stroke={color} strokeWidth={strokeWidth} fill="none" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" className="transition-all duration-700 ease-out" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-3xl font-bold text-foreground">{percentage.toFixed(1)}%</span>
@@ -186,13 +177,8 @@ function CircularProgress({ percentage, target, size = 160 }: { percentage: numb
 }
 
 function getSmartInsight(
-  currentPct: number,
-  target: number,
-  remClasses: number,
-  safeBunksNow: number,
-  mustAttendNow: number,
-  projIfAllAttend: number,
-  total: number
+  currentPct: number, target: number, remClasses: number, safeBunksNow: number,
+  mustAttendNow: number, projIfAllAttend: number, total: number
 ): string {
   if (total === 0) return "Enter your attendance data to get insights.";
   if (remClasses === 0) {
@@ -221,8 +207,9 @@ export default function AttendanceCalculator() {
   const [dayClasses, setDayClasses] = useState<number[]>([...DEFAULT_DAY_CLASSES]);
   const [endDate, setEndDate] = useState(getDefaultEndDate());
   const [target, setTarget] = useState(75);
+  const [holidays, setHolidays] = useState<string[]>([]);
+  const [holidayPickerOpen, setHolidayPickerOpen] = useState(false);
 
-  // Load from localStorage
   useEffect(() => {
     const saved = loadState();
     if (saved) {
@@ -232,25 +219,20 @@ export default function AttendanceCalculator() {
       setDayClasses(saved.dayClasses);
       setEndDate(saved.endDate);
       setTarget(saved.target);
+      setHolidays(saved.holidays || []);
     }
   }, []);
 
-  // Save on every change
   useEffect(() => {
-    saveState({ attended, total, dayActive, dayClasses, endDate, target });
-  }, [attended, total, dayActive, dayClasses, endDate, target]);
+    saveState({ attended, total, dayActive, dayClasses, endDate, target, holidays });
+  }, [attended, total, dayActive, dayClasses, endDate, target, holidays]);
 
   const handleAttendedChange = useCallback((val: number) => {
-    setAttended(prev => {
-      const clamped = Math.max(0, Math.min(val, total));
-      return clamped;
-    });
-  }, [total]);
+    setAttended(Math.max(0, val));
+  }, []);
 
   const handleTotalChange = useCallback((val: number) => {
-    const v = Math.max(0, val);
-    setTotal(v);
-    setAttended(prev => Math.min(prev, v));
+    setTotal(Math.max(0, val));
   }, []);
 
   const toggleDay = useCallback((idx: number) => {
@@ -261,10 +243,21 @@ export default function AttendanceCalculator() {
     setDayClasses(prev => prev.map((v, i) => i === idx ? Math.max(0, val) : v));
   }, []);
 
-  const currentPct = total > 0 ? (attended / total) * 100 : 0;
-  const attendedInvalid = attended > total && total > 0;
+  const addHoliday = useCallback((date: Date | undefined) => {
+    if (!date) return;
+    const dateStr = date.toISOString().split("T")[0];
+    setHolidays(prev => prev.includes(dateStr) ? prev : [...prev, dateStr].sort());
+    setHolidayPickerOpen(false);
+  }, []);
 
-  const remClasses = useMemo(() => countRemainingClasses(endDate, dayActive, dayClasses), [endDate, dayActive, dayClasses]);
+  const removeHoliday = useCallback((dateStr: string) => {
+    setHolidays(prev => prev.filter(h => h !== dateStr));
+  }, []);
+
+  const attendedInvalid = attended > total && total > 0;
+  const currentPct = total > 0 && !attendedInvalid ? (attended / total) * 100 : 0;
+
+  const remClasses = useMemo(() => countRemainingClasses(endDate, dayActive, dayClasses, holidays), [endDate, dayActive, dayClasses, holidays]);
   const weeksRemaining = useMemo(() => getWeeksRemaining(endDate), [endDate]);
 
   const projIfAllAttend = total + remClasses > 0 ? ((attended + remClasses) / (total + remClasses)) * 100 : 0;
@@ -301,6 +294,7 @@ export default function AttendanceCalculator() {
     setDayClasses([...DEFAULT_DAY_CLASSES]);
     setEndDate(getDefaultEndDate());
     setTarget(75);
+    setHolidays([]);
   };
 
   const selectedEndDate = useMemo(() => {
@@ -317,6 +311,17 @@ export default function AttendanceCalculator() {
           Attendance Calculator
         </h1>
         <p className="text-muted-foreground text-sm md:text-base">Track your attendance and plan your bunks smartly</p>
+      </motion.div>
+
+      {/* Info Note */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <Alert className="border-primary/30 bg-primary/5">
+          <Info className="h-4 w-4 text-primary" />
+          <AlertDescription className="text-sm text-muted-foreground">
+            <strong className="text-foreground">Not sure where to find your attendance?</strong><br />
+            Go to <span className="font-semibold text-primary">Gitam → G-Learn → Attendance → By Subject</span> to view total and attended classes.
+          </AlertDescription>
+        </Alert>
       </motion.div>
 
       {/* Section 1: Current Attendance */}
@@ -356,7 +361,9 @@ export default function AttendanceCalculator() {
               </div>
             </div>
             {attendedInvalid && (
-              <p className="text-destructive text-xs mt-2 text-center">Attended cannot exceed total classes</p>
+              <div className="mt-3 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-center">
+                <p className="text-destructive text-sm font-medium">⚠️ Classes attended cannot be greater than total classes held. Please correct your input.</p>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -396,11 +403,60 @@ export default function AttendanceCalculator() {
                 </div>
               ))}
             </div>
+            <p className="text-xs text-muted-foreground mt-2 text-center">Click a day to toggle it on/off. Saturday is off by default.</p>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* Section 3: End Date & Target */}
+      {/* Section 3: Holidays */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }}>
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg text-card-foreground">🎉 Holidays</CardTitle>
+              <Popover open={holidayPickerOpen} onOpenChange={setHolidayPickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-1">
+                    <Plus className="w-4 h-4" /> Add Holiday
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <Calendar
+                    mode="single"
+                    selected={undefined}
+                    onSelect={addHoliday}
+                    disabled={(date) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return date <= today;
+                    }}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {holidays.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-2">No holidays added. Click "Add Holiday" to mark days off.</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {holidays.map(h => (
+                  <span key={h} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                    {format(new Date(h + "T00:00:00"), "MMM d, yyyy")}
+                    <button onClick={() => removeHoliday(h)} className="ml-1 hover:text-destructive transition-colors">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Section 4: End Date & Target */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
         <Card className="border-border bg-card">
           <CardHeader className="pb-3">
@@ -414,10 +470,7 @@ export default function AttendanceCalculator() {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !selectedEndDate && "text-muted-foreground"
-                      )}
+                      className={cn("w-full justify-start text-left font-normal", !selectedEndDate && "text-muted-foreground")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {selectedEndDate ? format(selectedEndDate, "PPP") : "Pick a date"}
@@ -436,13 +489,7 @@ export default function AttendanceCalculator() {
               </div>
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Target: {target}%</Label>
-                <Slider
-                  min={50}
-                  max={100}
-                  step={1}
-                  value={[target]}
-                  onValueChange={([v]) => setTarget(v)}
-                />
+                <Slider min={50} max={100} step={1} value={[target]} onValueChange={([v]) => setTarget(v)} />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>50%</span>
                   <span>100%</span>
@@ -454,9 +501,8 @@ export default function AttendanceCalculator() {
       </motion.div>
 
       {/* Results Panel */}
-      {total > 0 && (
+      {total > 0 && !attendedInvalid && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} className="space-y-4">
-          {/* Progress Ring + Stats */}
           <Card className="border-border bg-card">
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row items-center gap-6">
@@ -479,23 +525,18 @@ export default function AttendanceCalculator() {
             </CardContent>
           </Card>
 
-          {/* Projection Cards */}
           {!endDatePast && remClasses > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Card className={cn("border", getBgClass(projIfAllAttend, target))}>
                 <CardContent className="pt-4 pb-4 text-center">
                   <p className="text-xs text-muted-foreground mb-1">If you attend all remaining</p>
-                  <p className={cn("text-3xl font-bold", getColorClass(projIfAllAttend, target))}>
-                    {projIfAllAttend.toFixed(1)}%
-                  </p>
+                  <p className={cn("text-3xl font-bold", getColorClass(projIfAllAttend, target))}>{projIfAllAttend.toFixed(1)}%</p>
                 </CardContent>
               </Card>
               <Card className={cn("border", getBgClass(projIfAllBunk, target))}>
                 <CardContent className="pt-4 pb-4 text-center">
                   <p className="text-xs text-muted-foreground mb-1">If you bunk all remaining</p>
-                  <p className={cn("text-3xl font-bold", getColorClass(projIfAllBunk, target))}>
-                    {projIfAllBunk.toFixed(1)}%
-                  </p>
+                  <p className={cn("text-3xl font-bold", getColorClass(projIfAllBunk, target))}>{projIfAllBunk.toFixed(1)}%</p>
                 </CardContent>
               </Card>
               <Card className={cn("border", currentPct >= target ? getBgClass(100, target) : getBgClass(0, target))}>
@@ -504,12 +545,7 @@ export default function AttendanceCalculator() {
                     {currentPct >= target ? "Can bunk right now" : "Must attend to reach target"}
                   </p>
                   <p className={cn("text-3xl font-bold", currentPct >= target ? "text-green-400" : "text-red-400")}>
-                    {currentPct >= target
-                      ? safeBunksNow
-                      : mustAttendNow === Infinity
-                        ? "∞"
-                        : mustAttendNow
-                    }
+                    {currentPct >= target ? safeBunksNow : mustAttendNow === Infinity ? "∞" : mustAttendNow}
                   </p>
                   <p className="text-xs text-muted-foreground">classes</p>
                 </CardContent>
@@ -533,7 +569,6 @@ export default function AttendanceCalculator() {
             </Card>
           )}
 
-          {/* Timeline Strip */}
           <Card className="border-border bg-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-card-foreground">📈 Timeline</CardTitle>
@@ -563,7 +598,6 @@ export default function AttendanceCalculator() {
             </CardContent>
           </Card>
 
-          {/* Smart Insight */}
           <Card className="border-primary/30 bg-primary/5">
             <CardContent className="pt-4 pb-4">
               <p className="text-sm text-foreground text-center">💡 {insight}</p>
@@ -572,7 +606,6 @@ export default function AttendanceCalculator() {
         </motion.div>
       )}
 
-      {/* Empty state */}
       {total === 0 && (
         <Card className="border-border bg-card">
           <CardContent className="pt-6 pb-6 text-center">
@@ -581,7 +614,6 @@ export default function AttendanceCalculator() {
         </Card>
       )}
 
-      {/* Reset */}
       <div className="flex justify-center pb-8">
         <AlertDialog>
           <AlertDialogTrigger asChild>
