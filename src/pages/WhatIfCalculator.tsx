@@ -219,7 +219,7 @@ export default function WhatIfCalculator() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="text-muted-foreground">Current Semester</Label>
+                <Label className="text-muted-foreground">Previous Semester</Label>
                 <Select value={String(currentSemester)} onValueChange={v => setCurrentSemester(Number(v))}>
                   <SelectTrigger>
                     <SelectValue />
