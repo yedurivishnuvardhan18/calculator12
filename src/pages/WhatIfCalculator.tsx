@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Target, Save, Share2, TrendingUp, TrendingDown, Award, ArrowRight } from "lucide-react";
+import { Target, Save, Share2, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
 
 const STORAGE_KEY = "whatif_calculator_state";
 
