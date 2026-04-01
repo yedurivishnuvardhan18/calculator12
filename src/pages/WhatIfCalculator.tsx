@@ -356,43 +356,6 @@ export default function WhatIfCalculator() {
         </Card>
       </motion.div>
 
-      {/* Section 3: Scenario Comparison */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-card-foreground">🎯 Try Different Scenarios</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {scenarios.map((sc, i) => {
-                const scTier = sc.cgpa !== null ? getCGPATier(sc.cgpa, gradingScale) : null;
-                return (
-                  <button
-                    key={sc.name}
-                    onClick={() => applyScenario(sc.semesters)}
-                    className="p-4 rounded-xl border border-border bg-muted/50 hover:bg-muted transition-colors text-left space-y-2 group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{sc.emoji}</span>
-                      <span className="font-semibold text-sm text-card-foreground">{sc.name}</span>
-                    </div>
-                    {sc.semesters.map((s, j) => (
-                      <p key={j} className="text-xs text-muted-foreground">Sem {j + 1}: {s.sgpa.toFixed(1)}</p>
-                    ))}
-                    <div className="pt-1 border-t border-border">
-                      <span className={`text-2xl font-bold ${scTier?.color || "text-card-foreground"}`}>
-                        {sc.cgpa?.toFixed(2) ?? "—"}
-                      </span>
-                      <p className="text-xs text-muted-foreground mt-0.5">{scTier?.emoji} {scTier?.label}</p>
-                    </div>
-                    <p className="text-[10px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">Click to apply →</p>
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
 
       {/* Section 4: Results */}
       {projectedCGPA !== null && (
