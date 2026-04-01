@@ -106,7 +106,7 @@ export default function WhatIfCalculator() {
   const [futureCount, setFutureCount] = useState(1);
   const [futureSemesters, setFutureSemesters] = useState<FutureSemester[]>([{ credits: 20, sgpa: 7.0, semNumber: 2 }]);
   const [targetCGPA, setTargetCGPA] = useState(8.0);
-  const [loaded, setLoaded] = useState(false);
+  
 
   const maxFutureSemesters = 8 - currentSemester;
 
