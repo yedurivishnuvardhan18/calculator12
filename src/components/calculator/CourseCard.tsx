@@ -255,10 +255,10 @@ export function CourseCard({
   };
 
   const popColors = [
-    "border-pop-pink/40 bg-gradient-to-br from-pop-pink/5 to-pop-purple/5",
-    "border-pop-cyan/40 bg-gradient-to-br from-pop-cyan/5 to-pop-green/5",
-    "border-pop-green/40 bg-gradient-to-br from-pop-green/5 to-pop-cyan/5",
-    "border-pop-orange/40 bg-gradient-to-br from-pop-orange/5 to-pop-yellow/5",
+    "border-pop-pink/40 bg-pop-pink/5",
+    "border-pop-cyan/40 bg-pop-cyan/5",
+    "border-pop-green/40 bg-pop-green/5",
+    "border-pop-orange/40 bg-pop-orange/5",
   ];
 
   const headerColors = [
@@ -786,7 +786,7 @@ export function CourseCard({
               />
             )}
             {course.finalGradePoint !== null && course.letterGrade && (
-              <div className="flex items-center justify-center gap-4 p-5 bg-gradient-to-br from-pop-purple/10 to-pop-pink/10 rounded-2xl border-2 border-pop-purple/30 pop-shadow">
+              <div className="flex items-center justify-center gap-4 p-5 bg-pop-purple/10 rounded-2xl border-2 border-pop-purple/30 pop-shadow">
                 <GradeBadge letter={course.letterGrade} point={course.finalGradePoint} />
                 <div className="text-sm text-muted-foreground font-medium">
                   <span className="font-display font-bold text-foreground text-lg block">{course.finalGradePoint}</span>

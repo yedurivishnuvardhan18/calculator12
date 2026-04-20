@@ -171,7 +171,7 @@ export function GradeBattleModal({ open, onOpenChange, courses }: GradeBattleMod
               exit={{ opacity: 0, y: -10 }}
               className="space-y-4"
             >
-              <div className="bg-gradient-to-br from-pop-green/10 to-pop-cyan/10 rounded-2xl p-5 text-center border-2 border-pop-green/20">
+              <div className="bg-pop-green/10 rounded-2xl p-5 text-center border-2 border-pop-green/20">
                 <p className="text-xs text-muted-foreground mb-1">Your Power Level</p>
                 <p className="text-4xl font-black font-display text-pop-green">{mySGPA.toFixed(2)}</p>
                 <div className="flex items-center justify-center gap-1.5 mt-2">

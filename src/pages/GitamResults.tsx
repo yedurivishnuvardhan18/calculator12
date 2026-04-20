@@ -122,7 +122,7 @@ function ResultsSkeleton() {
     <div className="mt-8 space-y-4">
       {/* Banner skeleton */}
       <div className="bg-card border border-border rounded-xl p-4 sm:p-6 relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-indigo-400" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
         <div className="h-6 w-48 rounded skeleton-shimmer mb-2" />
         <div className="h-4 w-32 rounded skeleton-shimmer mb-4" />
         <div className="flex flex-wrap gap-2">
@@ -253,7 +253,7 @@ export default function GitamResults() {
 
       {/* Search card */}
       <div className="bg-card border border-border rounded-xl p-4 sm:p-6 relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-indigo-400" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
 
         {/* Tabs */}
         <div className="flex gap-2 mb-5">
@@ -338,7 +338,7 @@ function ResultsView({ data }: { data: any }) {
     <div className="mt-8 animate-in fade-in slide-in-from-bottom-2">
       {/* Student banner */}
       <div className="bg-card border border-border rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-indigo-400" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-lg sm:text-2xl font-extrabold tracking-tight">{data.student_name}</div>

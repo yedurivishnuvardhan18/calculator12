@@ -82,7 +82,7 @@ export default function GradeCalculator() {
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
         >
-          <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-pop-pink/20 via-pop-purple/15 to-pop-cyan/20 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
+          <div className="inline-flex items-center gap-2 sm:gap-3 bg-pop-pink/15 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
             <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-pop-pink animate-float" />
             <h1 className="text-xl sm:text-3xl font-black font-display">Grade Calculator</h1>
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-pop-yellow" />

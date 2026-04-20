@@ -165,7 +165,7 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
               </CardContent>
             </Card>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 p-5 sm:p-8 bg-gradient-to-br from-pop-orange/10 to-pop-yellow/10 rounded-3xl border-3 border-pop-orange/30 pop-shadow-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 p-5 sm:p-8 bg-pop-orange/10 rounded-3xl border-3 border-pop-orange/30 pop-shadow-lg">
               <div className="text-center">
                 <div className="text-2xl sm:text-3xl font-bold font-display text-muted-foreground">{previousCGPA}</div>
                 <div className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-1">Previous CGPA</div>

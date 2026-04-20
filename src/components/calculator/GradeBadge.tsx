@@ -33,7 +33,7 @@ export function GradeBadge({ letter, point, size = "md" }: GradeBadgeProps) {
     <div className="relative inline-block group">
       {isTopGrade && size !== "sm" && (
         <div className="absolute inset-0 animate-pulse">
-          <div className="absolute inset-0 bg-gradient-to-r from-pop-yellow/30 to-pop-orange/30 rounded-2xl blur-md scale-125" />
+          <div className="absolute inset-0 bg-pop-yellow/30 rounded-2xl blur-md scale-125" />
         </div>
       )}
       
