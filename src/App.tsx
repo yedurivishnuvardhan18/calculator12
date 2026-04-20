@@ -9,7 +9,6 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CommandPalette } from "./components/CommandPalette";
 import { BugReportButton } from "./components/BugReportButton";
 import GradeCalculator from "./pages/GradeCalculator";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ExternalPage } from "./components/ExternalPage";
 import Learn from "./pages/Learn";
