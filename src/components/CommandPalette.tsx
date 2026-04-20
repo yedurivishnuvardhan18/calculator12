@@ -51,10 +51,6 @@ export function CommandPalette() {
             <Calculator className="mr-2 h-4 w-4" />
             Grade Calculator
           </CommandItem>
-          <CommandItem onSelect={() => go("/habits")}>
-            <CheckSquare className="mr-2 h-4 w-4" />
-            Habit Tracker
-          </CommandItem>
           <CommandItem onSelect={() => go("/learn")}>
             <GraduationCap className="mr-2 h-4 w-4" />
             Learn

@@ -4,17 +4,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
-import { Footer } from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CommandPalette } from "./components/CommandPalette";
 import { BugReportButton } from "./components/BugReportButton";
 import GradeCalculator from "./pages/GradeCalculator";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ExternalPage } from "./components/ExternalPage";
-import { FloatingCoffee } from "./components/FloatingCoffee";
-import { CoffeePopup } from "./components/CoffeePopup";
 import Learn from "./pages/Learn";
 import LearnSubject from "./pages/LearnSubject";
 import LearnModule from "./pages/LearnModule";
@@ -30,8 +26,6 @@ import AdminVideos from "./pages/admin/AdminVideos";
 import GitamResults from "./pages/GitamResults";
 import WhatIfCalculator from "./pages/WhatIfCalculator";
 import AttendanceCalculator from "./pages/AttendanceCalculator";
-import Payments from "./pages/Payments";
-import { PaymentPopup } from "./components/PaymentPopup";
 
 const queryClient = new QueryClient();
 
@@ -48,8 +42,6 @@ const App = () => (
             <Route path="/" element={<ErrorBoundary><GradeCalculator /></ErrorBoundary>} />
             <Route path="/what-if" element={<ErrorBoundary><WhatIfCalculator /></ErrorBoundary>} />
             <Route path="/attendance" element={<ErrorBoundary><AttendanceCalculator /></ErrorBoundary>} />
-            <Route path="/payments" element={<ErrorBoundary><Payments /></ErrorBoundary>} />
-            <Route path="/habits" element={<ErrorBoundary><Index /></ErrorBoundary>} />
             <Route path="/learn" element={<ErrorBoundary><Learn /></ErrorBoundary>} />
             <Route path="/learn/:subjectId" element={<ErrorBoundary><LearnSubject /></ErrorBoundary>} />
             <Route path="/learn/:subjectId/:moduleId" element={<ErrorBoundary><LearnModule /></ErrorBoundary>} />
@@ -67,9 +59,6 @@ const App = () => (
             <Route path="/external/feedback" element={<ExternalPage url="https://docs.google.com/forms/d/e/1FAIpQLSffSEUgxpJZ4i14s1E0cFQmheKTlS6uKGajijuL3YMBUY4txg/viewform?usp=publish-editor" />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Footer />
-          {/* FloatingCoffee and CoffeePopup removed */}
-          <PaymentPopup />
           <BugReportButton />
         </BrowserRouter>
       </TooltipProvider>
