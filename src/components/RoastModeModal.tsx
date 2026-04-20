@@ -133,7 +133,7 @@ export function RoastModeModal({ open, onOpenChange, courses }: RoastModeModalPr
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-gradient-to-br from-pop-orange/10 to-pop-pink/10 rounded-2xl p-5 text-center border-2 border-pop-orange/20"
+              className="bg-pop-orange/10 rounded-2xl p-5 text-center border-2 border-pop-orange/20"
             >
               <motion.span
                 className="text-4xl block mb-2"

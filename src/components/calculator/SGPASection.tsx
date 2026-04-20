@@ -151,7 +151,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
               </CardContent>
             </Card>
 
-            <div className="flex flex-col items-center gap-3 sm:gap-5 p-5 sm:p-8 bg-gradient-to-br from-pop-green/10 to-pop-cyan/10 rounded-3xl border-3 border-pop-green/30 pop-shadow-lg">
+            <div className="flex flex-col items-center gap-3 sm:gap-5 p-5 sm:p-8 bg-pop-green/10 rounded-3xl border-3 border-pop-green/30 pop-shadow-lg">
               <div className="text-center">
                 <div className="text-5xl sm:text-7xl font-black font-display text-pop-green drop-shadow-md animate-pop-in">{result?.sgpa.toFixed(2)}</div>
                 {result && result.sgpa >= 9 && (
