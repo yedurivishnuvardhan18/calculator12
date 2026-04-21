@@ -52,6 +52,14 @@
 
     --font-display: 'Fredoka', sans-serif;
     --font-body: 'Space Grotesk', sans-serif;
+
+    /* Accent palette — overridden per theme so badges/icons fit each theme */
+    --pop-pink: 338 100% 71%;
+    --pop-cyan: 174 56% 55%;
+    --pop-green: 160 84% 39%;
+    --pop-orange: 22 100% 63%;
+    --pop-yellow: 51 100% 71%;
+    --pop-purple: 271 91% 65%;
   }
 
   .dark {

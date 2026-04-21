@@ -351,3 +351,109 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
 @media (prefers-reduced-motion: reduce) {
   html, body, button, input, textarea, select { transition: none; }
 }
+
+/* ============================================================
+   Per-theme accent (pop-*) overrides — keeps badges, icons,
+   grade chips, and accent buttons looking native to each theme.
+   ============================================================ */
+
+/* Exam Sheet — paper with red/orange marker accents */
+.theme-exam-sheet {
+  --pop-pink: 350 75% 55%;
+  --pop-cyan: 195 65% 45%;
+  --pop-green: 145 55% 38%;
+  --pop-orange: 14 78% 47%;
+  --pop-yellow: 45 90% 55%;
+  --pop-purple: 280 50% 45%;
+}
+
+/* Minimalist — desaturated mono accents */
+.theme-minimalist {
+  --pop-pink: 0 0% 75%;
+  --pop-cyan: 0 0% 70%;
+  --pop-green: 0 0% 80%;
+  --pop-orange: 0 0% 65%;
+  --pop-yellow: 0 0% 90%;
+  --pop-purple: 0 0% 60%;
+}
+
+/* Slate — blue-tinted neutrals */
+.theme-slate {
+  --pop-pink: 340 70% 65%;
+  --pop-cyan: 190 70% 55%;
+  --pop-green: 160 60% 50%;
+  --pop-orange: 25 90% 60%;
+  --pop-yellow: 45 90% 60%;
+  --pop-purple: 260 70% 65%;
+}
+
+/* High Contrast — pure mono */
+.theme-high-contrast {
+  --pop-pink: 0 0% 100%;
+  --pop-cyan: 0 0% 100%;
+  --pop-green: 0 0% 100%;
+  --pop-orange: 0 0% 100%;
+  --pop-yellow: 0 0% 100%;
+  --pop-purple: 0 0% 100%;
+}
+.theme-high-contrast .pop-shadow,
+.theme-high-contrast .pop-shadow-lg,
+.theme-high-contrast .pop-shadow-xl,
+.theme-high-contrast [class*="bg-pop-"] {
+  color: hsl(0 0% 0%) !important;
+}
+
+/* Game Boy Night — everything tinted LCD green */
+.theme-gameboy-night {
+  --pop-pink: 70 60% 55%;
+  --pop-cyan: 75 70% 55%;
+  --pop-green: 70 75% 55%;
+  --pop-orange: 60 75% 55%;
+  --pop-yellow: 65 90% 60%;
+  --pop-purple: 80 60% 50%;
+}
+
+/* Terminal Doom — fire palette */
+.theme-terminal-doom {
+  --pop-pink: 0 90% 55%;
+  --pop-cyan: 30 90% 55%;
+  --pop-green: 18 95% 55%;
+  --pop-orange: 18 95% 55%;
+  --pop-yellow: 45 95% 55%;
+  --pop-purple: 0 80% 45%;
+}
+
+/* Retro 98 — bright Win98 16-color palette */
+.theme-retro-98 {
+  --pop-pink: 320 80% 50%;
+  --pop-cyan: 190 90% 45%;
+  --pop-green: 130 80% 35%;
+  --pop-orange: 25 95% 50%;
+  --pop-yellow: 50 100% 50%;
+  --pop-purple: 270 75% 50%;
+}
+
+/* ============================================================
+   Global theme-aware polish
+   - Card surfaces inherit theme card token
+   - Inputs become themed
+   - Buttons keep contrast
+   ============================================================ */
+
+/* Make all card backgrounds fall back to themed surface even if
+   a component used a hardcoded white/black shade. */
+.theme-exam-sheet [class*="bg-white"],
+.theme-minimalist [class*="bg-white"],
+.theme-slate [class*="bg-white"],
+.theme-high-contrast [class*="bg-white"],
+.theme-gameboy-night [class*="bg-white"],
+.theme-terminal-doom [class*="bg-white"],
+.theme-retro-98 [class*="bg-white"] {
+  background-color: hsl(var(--card));
+}
+
+/* Selection */
+::selection {
+  background: hsl(var(--primary) / 0.35);
+  color: hsl(var(--foreground));
+}
