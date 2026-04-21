@@ -1,7 +1,6 @@
-import { useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { THEMES, useTheme, type ThemeId } from "@/components/ThemeProvider";
-import { Check, Sparkles } from "lucide-react";
+import { FileText, Circle, Layers, Square, Gamepad2, Terminal, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ThemePanelProps {
@@ -9,91 +8,79 @@ interface ThemePanelProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const ICONS: Record<ThemeId, typeof FileText> = {
+  "exam-sheet": FileText,
+  "minimalist": Circle,
+  "slate": Layers,
+  "high-contrast": Square,
+  "gameboy-night": Gamepad2,
+  "terminal-doom": Terminal,
+  "retro-98": Monitor,
+};
+
 export function ThemePanel({ open, onOpenChange }: ThemePanelProps) {
   const { theme, setTheme } = useTheme();
-
-  // Close on Escape (Sheet handles this, but keep deterministic on first open)
-  useEffect(() => {
-    if (!open) return;
-  }, [open]);
-
-  const handleSelect = (id: ThemeId) => {
-    setTheme(id);
-  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md overflow-y-auto bg-background border-l border-border"
+        className="w-full sm:max-w-sm overflow-y-auto bg-background border-l border-border p-5"
       >
-        <SheetHeader className="text-left">
-          <SheetTitle className="flex items-center gap-2 text-2xl font-display">
-            <Sparkles className="w-5 h-5 text-primary" />
+        <SheetHeader className="text-left mb-4">
+          <SheetTitle className="text-xs font-bold tracking-[0.2em] uppercase text-muted-foreground">
             Themes
           </SheetTitle>
-          <SheetDescription>
-            Pick a vibe. Your choice is saved automatically.
+          <SheetDescription className="text-sm text-foreground/80">
+            Select your preferred style.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 grid grid-cols-1 gap-3">
+        <div className="flex flex-col gap-3">
           {THEMES.map((t) => {
+            const Icon = ICONS[t.id];
             const selected = theme === t.id;
             return (
               <button
                 key={t.id}
                 type="button"
-                onClick={() => handleSelect(t.id)}
+                onClick={() => setTheme(t.id)}
                 aria-pressed={selected}
                 aria-label={`Apply ${t.name} theme`}
                 className={cn(
-                  "group relative flex items-stretch gap-4 p-4 rounded-2xl border-2 text-left transition-all duration-300",
-                  "hover:scale-[1.02] hover:shadow-lg",
+                  "group relative flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all duration-200",
+                  "hover:scale-[1.02]",
+                  t.cardBg,
+                  t.cardText,
                   selected
-                    ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                    : "border-border bg-card hover:border-primary/40",
+                    ? "border-foreground ring-2 ring-foreground/30 shadow-lg"
+                    : "border-transparent hover:border-foreground/30",
                 )}
               >
-                {/* Preview swatch */}
+                {/* Icon badge */}
                 <div
                   className={cn(
-                    "relative w-20 h-20 rounded-xl border border-border/50 overflow-hidden shrink-0 transition-transform duration-300",
-                    "group-hover:scale-105",
-                    t.preview,
+                    "shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border",
+                    t.isDark ? "border-white/20 bg-white/10" : "border-black/15 bg-black/5",
                   )}
                   aria-hidden="true"
                 >
-                  <span className={cn("absolute bottom-1.5 right-1.5 w-3 h-3 rounded-full ring-2 ring-white/60", t.accent)} />
+                  <Icon className="w-4 h-4" strokeWidth={2} />
                 </div>
 
                 {/* Text */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-display font-bold text-base text-foreground truncate">
-                      {t.name}
-                    </h3>
-                    {selected && (
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground shrink-0">
-                        <Check className="w-3 h-3" strokeWidth={3} />
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1 leading-snug">
+                  <h3 className="font-bold text-sm tracking-wide uppercase truncate">
+                    {t.name}
+                  </h3>
+                  <p className={cn("text-xs mt-0.5 leading-snug opacity-80")}>
                     {t.description}
                   </p>
-                  <span className="inline-block mt-2 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">
-                    {t.isDark ? "Dark" : "Light"}
-                  </span>
                 </div>
               </button>
             );
           })}
         </div>
-
-        <p className="mt-6 text-xs text-muted-foreground text-center">
-          More themes coming soon ✨
-        </p>
       </SheetContent>
     </Sheet>
   );
