@@ -106,15 +106,6 @@ export const THEMES: ThemeMeta[] = [
     cardText: "text-black",
     accent: "bg-[#000080]",
     isDark: false,
-  {
-    id: "retro-98",
-    name: "Retro 98",
-    description: "CRT desktop, teal workspace, dialog-box nostalgia.",
-    swatch: "bg-[#c0c0c0]",
-    cardBg: "bg-[#c0c0c0]",
-    cardText: "text-black",
-    accent: "bg-[#000080]",
-    isDark: false,
   },
   // ───────── MORE THEMES (new) ─────────
   {
