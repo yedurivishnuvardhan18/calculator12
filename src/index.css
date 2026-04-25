@@ -268,3 +268,29 @@ select {
 .voice-success-flash {
   animation: voice-success-flash 0.6s ease-out;
 }
+
+/* ============================================================
+   Themed scrollbar — uses CSS variables so it follows theme
+   ============================================================ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.4) hsl(var(--background));
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+*::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.35);
+  border-radius: 8px;
+  border: 2px solid hsl(var(--background));
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.6);
+}
+*::-webkit-scrollbar-corner {
+  background: hsl(var(--background));
+}
