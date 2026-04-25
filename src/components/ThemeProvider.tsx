@@ -7,7 +7,19 @@ export type ThemeId =
   | "high-contrast"
   | "gameboy-night"
   | "terminal-doom"
-  | "retro-98";
+  | "retro-98"
+  | "arctic-pro"
+  | "midnight-luxe"
+  | "matrix-green"
+  | "github-dark"
+  | "parchment"
+  | "cyber-violet"
+  | "warm-paper"
+  | "ocean-depth";
+
+export interface ThemeGroup {
+  isNew?: boolean;
+}
 
 export interface ThemeMeta {
   id: ThemeId;
