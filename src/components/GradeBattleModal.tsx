@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Swords, Trophy, Share2, RotateCcw, Zap, Shield, Target } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { getThemeChartColors } from "@/lib/theme-colors";
 
 interface GradeBattleModalProps {
   open: boolean;
@@ -124,7 +125,7 @@ export function GradeBattleModal({ open, onOpenChange, courses }: GradeBattleMod
     if (!showResult || hasConfettied.current) return;
     hasConfettied.current = true;
     if (winner === "you") {
-      const colors = ['#FF6B9D', '#FFE66D', '#4ECDC4', '#A855F7'];
+      const colors = getThemeChartColors();
       confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 }, colors });
       setTimeout(() => {
         confetti({ particleCount: 80, angle: 60, spread: 70, origin: { x: 0 }, colors });

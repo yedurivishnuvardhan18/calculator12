@@ -8,6 +8,7 @@ import { VoiceMicButton } from "./VoiceMicButton";
 import { useState, useEffect, useRef, useMemo } from "react";
 import confetti from "canvas-confetti";
 import { generateGradeCard } from "@/lib/gradecard-generator";
+import { getThemeChartColors } from "@/lib/theme-colors";
 
 interface CGPASectionProps {
   currentSGPA: number;
@@ -34,7 +35,7 @@ export function CGPASection({ currentSGPA, currentCredits, courses, onCGPACalcul
   useEffect(() => {
     if (showResult && result && !hasTriggeredConfetti.current) {
       hasTriggeredConfetti.current = true;
-      const colors = ['#FF8C42', '#FFE66D', '#FF6B9D', '#4ECDC4', '#A855F7', '#10B981'];
+      const colors = getThemeChartColors();
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors });
       setTimeout(() => {
         confetti({ particleCount: 60, angle: 60, spread: 60, origin: { x: 0 }, colors });

@@ -234,16 +234,16 @@ export default function GitamResults() {
     <main className="relative z-[1] max-w-[960px] mx-auto px-3 sm:px-6 pt-6 sm:pt-8 pb-24">
       {/* Grid background effect */}
       <div className="fixed inset-0 z-0 pointer-events-none" style={{
-        backgroundImage: "linear-gradient(rgba(110,231,183,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(110,231,183,.04) 1px, transparent 1px)",
+        backgroundImage: "linear-gradient(hsl(var(--primary) / 0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.04) 1px, transparent 1px)",
         backgroundSize: "40px 40px",
       }} />
 
       {/* Header */}
       <header className="flex items-center gap-3 sm:gap-4 pb-6 sm:pb-8 border-b border-border mb-6 sm:mb-8">
-        <div className="w-9 h-9 sm:w-11 sm:h-11 bg-emerald-400 flex-shrink-0" style={{ clipPath: "polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%)" }} />
+        <div className="w-9 h-9 sm:w-11 sm:h-11 bg-primary flex-shrink-0" style={{ clipPath: "polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%)" }} />
         <div>
           <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight">
-            Team<span className="text-emerald-400">Dino</span>
+            Grade<span className="text-primary">Guru</span>
           </h1>
           <p className="font-mono text-[0.7rem] text-muted-foreground tracking-widest uppercase mt-1">
             Results & Attendance · GradeGuru
@@ -257,10 +257,10 @@ export default function GitamResults() {
 
         {/* Tabs */}
         <div className="flex gap-2 mb-5">
-          <button onClick={() => setTab("results")} className={`font-mono text-xs px-4 py-2 rounded-lg border transition-all ${tab === "results" ? "bg-emerald-400 border-emerald-400 text-black font-bold" : "border-border text-muted-foreground hover:border-emerald-400 hover:text-emerald-400"}`}>
+          <button onClick={() => setTab("results")} className={`font-mono text-xs px-4 py-2 rounded-lg border transition-all ${tab === "results" ? "bg-primary border-primary text-primary-foreground font-bold" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}>
             <BookOpen className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" /> Results
           </button>
-          <button onClick={() => setTab("attendance")} className={`font-mono text-xs px-4 py-2 rounded-lg border transition-all ${tab === "attendance" ? "bg-emerald-400 border-emerald-400 text-black font-bold" : "border-border text-muted-foreground hover:border-emerald-400 hover:text-emerald-400"}`}>
+          <button onClick={() => setTab("attendance")} className={`font-mono text-xs px-4 py-2 rounded-lg border transition-all ${tab === "attendance" ? "bg-primary border-primary text-primary-foreground font-bold" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}>
             <ClipboardList className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" /> Attendance
           </button>
         </div>
@@ -272,7 +272,7 @@ export default function GitamResults() {
             value={reg}
             onChange={(e) => setReg(e.target.value.toUpperCase())}
             placeholder="e.g. 2023001075"
-            className="w-full bg-background border border-border rounded-lg text-foreground font-mono text-sm px-4 py-3 outline-none transition-all focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 placeholder:text-muted-foreground"
+            className="w-full bg-background border border-border rounded-lg text-foreground font-mono text-sm px-4 py-3 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground"
             onKeyDown={(e) => e.key === "Enter" && search()}
           />
         </div>
@@ -286,7 +286,7 @@ export default function GitamResults() {
                 <button
                   key={s}
                   onClick={() => setSem(s)}
-                  className={`font-mono text-sm px-3 py-2 rounded-lg border transition-all ${sem === s ? "bg-emerald-400 border-emerald-400 text-black font-bold" : "bg-background border-border text-muted-foreground hover:border-emerald-400 hover:text-emerald-400"}`}
+                  className={`font-mono text-sm px-3 py-2 rounded-lg border transition-all ${sem === s ? "bg-primary border-primary text-primary-foreground font-bold" : "bg-background border-border text-muted-foreground hover:border-primary hover:text-primary"}`}
                 >
                   {s}
                 </button>
@@ -299,7 +299,7 @@ export default function GitamResults() {
         <button
           onClick={search}
           disabled={loading || !reg.trim()}
-          className="w-full flex items-center justify-center gap-2 bg-emerald-400 text-black rounded-lg font-extrabold text-base py-3 mt-4 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-400/25 disabled:opacity-45 disabled:cursor-not-allowed disabled:translate-y-0"
+          className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-lg font-extrabold text-base py-3 mt-4 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/25 disabled:opacity-45 disabled:cursor-not-allowed disabled:translate-y-0"
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
           {loading ? "Searching..." : `Search ${tab === "results" ? "Results" : "Attendance"}`}
@@ -379,7 +379,7 @@ function ResultsView({ data }: { data: any }) {
                 </thead>
                 <tbody>
                   {data.sem_table.map((r: any, i: number) => (
-                    <tr key={i} className="border-b border-border last:border-b-0 hover:bg-white/[0.02] transition-colors">
+                    <tr key={i} className="border-b border-border last:border-b-0 hover:bg-muted/40 transition-colors">
                       <td className="px-4 py-3">
                         <div className="font-semibold text-sm">{r.course_name}</div>
                         <div className="inline-block bg-background border border-border rounded px-1.5 py-0.5 text-[0.68rem] text-muted-foreground font-mono mt-1">{r.course_code}</div>

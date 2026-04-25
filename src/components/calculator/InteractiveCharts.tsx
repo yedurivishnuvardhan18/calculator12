@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { Course, GRADE_MAPPINGS } from "@/types/calculator";
+import { getThemeChartColors } from "@/lib/theme-colors";
 
-const COLORS = ["#6ee7b7", "#818cf8", "#f472b6", "#fbbf24", "#38bdf8", "#a78bfa", "#fb923c", "#ef4444"];
+const COLORS = getThemeChartColors();
 
 interface Props {
   courses: Course[];
