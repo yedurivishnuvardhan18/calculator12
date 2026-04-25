@@ -6,6 +6,7 @@ import { generateGradeCard } from "@/lib/gradecard-generator";
 import { useState, useEffect, useRef } from "react";
 import { GradeBadge } from "./GradeBadge";
 import confetti from "canvas-confetti";
+import { getThemeChartColors } from "@/lib/theme-colors";
 
 interface SGPASectionProps {
   courses: Course[];
@@ -29,7 +30,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
   useEffect(() => {
     if (showResult && result && !hasTriggeredConfetti.current) {
       hasTriggeredConfetti.current = true;
-      const colors = ['#FF6B9D', '#FFE66D', '#4ECDC4', '#A855F7', '#FF8C42', '#10B981'];
+      const colors = getThemeChartColors();
       
       if (result.sgpa >= 9) {
         // 🎉 Extra celebration for high SGPA!
