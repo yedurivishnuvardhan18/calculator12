@@ -67,7 +67,7 @@ export function CommandPalette() {
         <CommandSeparator />
         <CommandGroup heading="Quick Actions">
           <CommandItem onSelect={() => { toggleTheme(); setOpen(false); }}>
-            {theme === "minimalist" || theme === "high-contrast" || theme === "slate" || theme === "gameboy-night" || theme === "terminal-doom"
+            {theme === "minimalist" || theme === "high-contrast" || theme === "slate"
               ? <Sun className="mr-2 h-4 w-4" />
               : <Moon className="mr-2 h-4 w-4" />}
             Toggle Theme
