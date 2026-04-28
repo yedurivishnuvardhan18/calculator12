@@ -74,6 +74,7 @@ export default function GradeCalculator() {
 
   return (
     <div className="min-h-screen bg-background abstract-dots">
+      <h1 className="sr-only">GITAM Grade Calculator - Free CGPA & GPA Tool</h1>
       <div className="container max-w-4xl py-5 sm:py-10 px-4 sm:px-6 space-y-5 sm:space-y-8">
         {/* Header */}
         <motion.div
@@ -84,7 +85,7 @@ export default function GradeCalculator() {
         >
           <div className="inline-flex items-center gap-2 sm:gap-3 bg-pop-pink/15 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
             <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-pop-pink animate-float" />
-            <h1 className="text-xl sm:text-3xl font-black font-display">Grade Calculator</h1>
+            <h2 className="text-xl sm:text-3xl font-black font-display">Grade Calculator</h2>
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-pop-yellow" />
           </div>
           <p className="text-muted-foreground text-xs sm:text-base font-medium max-w-lg mx-auto">
@@ -207,6 +208,35 @@ export default function GradeCalculator() {
         >
           <InteractiveCharts courses={courses} />
         </motion.div>
+
+        {/* SEO Content Section */}
+        <section style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+          <h1>GITAM Grade Calculator</h1>
+          <p>
+            The most accurate and free grade calculator for GITAM students across 
+            Vizag, Hyderabad, and Bengaluru campuses. Built by GITAM students, for 
+            GITAM students.
+          </p>
+
+          <h2>What can you calculate?</h2>
+          <p>
+            Use our CGPA calculator, GPA calculator, and attendance tracker — all 
+            tailored to GITAM's grading system. No login required, completely free.
+          </p>
+
+          <h2>How to calculate CGPA at GITAM?</h2>
+          <p>
+            Enter your subject credits and grades in the calculator above. Our tool 
+            automatically applies GITAM's grading formula and gives you your CGPA instantly.
+          </p>
+
+          <h2>Why TeamDino Calculator?</h2>
+          <p>
+            Unlike generic calculators, TeamDino's grade calculator is built specifically 
+            for GITAM's credit system. It supports all campuses and is updated regularly 
+            based on student feedback.
+          </p>
+        </section>
 
       </div>
     </div>
