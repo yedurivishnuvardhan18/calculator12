@@ -1,7 +1,7 @@
 /* ============================================================
-   ATTENDX-style Theme System
-   7 deeply-styled themes that restyle the entire app via CSS
-   variables on <html class="theme-*">.
+   GradeGuru Theme System — 4 curated themes
+   Each theme sets full HSL token palette on <html class="theme-*">
+   so every shadcn component, badge, chart, and surface follows.
    ============================================================ */
 
 :root {
@@ -14,441 +14,230 @@
   --font-body-override: var(--font-body);
 }
 
-html,
-body,
-button,
-input,
-textarea,
-select {
+html, body, button, input, textarea, select {
   transition: var(--theme-transition);
 }
 
-html {
-  font-family: var(--font-body-override);
-}
+html { font-family: var(--font-body-override); }
 html h1, html h2, html h3, html h4, html h5, html h6 {
   font-family: var(--font-display-override);
 }
 
-/* ============================================================
-   1. EXAM SHEET — marked paper, ruled margins, stamp orange
-   ============================================================ */
-.theme-exam-sheet {
-  --background: 42 70% 92%;
-  --foreground: 30 60% 12%;
-  --card: 40 80% 96%;
-  --card-foreground: 30 60% 12%;
-  --popover: 40 80% 96%;
-  --popover-foreground: 30 60% 12%;
-  --primary: 14 78% 47%;
-  --primary-foreground: 40 80% 96%;
-  --secondary: 40 50% 88%;
-  --secondary-foreground: 30 60% 18%;
-  --muted: 40 50% 90%;
-  --muted-foreground: 30 30% 35%;
-  --accent: 14 78% 47%;
-  --accent-foreground: 40 80% 96%;
-  --destructive: 0 70% 45%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 14 60% 55%;
-  --input: 40 60% 94%;
-  --ring: 14 78% 47%;
-  --radius: 1rem;
-  --font-display-override: 'Space Grotesk', sans-serif;
-  --font-body-override: 'Space Grotesk', sans-serif;
-
-  --surface-bg: hsl(40, 80%, 96%);
-  --surface-border: hsl(14, 78%, 47%);
-  --surface-shadow: 6px 6px 0 0 hsl(14, 78%, 47% / 0.25);
-}
-.theme-exam-sheet body {
-  background-color: hsl(42, 70%, 92%);
-  background-image:
-    linear-gradient(hsla(14, 78%, 47%, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, hsla(14, 78%, 47%, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-attachment: fixed;
-}
-.theme-exam-sheet .pop-shadow,
-.theme-exam-sheet .pop-shadow-lg,
-.theme-exam-sheet .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-.theme-exam-sheet h1, .theme-exam-sheet h2, .theme-exam-sheet h3,
-.theme-exam-sheet h4, .theme-exam-sheet h5, .theme-exam-sheet h6 {
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* ============================================================
-   2. MINIMALIST — quiet, fluid, premium black/white
-   ============================================================ */
-.theme-minimalist {
-  --background: 0 0% 4%;
-  --foreground: 0 0% 96%;
-  --card: 0 0% 7%;
-  --card-foreground: 0 0% 96%;
-  --popover: 0 0% 7%;
-  --popover-foreground: 0 0% 96%;
-  --primary: 0 0% 96%;
-  --primary-foreground: 0 0% 4%;
-  --secondary: 0 0% 12%;
-  --secondary-foreground: 0 0% 90%;
-  --muted: 0 0% 10%;
-  --muted-foreground: 0 0% 55%;
-  --accent: 0 0% 96%;
-  --accent-foreground: 0 0% 4%;
-  --destructive: 0 60% 50%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 16%;
-  --input: 0 0% 10%;
-  --ring: 0 0% 96%;
-  --radius: 1.25rem;
-  --font-display-override: 'Space Grotesk', sans-serif;
-  --font-body-override: 'Space Grotesk', sans-serif;
-
-  --surface-bg: hsl(0, 0%, 7%);
-  --surface-border: hsl(0, 0%, 16%);
-  --surface-shadow: 0 20px 60px -20px hsla(0, 0%, 0%, 0.6);
-}
-.theme-minimalist body {
-  background:
-    radial-gradient(ellipse at 50% 0%, hsla(0, 0%, 20%, 0.4), transparent 70%),
-    hsl(0, 0%, 4%);
-  background-attachment: fixed;
-}
-.theme-minimalist .pop-shadow,
-.theme-minimalist .pop-shadow-lg,
-.theme-minimalist .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ============================================================
-   3. SLATE — calm neutral blue-grey
-   ============================================================ */
-.theme-slate {
-  --background: 215 30% 14%;
-  --foreground: 210 20% 95%;
-  --card: 215 28% 18%;
-  --card-foreground: 210 20% 95%;
-  --popover: 215 28% 18%;
-  --popover-foreground: 210 20% 95%;
-  --primary: 217 90% 60%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 215 25% 22%;
-  --secondary-foreground: 210 15% 90%;
-  --muted: 215 22% 22%;
-  --muted-foreground: 215 15% 65%;
-  --accent: 217 90% 60%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 70% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 215 20% 28%;
-  --input: 215 25% 22%;
-  --ring: 217 90% 60%;
-  --radius: 0.875rem;
-  --font-display-override: 'Space Grotesk', sans-serif;
-  --font-body-override: 'Space Grotesk', sans-serif;
-
-  --surface-bg: hsl(215, 28%, 18%);
-  --surface-border: hsl(215, 20%, 28%);
-  --surface-shadow: 0 8px 24px -8px hsla(215, 50%, 5%, 0.6);
-}
-.theme-slate .pop-shadow,
-.theme-slate .pop-shadow-lg,
-.theme-slate .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ============================================================
-   4. HIGH CONTRAST — pure black, pure white
-   ============================================================ */
-.theme-high-contrast {
-  --background: 0 0% 0%;
-  --foreground: 0 0% 100%;
-  --card: 0 0% 0%;
-  --card-foreground: 0 0% 100%;
-  --popover: 0 0% 0%;
-  --popover-foreground: 0 0% 100%;
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 0%;
-  --secondary: 0 0% 8%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 6%;
-  --muted-foreground: 0 0% 75%;
-  --accent: 0 0% 100%;
-  --accent-foreground: 0 0% 0%;
-  --destructive: 0 100% 55%;
-  --destructive-foreground: 0 0% 0%;
-  --border: 0 0% 100%;
-  --input: 0 0% 0%;
-  --ring: 0 0% 100%;
-  --radius: 0.25rem;
-  --font-display-override: 'Space Grotesk', sans-serif;
-  --font-body-override: 'Space Grotesk', sans-serif;
-
-  --surface-bg: hsl(0, 0%, 0%);
-  --surface-border: hsl(0, 0%, 100%);
-  --surface-shadow: 4px 4px 0 0 hsl(0, 0%, 100%);
-}
-.theme-high-contrast * { border-color: hsl(0, 0%, 100%); }
-.theme-high-contrast .pop-shadow,
-.theme-high-contrast .pop-shadow-lg,
-.theme-high-contrast .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-.theme-high-contrast h1, .theme-high-contrast h2, .theme-high-contrast h3 {
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-/* ============================================================
-   5. GAME BOY NIGHT — LCD green cartridge glow
-   ============================================================ */
-.theme-gameboy-night {
-  --background: 80 35% 8%;
-  --foreground: 70 75% 65%;
-  --card: 85 40% 12%;
-  --card-foreground: 70 75% 70%;
-  --popover: 85 40% 12%;
-  --popover-foreground: 70 75% 70%;
-  --primary: 70 75% 60%;
-  --primary-foreground: 80 50% 8%;
-  --secondary: 85 35% 16%;
-  --secondary-foreground: 70 70% 65%;
-  --muted: 85 30% 14%;
-  --muted-foreground: 70 40% 50%;
-  --accent: 70 75% 60%;
-  --accent-foreground: 80 50% 8%;
-  --destructive: 10 80% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 70 40% 30%;
-  --input: 85 35% 14%;
-  --ring: 70 75% 60%;
-  --radius: 0.75rem;
-  --font-display-override: 'VT323', 'Courier New', monospace;
-  --font-body-override: 'VT323', 'Courier New', monospace;
-
-  --surface-bg: hsl(85, 40%, 12%);
-  --surface-border: hsl(70, 40%, 30%);
-  --surface-shadow:
-    0 0 0 1px hsla(70, 75%, 60%, 0.3),
-    0 0 20px hsla(70, 75%, 60%, 0.15);
-}
-.theme-gameboy-night body {
-  background-color: hsl(80, 35%, 8%);
-  background-image:
-    linear-gradient(hsla(70, 75%, 60%, 0.04) 1px, transparent 1px),
-    radial-gradient(ellipse at 50% 30%, hsla(70, 75%, 50%, 0.18), transparent 60%);
-  background-size: 100% 3px, 100% 100%;
-  background-attachment: fixed;
-}
-.theme-gameboy-night h1, .theme-gameboy-night h2, .theme-gameboy-night h3 {
-  text-shadow: 0 0 8px hsla(70, 75%, 60%, 0.6);
-  letter-spacing: 0.04em;
-}
-.theme-gameboy-night .pop-shadow,
-.theme-gameboy-night .pop-shadow-lg,
-.theme-gameboy-night .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ============================================================
-   6. TERMINAL DOOM — combat HUD, inferno orange/red
-   ============================================================ */
-.theme-terminal-doom {
-  --background: 0 60% 5%;
-  --foreground: 18 95% 65%;
-  --card: 0 50% 9%;
-  --card-foreground: 18 95% 70%;
-  --popover: 0 50% 9%;
-  --popover-foreground: 18 95% 70%;
-  --primary: 18 95% 55%;
-  --primary-foreground: 0 60% 5%;
-  --secondary: 0 45% 14%;
-  --secondary-foreground: 18 80% 65%;
-  --muted: 0 40% 12%;
-  --muted-foreground: 18 50% 55%;
-  --accent: 18 95% 55%;
-  --accent-foreground: 0 60% 5%;
-  --destructive: 0 100% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 18 80% 35%;
-  --input: 0 45% 12%;
-  --ring: 18 95% 55%;
-  --radius: 0.25rem;
-  --font-display-override: 'VT323', 'Courier New', monospace;
-  --font-body-override: 'VT323', 'Courier New', monospace;
-
-  --surface-bg: hsl(0, 50%, 9%);
-  --surface-border: hsl(18, 80%, 35%);
-  --surface-shadow:
-    0 0 0 1px hsla(18, 95%, 55%, 0.4),
-    0 0 24px hsla(18, 95%, 55%, 0.2);
-}
-.theme-terminal-doom body {
-  background-color: hsl(0, 60%, 5%);
-  background-image:
-    linear-gradient(hsla(18, 95%, 55%, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, hsla(0, 100%, 40%, 0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
-  background-attachment: fixed;
-}
-.theme-terminal-doom h1, .theme-terminal-doom h2, .theme-terminal-doom h3 {
-  text-shadow: 0 0 10px hsla(18, 95%, 55%, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.theme-terminal-doom .pop-shadow,
-.theme-terminal-doom .pop-shadow-lg,
-.theme-terminal-doom .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ============================================================
-   7. RETRO 98 — Win98 teal desktop with chunky dialog windows
-   ============================================================ */
-.theme-retro-98 {
-  --background: 180 50% 35%;
-  --foreground: 0 0% 0%;
-  --card: 0 0% 75%;
-  --card-foreground: 0 0% 0%;
-  --popover: 0 0% 75%;
-  --popover-foreground: 0 0% 0%;
-  --primary: 240 100% 25%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 82%;
-  --secondary-foreground: 0 0% 0%;
-  --muted: 0 0% 78%;
-  --muted-foreground: 0 0% 25%;
-  --accent: 240 100% 25%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 80% 45%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 50%;
-  --input: 0 0% 100%;
-  --ring: 240 100% 25%;
-  --radius: 0;
-  --font-display-override: 'Press Start 2P', 'Courier New', monospace;
-  --font-body-override: 'VT323', 'Courier New', monospace;
-
-  --surface-bg: hsl(0, 0%, 75%);
-  --surface-border: hsl(0, 0%, 50%);
-  --surface-shadow:
-    inset -1px -1px 0 0 hsl(0, 0%, 30%),
-    inset 1px 1px 0 0 hsl(0, 0%, 100%),
-    inset -2px -2px 0 0 hsl(0, 0%, 50%),
-    inset 2px 2px 0 0 hsl(0, 0%, 90%);
-}
-.theme-retro-98 body {
-  background-color: hsl(180, 50%, 35%);
-  background-attachment: fixed;
-  font-family: var(--font-body-override);
-}
-.theme-retro-98 h1, .theme-retro-98 h2, .theme-retro-98 h3,
-.theme-retro-98 h4, .theme-retro-98 h5, .theme-retro-98 h6 {
-  font-family: var(--font-display-override);
-  line-height: 1.5;
-  letter-spacing: 0.02em;
-}
-.theme-retro-98 button,
-.theme-retro-98 [class*="rounded"] { border-radius: 0 !important; }
-.theme-retro-98 .pop-shadow,
-.theme-retro-98 .pop-shadow-lg,
-.theme-retro-98 .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ============================================================
-   Reduced motion
-   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   html, body, button, input, textarea, select { transition: none; }
 }
 
 /* ============================================================
-   Per-theme accent (pop-*) overrides — keeps badges, icons,
-   grade chips, and accent buttons looking native to each theme.
+   1. FOREST LIME — deep forest green canvas + lime accent
    ============================================================ */
+.theme-forest-lime {
+  --background: 158 60% 8%;
+  --foreground: 80 70% 92%;
+  --card: 158 50% 12%;
+  --card-foreground: 80 70% 92%;
+  --popover: 158 50% 12%;
+  --popover-foreground: 80 70% 92%;
+  --primary: 80 75% 65%;
+  --primary-foreground: 158 60% 8%;
+  --secondary: 158 40% 16%;
+  --secondary-foreground: 80 60% 88%;
+  --muted: 158 35% 18%;
+  --muted-foreground: 90 25% 72%;
+  --accent: 80 75% 65%;
+  --accent-foreground: 158 60% 8%;
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 158 35% 22%;
+  --input: 158 40% 16%;
+  --ring: 80 75% 65%;
+  --radius: 1rem;
+  --font-display-override: 'Inter', system-ui, sans-serif;
+  --font-body-override: 'Inter', system-ui, sans-serif;
 
-/* Exam Sheet — paper with red/orange marker accents */
-.theme-exam-sheet {
-  --pop-pink: 350 75% 55%;
-  --pop-cyan: 195 65% 45%;
-  --pop-green: 145 55% 38%;
-  --pop-orange: 14 78% 47%;
-  --pop-yellow: 45 90% 55%;
-  --pop-purple: 280 50% 45%;
-}
+  --surface-bg: hsl(158 50% 12%);
+  --surface-border: hsl(158 35% 22%);
+  --surface-shadow: 0 8px 32px -8px hsl(158 80% 4% / 0.6);
 
-/* Minimalist — desaturated mono accents */
-.theme-minimalist {
-  --pop-pink: 0 0% 75%;
-  --pop-cyan: 0 0% 70%;
-  --pop-green: 0 0% 80%;
-  --pop-orange: 0 0% 65%;
-  --pop-yellow: 0 0% 90%;
-  --pop-purple: 0 0% 60%;
-}
+  --pop-pink: 340 75% 70%;
+  --pop-cyan: 180 70% 60%;
+  --pop-green: 80 75% 60%;
+  --pop-orange: 25 90% 65%;
+  --pop-yellow: 50 95% 65%;
+  --pop-purple: 270 70% 70%;
 
-/* Slate — blue-tinted neutrals */
-.theme-slate {
-  --pop-pink: 340 70% 65%;
-  --pop-cyan: 190 70% 55%;
-  --pop-green: 160 60% 50%;
-  --pop-orange: 25 90% 60%;
-  --pop-yellow: 45 90% 60%;
-  --pop-purple: 260 70% 65%;
+  --success: 80 75% 60%;
+  --success-foreground: 158 60% 8%;
+  --warning: 38 95% 60%;
+  --warning-foreground: 158 60% 8%;
 }
-
-/* High Contrast — pure mono */
-.theme-high-contrast {
-  --pop-pink: 0 0% 100%;
-  --pop-cyan: 0 0% 100%;
-  --pop-green: 0 0% 100%;
-  --pop-orange: 0 0% 100%;
-  --pop-yellow: 0 0% 100%;
-  --pop-purple: 0 0% 100%;
-}
-.theme-high-contrast .pop-shadow,
-.theme-high-contrast .pop-shadow-lg,
-.theme-high-contrast .pop-shadow-xl,
-.theme-high-contrast [class*="bg-pop-"] {
-  color: hsl(0 0% 0%) !important;
-}
-
-/* Game Boy Night — everything tinted LCD green */
-.theme-gameboy-night {
-  --pop-pink: 70 60% 55%;
-  --pop-cyan: 75 70% 55%;
-  --pop-green: 70 75% 55%;
-  --pop-orange: 60 75% 55%;
-  --pop-yellow: 65 90% 60%;
-  --pop-purple: 80 60% 50%;
-}
-
-/* Terminal Doom — fire palette */
-.theme-terminal-doom {
-  --pop-pink: 0 90% 55%;
-  --pop-cyan: 30 90% 55%;
-  --pop-green: 18 95% 55%;
-  --pop-orange: 18 95% 55%;
-  --pop-yellow: 45 95% 55%;
-  --pop-purple: 0 80% 45%;
-}
-
-/* Retro 98 — bright Win98 16-color palette */
-.theme-retro-98 {
-  --pop-pink: 320 80% 50%;
-  --pop-cyan: 190 90% 45%;
-  --pop-green: 130 80% 35%;
-  --pop-orange: 25 95% 50%;
-  --pop-yellow: 50 100% 50%;
-  --pop-purple: 270 75% 50%;
-}
+.theme-forest-lime .pop-shadow,
+.theme-forest-lime .pop-shadow-lg,
+.theme-forest-lime .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
 /* ============================================================
-   Global theme-aware polish
-   - Card surfaces inherit theme card token
-   - Inputs become themed
-   - Buttons keep contrast
+   2. SUNNY BROWN — bright yellow canvas + dark brown text
    ============================================================ */
+.theme-sunny-brown {
+  --background: 48 95% 70%;
+  --foreground: 18 70% 12%;
+  --card: 48 100% 88%;
+  --card-foreground: 18 70% 12%;
+  --popover: 48 100% 88%;
+  --popover-foreground: 18 70% 12%;
+  --primary: 18 70% 18%;
+  --primary-foreground: 48 100% 92%;
+  --secondary: 48 80% 80%;
+  --secondary-foreground: 18 70% 15%;
+  --muted: 48 70% 82%;
+  --muted-foreground: 18 40% 28%;
+  --accent: 18 70% 18%;
+  --accent-foreground: 48 100% 92%;
+  --destructive: 0 75% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 18 40% 35%;
+  --input: 48 100% 92%;
+  --ring: 18 70% 18%;
+  --radius: 1.25rem;
+  --font-display-override: 'Inter', system-ui, sans-serif;
+  --font-body-override: 'Inter', system-ui, sans-serif;
 
-/* Make all card backgrounds fall back to themed surface even if
-   a component used a hardcoded white/black shade. */
-.theme-exam-sheet [class*="bg-white"],
-.theme-minimalist [class*="bg-white"],
-.theme-slate [class*="bg-white"],
-.theme-high-contrast [class*="bg-white"],
-.theme-gameboy-night [class*="bg-white"],
-.theme-terminal-doom [class*="bg-white"],
-.theme-retro-98 [class*="bg-white"] {
+  --surface-bg: hsl(48 100% 88%);
+  --surface-border: hsl(18 40% 35%);
+  --surface-shadow: 0 6px 20px -6px hsl(18 70% 12% / 0.25);
+
+  --pop-pink: 340 75% 45%;
+  --pop-cyan: 195 75% 38%;
+  --pop-green: 145 65% 32%;
+  --pop-orange: 18 90% 45%;
+  --pop-yellow: 45 95% 50%;
+  --pop-purple: 270 60% 45%;
+
+  --success: 145 65% 32%;
+  --success-foreground: 0 0% 100%;
+  --warning: 28 90% 45%;
+  --warning-foreground: 0 0% 100%;
+}
+.theme-sunny-brown .pop-shadow,
+.theme-sunny-brown .pop-shadow-lg,
+.theme-sunny-brown .pop-shadow-xl { box-shadow: var(--surface-shadow); }
+
+/* ============================================================
+   3. COSMIC VIOLET — deep navy bg + electric violet glow
+   ============================================================ */
+.theme-cosmic-violet {
+  --background: 250 45% 8%;
+  --foreground: 260 35% 95%;
+  --card: 250 40% 13%;
+  --card-foreground: 260 35% 95%;
+  --popover: 250 40% 13%;
+  --popover-foreground: 260 35% 95%;
+  --primary: 265 90% 70%;
+  --primary-foreground: 250 45% 8%;
+  --secondary: 250 35% 18%;
+  --secondary-foreground: 260 30% 92%;
+  --muted: 250 30% 17%;
+  --muted-foreground: 260 25% 72%;
+  --accent: 280 95% 75%;
+  --accent-foreground: 250 45% 8%;
+  --destructive: 350 80% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 260 40% 25%;
+  --input: 250 35% 16%;
+  --ring: 265 90% 70%;
+  --radius: 0.875rem;
+  --font-display-override: 'Inter', system-ui, sans-serif;
+  --font-body-override: 'Inter', system-ui, sans-serif;
+
+  --surface-bg: hsl(250 40% 13%);
+  --surface-border: hsl(260 40% 25%);
+  --surface-shadow: 0 0 0 1px hsl(265 90% 70% / 0.15), 0 12px 40px -10px hsl(265 90% 50% / 0.35);
+
+  --pop-pink: 320 90% 70%;
+  --pop-cyan: 195 95% 65%;
+  --pop-green: 160 75% 55%;
+  --pop-orange: 25 95% 65%;
+  --pop-yellow: 50 95% 65%;
+  --pop-purple: 275 95% 75%;
+
+  --success: 160 75% 55%;
+  --success-foreground: 250 45% 8%;
+  --warning: 38 95% 60%;
+  --warning-foreground: 250 45% 8%;
+}
+.theme-cosmic-violet body {
+  background:
+    radial-gradient(ellipse at 20% 0%, hsl(265 90% 30% / 0.35), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, hsl(280 80% 35% / 0.25), transparent 55%),
+    hsl(250 45% 8%);
+  background-attachment: fixed;
+}
+.theme-cosmic-violet h1, .theme-cosmic-violet h2 {
+  text-shadow: 0 0 24px hsl(265 90% 70% / 0.25);
+}
+.theme-cosmic-violet .pop-shadow,
+.theme-cosmic-violet .pop-shadow-lg,
+.theme-cosmic-violet .pop-shadow-xl { box-shadow: var(--surface-shadow); }
+
+/* ============================================================
+   4. LUXURY GOLD — warm cream bg + amber gold accents
+   ============================================================ */
+.theme-luxury-gold {
+  --background: 36 45% 94%;
+  --foreground: 25 55% 14%;
+  --card: 36 60% 98%;
+  --card-foreground: 25 55% 14%;
+  --popover: 36 60% 98%;
+  --popover-foreground: 25 55% 14%;
+  --primary: 35 85% 48%;
+  --primary-foreground: 36 60% 98%;
+  --secondary: 36 35% 88%;
+  --secondary-foreground: 25 55% 18%;
+  --muted: 36 30% 90%;
+  --muted-foreground: 28 25% 38%;
+  --accent: 35 85% 48%;
+  --accent-foreground: 36 60% 98%;
+  --destructive: 0 70% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 35 50% 70%;
+  --input: 36 55% 96%;
+  --ring: 35 85% 48%;
+  --radius: 0.5rem;
+  --font-display-override: 'Cormorant Garamond', Georgia, serif;
+  --font-body-override: 'Inter', system-ui, sans-serif;
+
+  --surface-bg: hsl(36 60% 98%);
+  --surface-border: hsl(35 50% 70%);
+  --surface-shadow: 0 4px 16px -4px hsl(25 55% 14% / 0.15);
+
+  --pop-pink: 340 70% 50%;
+  --pop-cyan: 195 65% 42%;
+  --pop-green: 145 55% 35%;
+  --pop-orange: 25 90% 50%;
+  --pop-yellow: 38 90% 50%;
+  --pop-purple: 280 50% 45%;
+
+  --success: 145 55% 35%;
+  --success-foreground: 0 0% 100%;
+  --warning: 35 90% 48%;
+  --warning-foreground: 0 0% 100%;
+}
+.theme-luxury-gold h1, .theme-luxury-gold h2, .theme-luxury-gold h3 {
+  font-family: var(--font-display-override);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+.theme-luxury-gold .pop-shadow,
+.theme-luxury-gold .pop-shadow-lg,
+.theme-luxury-gold .pop-shadow-xl { box-shadow: var(--surface-shadow); }
+
+/* ============================================================
+   Hardcoded white surfaces should follow theme card token,
+   so older components keep contrast against themed bg.
+   ============================================================ */
+.theme-forest-lime [class*="bg-white"],
+.theme-sunny-brown [class*="bg-white"],
+.theme-cosmic-violet [class*="bg-white"],
+.theme-luxury-gold [class*="bg-white"] {
   background-color: hsl(var(--card));
 }
 
@@ -456,340 +245,4 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
 ::selection {
   background: hsl(var(--primary) / 0.35);
   color: hsl(var(--foreground));
-}
-
-/* ============================================================
-   8 NEW THEMES — premium curated palette
-   ============================================================ */
-
-/* ---------- 8. ARCTIC PRO — Apple-inspired premium light ---------- */
-.theme-arctic-pro {
-  --background: 240 6% 96%;
-  --foreground: 240 6% 10%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 6% 10%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 6% 10%;
-  --primary: 211 100% 45%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 5% 92%;
-  --secondary-foreground: 240 6% 15%;
-  --muted: 240 5% 94%;
-  --muted-foreground: 240 4% 45%;
-  --accent: 211 100% 45%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 72% 51%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 240 6% 84%;
-  --input: 240 6% 90%;
-  --ring: 211 100% 45%;
-  --radius: 0.75rem;
-  --font-display-override: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  --font-body-override: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  --surface-bg: hsl(0 0% 100%);
-  --surface-border: hsl(240 6% 84%);
-  --surface-shadow: 0 1px 3px 0 hsl(240 6% 10% / 0.06), 0 4px 12px -2px hsl(240 6% 10% / 0.04);
-  --pop-pink: 340 75% 55%;
-  --pop-cyan: 195 85% 45%;
-  --pop-green: 145 65% 42%;
-  --pop-orange: 25 95% 55%;
-  --pop-yellow: 45 95% 55%;
-  --pop-purple: 270 70% 55%;
-}
-.theme-arctic-pro .pop-shadow,
-.theme-arctic-pro .pop-shadow-lg,
-.theme-arctic-pro .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- 9. MIDNIGHT LUXE — luxury dark with gold ---------- */
-.theme-midnight-luxe {
-  --background: 240 20% 5%;
-  --foreground: 36 50% 81%;
-  --card: 245 18% 9%;
-  --card-foreground: 36 50% 81%;
-  --popover: 245 18% 9%;
-  --popover-foreground: 36 50% 81%;
-  --primary: 38 45% 61%;
-  --primary-foreground: 240 20% 5%;
-  --secondary: 250 15% 14%;
-  --secondary-foreground: 36 40% 75%;
-  --muted: 250 12% 13%;
-  --muted-foreground: 285 12% 60%;
-  --accent: 38 45% 61%;
-  --accent-foreground: 240 20% 5%;
-  --destructive: 0 65% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 270 22% 17%;
-  --input: 250 15% 14%;
-  --ring: 38 45% 61%;
-  --radius: 1rem;
-  --font-display-override: 'Cormorant Garamond', Georgia, serif;
-  --font-body-override: 'Cormorant Garamond', Georgia, serif;
-  --surface-bg: hsl(245 18% 9%);
-  --surface-border: hsl(270 22% 17%);
-  --surface-shadow: 0 12px 40px -12px hsl(0 0% 0% / 0.7);
-  --pop-pink: 340 60% 65%;
-  --pop-cyan: 38 45% 61%;
-  --pop-green: 145 35% 55%;
-  --pop-orange: 28 60% 60%;
-  --pop-yellow: 45 65% 65%;
-  --pop-purple: 285 40% 65%;
-}
-.theme-midnight-luxe h1, .theme-midnight-luxe h2, .theme-midnight-luxe h3 {
-  letter-spacing: 0.01em;
-  font-weight: 600;
-}
-.theme-midnight-luxe .pop-shadow,
-.theme-midnight-luxe .pop-shadow-lg,
-.theme-midnight-luxe .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- 10. MATRIX GREEN — hacker terminal ---------- */
-.theme-matrix-green {
-  --background: 150 100% 5%;
-  --foreground: 150 100% 50%;
-  --card: 150 100% 8%;
-  --card-foreground: 150 100% 55%;
-  --popover: 150 100% 8%;
-  --popover-foreground: 150 100% 55%;
-  --primary: 150 100% 50%;
-  --primary-foreground: 150 100% 5%;
-  --secondary: 150 80% 12%;
-  --secondary-foreground: 150 100% 55%;
-  --muted: 150 60% 10%;
-  --muted-foreground: 150 80% 42%;
-  --accent: 150 100% 50%;
-  --accent-foreground: 150 100% 5%;
-  --destructive: 0 100% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 150 100% 18%;
-  --input: 150 80% 10%;
-  --ring: 150 100% 50%;
-  --radius: 0.25rem;
-  --font-display-override: 'JetBrains Mono', 'Courier New', monospace;
-  --font-body-override: 'JetBrains Mono', 'Courier New', monospace;
-  --surface-bg: hsl(150 100% 8%);
-  --surface-border: hsl(150 100% 18%);
-  --surface-shadow: 0 0 0 1px hsl(150 100% 50% / 0.3), 0 0 24px hsl(150 100% 50% / 0.18);
-  --pop-pink: 150 100% 55%;
-  --pop-cyan: 150 100% 60%;
-  --pop-green: 150 100% 50%;
-  --pop-orange: 150 100% 55%;
-  --pop-yellow: 150 100% 65%;
-  --pop-purple: 150 80% 45%;
-}
-.theme-matrix-green body {
-  background-image: linear-gradient(hsl(150 100% 50% / 0.04) 1px, transparent 1px);
-  background-size: 100% 3px;
-  background-attachment: fixed;
-}
-.theme-matrix-green h1, .theme-matrix-green h2, .theme-matrix-green h3 {
-  text-shadow: 0 0 8px hsl(150 100% 50% / 0.6);
-}
-.theme-matrix-green .pop-shadow,
-.theme-matrix-green .pop-shadow-lg,
-.theme-matrix-green .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- 11. GITHUB DARK — developer focused ---------- */
-.theme-github-dark {
-  --background: 215 28% 7%;
-  --foreground: 213 29% 93%;
-  --card: 215 21% 11%;
-  --card-foreground: 213 29% 93%;
-  --popover: 215 21% 11%;
-  --popover-foreground: 213 29% 93%;
-  --primary: 137 55% 36%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 215 19% 16%;
-  --secondary-foreground: 213 25% 88%;
-  --muted: 215 19% 14%;
-  --muted-foreground: 215 14% 57%;
-  --accent: 212 100% 67%;
-  --accent-foreground: 215 28% 7%;
-  --destructive: 0 65% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 215 14% 20%;
-  --input: 215 19% 14%;
-  --ring: 212 100% 67%;
-  --radius: 0.375rem;
-  --font-display-override: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  --font-body-override: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  --surface-bg: hsl(215 21% 11%);
-  --surface-border: hsl(215 14% 20%);
-  --surface-shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.4);
-  --pop-pink: 340 80% 65%;
-  --pop-cyan: 212 100% 67%;
-  --pop-green: 137 55% 50%;
-  --pop-orange: 25 90% 60%;
-  --pop-yellow: 45 95% 60%;
-  --pop-purple: 265 80% 70%;
-}
-.theme-github-dark .pop-shadow,
-.theme-github-dark .pop-shadow-lg,
-.theme-github-dark .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- 12. PARCHMENT — old library academic ---------- */
-.theme-parchment {
-  --background: 36 75% 95%;
-  --foreground: 25 40% 17%;
-  --card: 38 75% 92%;
-  --card-foreground: 25 40% 17%;
-  --popover: 38 75% 92%;
-  --popover-foreground: 25 40% 17%;
-  --primary: 25 76% 31%;
-  --primary-foreground: 38 75% 96%;
-  --secondary: 36 60% 88%;
-  --secondary-foreground: 25 50% 22%;
-  --muted: 36 50% 90%;
-  --muted-foreground: 36 35% 32%;
-  --accent: 25 76% 31%;
-  --accent-foreground: 38 75% 96%;
-  --destructive: 0 65% 45%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 33 55% 65%;
-  --input: 38 70% 94%;
-  --ring: 25 76% 31%;
-  --radius: 0.25rem;
-  --font-display-override: 'Crimson Text', Georgia, serif;
-  --font-body-override: 'Crimson Text', Georgia, serif;
-  --surface-bg: hsl(38 75% 92%);
-  --surface-border: hsl(33 55% 65%);
-  --surface-shadow: 0 2px 8px -2px hsl(25 50% 20% / 0.18);
-  --pop-pink: 340 55% 45%;
-  --pop-cyan: 195 50% 35%;
-  --pop-green: 130 40% 32%;
-  --pop-orange: 25 76% 40%;
-  --pop-yellow: 38 75% 45%;
-  --pop-purple: 280 35% 40%;
-}
-.theme-parchment .pop-shadow,
-.theme-parchment .pop-shadow-lg,
-.theme-parchment .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- 13. CYBER VIOLET — futuristic neon ---------- */
-.theme-cyber-violet {
-  --background: 240 30% 14%;
-  --foreground: 270 50% 90%;
-  --card: 220 45% 17%;
-  --card-foreground: 270 50% 90%;
-  --popover: 220 45% 17%;
-  --popover-foreground: 270 50% 90%;
-  --primary: 271 76% 53%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 30% 22%;
-  --secondary-foreground: 270 45% 88%;
-  --muted: 240 25% 20%;
-  --muted-foreground: 260 35% 70%;
-  --accent: 270 95% 75%;
-  --accent-foreground: 240 30% 14%;
-  --destructive: 0 80% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 268 55% 28%;
-  --input: 240 30% 20%;
-  --ring: 270 95% 75%;
-  --radius: 0.5rem;
-  --font-display-override: 'Rajdhani', sans-serif;
-  --font-body-override: 'Rajdhani', sans-serif;
-  --surface-bg: hsl(220 45% 17%);
-  --surface-border: hsl(268 55% 28%);
-  --surface-shadow: 0 0 0 1px hsl(270 95% 75% / 0.2), 0 0 20px hsl(271 76% 53% / 0.25);
-  --pop-pink: 320 95% 70%;
-  --pop-cyan: 190 95% 65%;
-  --pop-green: 160 80% 55%;
-  --pop-orange: 30 95% 65%;
-  --pop-yellow: 50 95% 65%;
-  --pop-purple: 270 95% 75%;
-}
-.theme-cyber-violet h1, .theme-cyber-violet h2, .theme-cyber-violet h3 {
-  text-shadow: 0 0 10px hsl(270 95% 75% / 0.5);
-  letter-spacing: 0.02em;
-}
-.theme-cyber-violet .pop-shadow,
-.theme-cyber-violet .pop-shadow-lg,
-.theme-cyber-violet .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- 14. WARM PAPER — editorial magazine ---------- */
-.theme-warm-paper {
-  --background: 28 35% 95%;
-  --foreground: 18 50% 12%;
-  --card: 28 60% 98%;
-  --card-foreground: 18 50% 12%;
-  --popover: 28 60% 98%;
-  --popover-foreground: 18 50% 12%;
-  --primary: 14 88% 41%;
-  --primary-foreground: 28 60% 98%;
-  --secondary: 28 30% 90%;
-  --secondary-foreground: 18 45% 18%;
-  --muted: 28 25% 92%;
-  --muted-foreground: 24 15% 42%;
-  --accent: 14 88% 41%;
-  --accent-foreground: 28 60% 98%;
-  --destructive: 0 70% 45%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 30 50% 75%;
-  --input: 28 50% 96%;
-  --ring: 14 88% 41%;
-  --radius: 0.5rem;
-  --font-display-override: 'Lora', Palatino, serif;
-  --font-body-override: 'Lora', Palatino, serif;
-  --surface-bg: hsl(28 60% 98%);
-  --surface-border: hsl(30 50% 75%);
-  --surface-shadow: 0 2px 10px -2px hsl(18 50% 12% / 0.1);
-  --pop-pink: 340 70% 50%;
-  --pop-cyan: 195 60% 42%;
-  --pop-green: 145 50% 38%;
-  --pop-orange: 14 88% 45%;
-  --pop-yellow: 38 80% 50%;
-  --pop-purple: 280 45% 45%;
-}
-.theme-warm-paper .pop-shadow,
-.theme-warm-paper .pop-shadow-lg,
-.theme-warm-paper .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- 15. OCEAN DEPTH — deep tech blue SaaS ---------- */
-.theme-ocean-depth {
-  --background: 222 47% 11%;
-  --foreground: 210 40% 96%;
-  --card: 217 33% 17%;
-  --card-foreground: 210 40% 96%;
-  --popover: 217 33% 17%;
-  --popover-foreground: 210 40% 96%;
-  --primary: 199 89% 41%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 215 28% 22%;
-  --secondary-foreground: 210 35% 90%;
-  --muted: 215 25% 20%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 199 92% 60%;
-  --accent-foreground: 222 47% 11%;
-  --destructive: 0 65% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 215 19% 27%;
-  --input: 215 28% 20%;
-  --ring: 199 92% 60%;
-  --radius: 0.5rem;
-  --font-display-override: 'Inter', -apple-system, sans-serif;
-  --font-body-override: 'Inter', -apple-system, sans-serif;
-  --surface-bg: hsl(217 33% 17%);
-  --surface-border: hsl(215 19% 27%);
-  --surface-shadow: 0 4px 20px -4px hsl(222 47% 4% / 0.5);
-  --pop-pink: 340 80% 65%;
-  --pop-cyan: 199 92% 60%;
-  --pop-green: 160 70% 50%;
-  --pop-orange: 25 90% 60%;
-  --pop-yellow: 45 95% 60%;
-  --pop-purple: 265 75% 65%;
-}
-.theme-ocean-depth .pop-shadow,
-.theme-ocean-depth .pop-shadow-lg,
-.theme-ocean-depth .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ---------- Make all new themes also override hardcoded bg-white ---------- */
-.theme-arctic-pro [class*="bg-white"],
-.theme-midnight-luxe [class*="bg-white"],
-.theme-matrix-green [class*="bg-white"],
-.theme-github-dark [class*="bg-white"],
-.theme-parchment [class*="bg-white"],
-.theme-cyber-violet [class*="bg-white"],
-.theme-warm-paper [class*="bg-white"],
-.theme-ocean-depth [class*="bg-white"] {
-  background-color: hsl(var(--card));
 }
