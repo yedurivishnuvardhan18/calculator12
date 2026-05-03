@@ -231,9 +231,13 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
   letter-spacing: -0.01em;
   font-weight: 600;
 }
-.theme-luxury-gold .pop-shadow,
-.theme-luxury-gold .pop-shadow-lg,
-.theme-luxury-gold .pop-shadow-xl { box-shadow: var(--surface-shadow); }
+.theme-luxury-gold body {
+  background:
+    radial-gradient(ellipse at 100% 0%, hsl(35 85% 75% / 0.5), transparent 55%),
+    radial-gradient(ellipse at 0% 100%, hsl(36 50% 88% / 0.7), transparent 55%),
+    hsl(36 45% 94%);
+  background-attachment: fixed;
+}
 
 /* ============================================================
    Hardcoded white surfaces should follow theme card token,
