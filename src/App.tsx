@@ -8,6 +8,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CommandPalette } from "./components/CommandPalette";
 import { BugReportButton } from "./components/BugReportButton";
+import { AnimatedBackground } from "./components/AnimatedBackground";
 import GradeCalculator from "./pages/GradeCalculator";
 import NotFound from "./pages/NotFound";
 import { ExternalPage } from "./components/ExternalPage";
