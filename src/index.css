@@ -244,6 +244,99 @@
 }
 .animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
 
+/* ============================================================
+   Animated 3D Background — used by <AnimatedBackground />
+   ============================================================ */
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  will-change: transform;
+  mix-blend-mode: screen;
+}
+.dark .bg-blob,
+.theme-cosmic-violet .bg-blob,
+.theme-forest-lime .bg-blob {
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+.theme-sunny-brown .bg-blob,
+.theme-luxury-gold .bg-blob {
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+}
+
+.bg-blob-1 {
+  width: 520px; height: 520px;
+  top: -120px; left: -120px;
+  background: radial-gradient(circle at 30% 30%, hsl(var(--primary) / 0.95), hsl(var(--primary) / 0.1) 70%);
+  animation: blob-float-1 18s ease-in-out infinite;
+}
+.bg-blob-2 {
+  width: 600px; height: 600px;
+  top: 20%; right: -180px;
+  background: radial-gradient(circle at 60% 40%, hsl(var(--accent) / 0.95), hsl(var(--accent) / 0.1) 70%);
+  animation: blob-float-2 22s ease-in-out infinite;
+}
+.bg-blob-3 {
+  width: 480px; height: 480px;
+  bottom: -140px; left: 25%;
+  background: radial-gradient(circle at 50% 50%, hsl(var(--pop-pink) / 0.85), hsl(var(--pop-purple) / 0.1) 70%);
+  animation: blob-float-3 26s ease-in-out infinite;
+}
+.bg-blob-4 {
+  width: 420px; height: 420px;
+  top: 55%; left: -100px;
+  background: radial-gradient(circle at 50% 50%, hsl(var(--pop-cyan) / 0.85), hsl(var(--pop-cyan) / 0.05) 70%);
+  animation: blob-float-4 20s ease-in-out infinite;
+}
+
+@keyframes blob-float-1 {
+  0%, 100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+  33%      { transform: translate3d(120px, 80px, 0) scale(1.15) rotate(40deg); }
+  66%      { transform: translate3d(60px, 180px, 0) scale(0.95) rotate(-25deg); }
+}
+@keyframes blob-float-2 {
+  0%, 100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+  50%      { transform: translate3d(-160px, 120px, 0) scale(1.2) rotate(-35deg); }
+}
+@keyframes blob-float-3 {
+  0%, 100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+  40%      { transform: translate3d(140px, -100px, 0) scale(1.1) rotate(30deg); }
+  80%      { transform: translate3d(-80px, -160px, 0) scale(0.9) rotate(-20deg); }
+}
+@keyframes blob-float-4 {
+  0%, 100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+  50%      { transform: translate3d(180px, -80px, 0) scale(1.25) rotate(45deg); }
+}
+
+.bg-conic-shimmer {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140vmax; height: 140vmax;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    hsl(var(--primary) / 0.10) 25%,
+    transparent 50%,
+    hsl(var(--accent) / 0.10) 75%,
+    transparent 100%
+  );
+  animation: conic-spin 40s linear infinite;
+  opacity: 0.6;
+  filter: blur(40px);
+}
+
+@keyframes conic-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-blob, .bg-conic-shimmer { animation: none !important; }
+}
+
 /* Abstract decorative dots pattern */
 .abstract-dots {
   background-image: radial-gradient(circle, hsl(var(--foreground) / 0.04) 1.5px, transparent 1.5px);
