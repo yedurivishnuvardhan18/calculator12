@@ -182,9 +182,6 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
 .theme-cosmic-violet h1, .theme-cosmic-violet h2 {
   text-shadow: 0 0 24px hsl(265 90% 70% / 0.25);
 }
-.theme-cosmic-violet .pop-shadow,
-.theme-cosmic-violet .pop-shadow-lg,
-.theme-cosmic-violet .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
 /* ============================================================
    4. LUXURY GOLD — warm cream bg + amber gold accents
