@@ -70,13 +70,9 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
   --warning: 38 95% 60%;
   --warning-foreground: 158 60% 8%;
 }
-.theme-forest-lime body {
-  background:
-    radial-gradient(ellipse at 15% 0%, hsl(80 75% 25% / 0.35), transparent 55%),
-    radial-gradient(ellipse at 85% 100%, hsl(158 80% 18% / 0.5), transparent 55%),
-    hsl(158 60% 8%);
-  background-attachment: fixed;
-}
+.theme-forest-lime .pop-shadow,
+.theme-forest-lime .pop-shadow-lg,
+.theme-forest-lime .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
 /* ============================================================
    2. SUNNY BROWN — bright yellow canvas + dark brown text
@@ -121,13 +117,9 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
   --warning: 28 90% 45%;
   --warning-foreground: 0 0% 100%;
 }
-.theme-sunny-brown body {
-  background:
-    radial-gradient(ellipse at 80% 0%, hsl(48 100% 80% / 0.6), transparent 55%),
-    radial-gradient(ellipse at 0% 100%, hsl(38 95% 60% / 0.5), transparent 55%),
-    hsl(48 95% 70%);
-  background-attachment: fixed;
-}
+.theme-sunny-brown .pop-shadow,
+.theme-sunny-brown .pop-shadow-lg,
+.theme-sunny-brown .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
 /* ============================================================
    3. COSMIC VIOLET — deep navy bg + electric violet glow
@@ -182,6 +174,9 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
 .theme-cosmic-violet h1, .theme-cosmic-violet h2 {
   text-shadow: 0 0 24px hsl(265 90% 70% / 0.25);
 }
+.theme-cosmic-violet .pop-shadow,
+.theme-cosmic-violet .pop-shadow-lg,
+.theme-cosmic-violet .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
 /* ============================================================
    4. LUXURY GOLD — warm cream bg + amber gold accents
@@ -231,13 +226,9 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
   letter-spacing: -0.01em;
   font-weight: 600;
 }
-.theme-luxury-gold body {
-  background:
-    radial-gradient(ellipse at 100% 0%, hsl(35 85% 75% / 0.5), transparent 55%),
-    radial-gradient(ellipse at 0% 100%, hsl(36 50% 88% / 0.7), transparent 55%),
-    hsl(36 45% 94%);
-  background-attachment: fixed;
-}
+.theme-luxury-gold .pop-shadow,
+.theme-luxury-gold .pop-shadow-lg,
+.theme-luxury-gold .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
 /* ============================================================
    Hardcoded white surfaces should follow theme card token,
