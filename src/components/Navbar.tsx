@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Calculator, Menu, X, Globe, MessageSquare, Target, ClipboardCheck, Palette } from "lucide-react";
+import { Calculator, Menu, X, Globe, Target, ClipboardCheck, Palette } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -13,7 +13,7 @@ const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
   { to: "/what-if", label: "CGPA Predictor", icon: Target },
   { to: "/attendance", label: "Attendance Calculator", icon: ClipboardCheck },
-  { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
+  // { to: "/external/feedback", label: "Feedback", icon: MessageSquare },
 ];
 
 const externalLinks: { href: string; label: string; icon: typeof Globe }[] = [];
