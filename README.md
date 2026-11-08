@@ -1,73 +1,86 @@
-# Welcome to your Lovable project
+# GITAM Grade Calculator
 
-## Project info
+TeamDino's GITAM Grade Calculator helps students calculate semester grades, SGPA, and CGPA. The production website is [calculator.teamdino.dpdns.org](https://calculator.teamdino.dpdns.org/).
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- Calculate semester grade points and SGPA from course grades and credits.
+- Calculate CGPA using a previous CGPA and earned credits.
+- Explore what-if CGPA scenarios and attendance tools.
+- Browse GITAM learning materials and results tools.
+- Use optional AI-generated grade feedback and Telugu grade roasts when the Supabase AI function is configured.
 
-There are several ways of editing your application.
+## Technology
 
-**Use Lovable**
+- React 18, TypeScript, and Vite
+- React Router, Tailwind CSS, and shadcn/ui
+- Supabase client and Edge Functions
+- Vite PWA plugin
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Requirements
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18 or later
+- npm
+- Supabase project credentials for features that use Supabase
 
-**Use your preferred IDE**
+## Local development
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Install dependencies:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+   ```sh
+   npm ci
+   ```
 
-Follow these steps:
+2. Create a local `.env` file and configure the Supabase client values:
+
+   ```env
+   VITE_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+   ```
+
+3. Start the development server:
+
+   ```sh
+   npm run dev
+   ```
+
+## Available scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Create the production build in `dist/` |
+| `npm run build:dev` | Create a development-mode build |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run the Vitest test suite |
+
+## Supabase and AI feedback
+
+The app's AI feedback and roast features call the `ai-feedback` Supabase Edge Function. Deploy it with the Supabase CLI after linking your project:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+supabase functions deploy ai-feedback
 ```
 
-**Edit a file directly in GitHub**
+Configure these secrets for the Edge Function. The AI service must expose an OpenAI-compatible chat completions endpoint:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+supabase secrets set AI_API_URL=https://YOUR_AI_PROVIDER/v1/chat/completions
+supabase secrets set AI_API_KEY=YOUR_AI_API_KEY
+supabase secrets set AI_MODEL=YOUR_MODEL_NAME
+```
 
-**Use GitHub Codespaces**
+Keep the AI API key in Supabase secrets; do not put it in a `VITE_` variable or commit it to source control. The app can still be built without the AI function, but requests to those optional features require the function and provider configuration.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The `gitam-proxy` Edge Function is used for GITAM results and attendance integrations and has its own Supabase configuration.
 
-## What technologies are used for this project?
+## Deployment
 
-This project is built with:
+Build the static site with `npm run build` and deploy the contents of `dist/` to the configured hosting provider. Configure the host to serve `index.html` as the fallback for client-side routes. Supabase Edge Functions are deployed separately.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## SEO files
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- `public/robots.txt` controls crawler guidance and advertises the sitemap.
+- `public/sitemap.xml` lists the public pages intended for indexing.
+- The production canonical domain is `https://calculator.teamdino.dpdns.org/`.

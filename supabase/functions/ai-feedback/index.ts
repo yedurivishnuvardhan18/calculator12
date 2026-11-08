@@ -38,8 +38,17 @@ serve(async (req) => {
     }
 
     const { studentName, grades, sgpa, cgpa, mode } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const AI_API_URL = Deno.env.get("AI_API_URL");
+    const AI_API_KEY = Deno.env.get("AI_API_KEY");
+    const AI_MODEL = Deno.env.get("AI_MODEL");
+    if (!AI_API_URL || !AI_API_KEY || !AI_MODEL) {
+      throw new Error("AI_API_URL, AI_API_KEY, and AI_MODEL must be configured");
+    }
+
+    const aiEndpoint = new URL(AI_API_URL);
+    if (aiEndpoint.protocol !== "https:") {
+      throw new Error("AI_API_URL must use HTTPS");
+    }
 
     const gradesText = typeof grades === "string"
       ? grades
@@ -85,14 +94,14 @@ ${gradesText || "No grade data available."}
 Write 3-4 sentences of constructive feedback highlighting strengths and areas for improvement. Be specific about subjects. Keep it professional and encouraging.`;
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(aiEndpoint, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${AI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt },
@@ -114,8 +123,8 @@ Write 3-4 sentences of constructive feedback highlighting strengths and areas fo
         });
       }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      throw new Error("AI gateway error");
+      console.error("AI provider error:", response.status, t);
+      throw new Error("AI provider error");
     }
 
     const data = await response.json();
