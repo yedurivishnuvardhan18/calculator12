@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { lazy, Suspense, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Course, createNewCourse, calculateSGPA } from "@/types/calculator";
 import { CourseCard } from "@/components/calculator/CourseCard";
@@ -6,12 +6,19 @@ import { StepIndicator } from "@/components/calculator/StepIndicator";
 import { SGPASection } from "@/components/calculator/SGPASection";
 import { CGPASection } from "@/components/calculator/CGPASection";
 import { GradeChart } from "@/components/calculator/GradeChart";
-import { InteractiveCharts } from "@/components/calculator/InteractiveCharts";
 import { Button } from "@/components/ui/button";
 import { Plus, GraduationCap, Sparkles, RotateCcw } from "lucide-react";
 import { usePersistedGrades } from "@/hooks/use-persisted-grades";
 import { MAX_COURSES } from "@/lib/security";
 import { toast } from "sonner";
+import { Seo } from "@/components/Seo";
+import { Link } from "react-router-dom";
+
+const InteractiveCharts = lazy(() =>
+  import("@/components/calculator/InteractiveCharts").then((module) => ({
+    default: module.InteractiveCharts,
+  }))
+);
 
 export default function GradeCalculator() {
   const { courses, setCourses, showCGPA, setShowCGPA, cgpaData, setCGPAData } = usePersistedGrades();
@@ -74,7 +81,11 @@ export default function GradeCalculator() {
 
   return (
     <div className="min-h-screen bg-background abstract-dots">
-      <h1 className="sr-only">GITAM Grade Calculator - Free CGPA & GPA Tool</h1>
+      <Seo
+        title="GITAM CGPA Calculator | SGPA & Grade Calculator | TeamDino"
+        description="Calculate GITAM CGPA, SGPA, GPA, and semester grades with the free GITAM grade calculator. Ideal for GITAM students checking academic performance, grade points, and CGPA conversion."
+        isHomePage
+      />
       <div className="container max-w-4xl py-5 sm:py-10 px-4 sm:px-6 space-y-5 sm:space-y-8">
         {/* Header */}
         <motion.div
@@ -85,7 +96,7 @@ export default function GradeCalculator() {
         >
           <div className="inline-flex items-center gap-2 sm:gap-3 bg-pop-pink/15 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
             <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-pop-pink animate-float" />
-            <h2 className="text-xl sm:text-3xl font-black font-display">Grade Calculator</h2>
+            <h1 className="text-xl sm:text-3xl font-black font-display">GITAM Grade Calculator</h1>
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-pop-yellow" />
           </div>
           <p className="text-muted-foreground text-xs sm:text-base font-medium max-w-lg mx-auto">
@@ -206,35 +217,45 @@ export default function GradeCalculator() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
-          <InteractiveCharts courses={courses} />
+          <Suspense fallback={<div className="h-[220px] rounded-xl skeleton-shimmer" aria-busy="true" />}>
+            <InteractiveCharts courses={courses} />
+          </Suspense>
         </motion.div>
 
         {/* SEO Content Section */}
         <section style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-          <h1>GITAM Grade Calculator</h1>
+          <h2>GITAM CGPA Calculator & GITAM Grade Calculator</h2>
           <p>
-            The most accurate and free grade calculator for GITAM students across 
-            Vizag, Hyderabad, and Bengaluru campuses. Built by GITAM students, for 
-            GITAM students.
+            Use this free GITAM grade calculator to work out semester results from
+            course grades and credits. It is designed for GITAM students who need a
+            quick GITAM CGPA calculator, SGPA calculator, and GPA calculator for academic tracking.
           </p>
 
-          <h2>What can you calculate?</h2>
+          <h2>What can you calculate with the GITAM SGPA calculator?</h2>
           <p>
-            Use our CGPA calculator, GPA calculator, and attendance tracker — all 
-            tailored to GITAM's grading system. No login required, completely free.
+            Calculate WGP and SGPA for a semester, then continue to CGPA using your
+            previous result and credits. This GITAM CGPA calculator, SGPA calculator,
+            and GPA calculator are built to help you estimate performance without any sign-up.
           </p>
 
-          <h2>How to calculate CGPA at GITAM?</h2>
+          <h2>How to calculate CGPA and semester grade at GITAM?</h2>
           <p>
-            Enter your subject credits and grades in the calculator above. Our tool 
-            automatically applies GITAM's grading formula and gives you your CGPA instantly.
+            Enter your subject credits and grades in the calculator above. Our tool
+            automatically applies the GITAM grading formula and gives you CGPA, SGPA,
+            and grade breakdowns instantly for quick academic planning.
           </p>
 
-          <h2>Why TeamDino Calculator?</h2>
+          <h2>Why students choose TeamDino's GITAM calculator</h2>
           <p>
-            Unlike generic calculators, TeamDino's grade calculator is built specifically 
-            for GITAM's credit system. It supports all campuses and is updated regularly 
-            based on student feedback.
+            Students use the TeamDino grade calculator to track semester scores,
+            convert credits into grade points, and compare academic performance across
+            subjects. It works as a practical GITAM grade calculator for SGPA, CGPA,
+            and student grade evaluation across the semester.
+          </p>
+          <p>
+            <Link to="/about" className="font-semibold text-primary underline underline-offset-4">
+              Learn about TeamDino and its administrator, Yeduri Vishnuvardhan.
+            </Link>
           </p>
         </section>
 

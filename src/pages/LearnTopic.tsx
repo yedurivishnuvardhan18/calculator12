@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play } from "lucide-react";
 import { motion } from "framer-motion";
+import { Seo } from "@/components/Seo";
 
 export default function LearnTopic() {
   const { subjectId, moduleId, topicId } = useParams();
@@ -25,14 +26,22 @@ export default function LearnTopic() {
   }, [topicId]);
 
   if (loading) return (
+    <>
+    <Seo title="GITAM Study Topic | TeamDino" description="Study GITAM course topics and related learning resources in the TeamDino learning hub." />
     <main className="container max-w-4xl py-8 px-4">
       <div className="h-8 w-48 mb-4 rounded skeleton-shimmer" />
       <div className="aspect-video w-full rounded-xl skeleton-shimmer" />
     </main>
+    </>
   );
 
   return (
     <main className="container max-w-4xl py-8 px-4 min-h-[80vh]">
+      <Seo
+        title={`${topic?.title || "GITAM Study Topic"} | TeamDino`}
+        description={topic?.description || `Explore ${topic?.title || "this topic"} and related study videos for GITAM students.`}
+        noIndex={!topic}
+      />
       <Button variant="ghost" size="sm" onClick={() => navigate(`/learn/${subjectId}/${moduleId}`)} className="mb-4">
         <ArrowLeft className="w-4 h-4 mr-1" /> Back to Topics
       </Button>

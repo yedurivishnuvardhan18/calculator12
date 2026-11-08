@@ -103,7 +103,7 @@ export function Navbar() {
             />
           )}
 
-          <img src="/logo.png" alt="GradeGuru logo" className="w-8 h-8 rounded-full" />
+          <img src="/logo.png" alt="GITAM Grade Calculator by TeamDino" className="w-8 h-8 rounded-full" />
 
           {/* Desktop nav */}
           {!isMobile &&

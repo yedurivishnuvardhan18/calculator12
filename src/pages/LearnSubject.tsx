@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Layers, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Seo } from "@/components/Seo";
 
 const moduleColors = [
   "bg-blue-500/10 text-blue-500",
@@ -34,17 +35,29 @@ export default function LearnSubject() {
   }, [subjectId]);
 
   if (loading) return (
+    <>
+    <Seo title="GITAM Subject Study Materials | TeamDino" description="Browse GITAM subject modules and semester study materials in the TeamDino learning hub." />
     <main className="container max-w-4xl py-8 px-4">
       <div className="h-8 w-48 mb-2 rounded skeleton-shimmer" />
       <div className="h-5 w-32 mb-8 rounded skeleton-shimmer" />
       <div className="grid gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-24 rounded-xl skeleton-shimmer" />)}</div>
     </main>
+    </>
   );
 
-  if (!subject) return <main className="container py-12 text-center"><p>Subject not found.</p></main>;
+  if (!subject) return (
+    <>
+      <Seo title="Subject Not Found | TeamDino" description="This GITAM subject page could not be found." noIndex />
+      <main className="container py-12 text-center"><p>Subject not found.</p></main>
+    </>
+  );
 
   return (
     <main className="container max-w-4xl py-8 px-4 min-h-[80vh]">
+      <Seo
+        title={`${subject.name} Study Materials | GITAM | TeamDino`}
+        description={`Explore ${subject.name} modules and semester study materials for GITAM students in the TeamDino learning hub.`}
+      />
       <Button variant="ghost" size="sm" onClick={() => navigate("/learn")} className="mb-4">
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </Button>

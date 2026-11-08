@@ -22,9 +22,9 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
       manifest: {
-        name: "GradeGuru - Work Smart",
-        short_name: "GradeGuru",
-        description: "Grade calculator and habit tracker to help you work smart.",
+        name: "GITAM Grade Calculator | TeamDino",
+        short_name: "GITAM Calculator",
+        description: "Calculate GITAM SGPA, CGPA, and GPA with the TeamDino grade calculator.",
         theme_color: "#6366f1",
         background_color: "#fafafc",
         display: "standalone",

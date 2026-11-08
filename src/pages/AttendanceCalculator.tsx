@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Seo } from "@/components/Seo";
 
 const STORAGE_KEY = "attendance_calculator_state";
 
@@ -304,6 +305,10 @@ export default function AttendanceCalculator() {
 
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4 space-y-6">
+      <Seo
+        title="GITAM Attendance Calculator | TeamDino"
+        description="Plan attendance for your GITAM semester. Calculate your current percentage and estimate how many classes you can miss or need to attend."
+      />
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold font-[var(--font-display)] text-foreground flex items-center justify-center gap-3">

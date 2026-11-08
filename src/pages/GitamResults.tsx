@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Search, Loader2, BookOpen, ClipboardList, RefreshCw } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { AiFeedbackModal } from "@/components/AiFeedbackModal";
+import { Seo } from "@/components/Seo";
 
 const SEMESTERS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
@@ -232,6 +233,10 @@ export default function GitamResults() {
 
   return (
     <main className="relative z-[1] max-w-[960px] mx-auto px-3 sm:px-6 pt-6 sm:pt-8 pb-24">
+      <Seo
+        title="GITAM Results & Attendance Tool | TeamDino"
+        description="Use the GITAM student results and attendance lookup tools on TeamDino. Enter your details in the calculator to check available information."
+      />
       {/* Grid background effect */}
       <div className="fixed inset-0 z-0 pointer-events-none" style={{
         backgroundImage: "linear-gradient(hsl(var(--primary) / 0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.04) 1px, transparent 1px)",

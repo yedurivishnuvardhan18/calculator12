@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Lock } from "lucide-react";
+import { Seo } from "@/components/Seo";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function AdminLogin() {
 
   return (
     <main className="min-h-[80vh] flex items-center justify-center px-4">
+      <Seo title="Admin Login | TeamDino" description="Sign in to the TeamDino administration area." noIndex />
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="mx-auto mb-2 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">

@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { GraduationCap, BookOpen, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Seo } from "@/components/Seo";
 
 export default function Learn() {
   const navigate = useNavigate();
@@ -43,6 +44,10 @@ export default function Learn() {
 
   return (
     <main className="container max-w-4xl py-8 px-4 min-h-[80vh]">
+      <Seo
+        title="GITAM Semester Study Materials | TeamDino Learning Hub"
+        description="Browse GITAM study materials by branch and semester. Explore subject modules, topics, and learning resources in the TeamDino hub."
+      />
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
           <GraduationCap className="w-4 h-4" /> Learning Hub

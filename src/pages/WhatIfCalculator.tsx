@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Target, Save, Share2, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { Seo } from "@/components/Seo";
 
 const STORAGE_KEY = "whatif_calculator_state";
 
@@ -177,6 +178,10 @@ export default function WhatIfCalculator() {
 
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4 space-y-6">
+      <Seo
+        title="GITAM CGPA Predictor | What-If Calculator | TeamDino"
+        description="Explore how future semester grades and credits may affect your CGPA with this free GITAM what-if grade calculator."
+      />
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold font-[var(--font-display)] text-foreground flex items-center justify-center gap-3">

@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, GitBranch, BookOpen, Layers, FileText, Video, LogOut, Menu, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Seo } from "@/components/Seo";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -28,7 +29,12 @@ export default function AdminLayout() {
     });
   }, [navigate]);
 
-  if (checking) return <main className="container py-12"><Skeleton className="h-8 w-48" /></main>;
+  if (checking) return (
+    <>
+      <Seo title="Admin | TeamDino" description="TeamDino administration." noIndex />
+      <main className="container py-12"><Skeleton className="h-8 w-48" /></main>
+    </>
+  );
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -66,6 +72,7 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-[80vh]">
+      <Seo title="Admin | TeamDino" description="TeamDino administration." noIndex />
       {isMobile ? (
         <>
           {sidebarOpen && <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setSidebarOpen(false)} />}

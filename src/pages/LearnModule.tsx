@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Seo } from "@/components/Seo";
 
 export default function LearnModule() {
   const { subjectId, moduleId } = useParams();
@@ -26,14 +27,21 @@ export default function LearnModule() {
   }, [moduleId]);
 
   if (loading) return (
+    <>
+    <Seo title="GITAM Learning Module | TeamDino" description="Explore GITAM study topics and learning materials in this subject module." />
     <main className="container max-w-4xl py-8 px-4">
       <div className="h-8 w-48 mb-6 rounded skeleton-shimmer" />
       <div className="grid gap-3">{[1,2,3].map(i => <div key={i} className="h-20 rounded-xl skeleton-shimmer" />)}</div>
     </main>
+    </>
   );
 
   return (
     <main className="container max-w-4xl py-8 px-4 min-h-[80vh]">
+      <Seo
+        title={`${mod?.title || "GITAM Study Module"} | TeamDino`}
+        description={mod?.description || `Browse topics and study materials in the ${mod?.title || "GITAM"} learning module.`}
+      />
       <Button variant="ghost" size="sm" onClick={() => navigate(`/learn/${subjectId}`)} className="mb-4">
         <ArrowLeft className="w-4 h-4 mr-1" /> Back to Modules
       </Button>
