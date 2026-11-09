@@ -1,7 +1,10 @@
-project_id = "bfeqdjzwnjumkvlgmdue"
+project_id = "hglxfplxwomhbsdfegsu"
 
 [functions.gitam-proxy]
 verify_jwt = false
 
 [functions.ai-feedback]
+verify_jwt = false
+
+[functions.attendance-screenshot]
 verify_jwt = false

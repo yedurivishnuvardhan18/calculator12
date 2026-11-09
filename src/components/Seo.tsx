@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
-const SITE_URL = "https://calculator.teamdino.dpdns.org";
+const SITE_URL = "https://calculator.teamdino.in";
 const LOGO_URL = `${SITE_URL}/logo.png`;
 const DEFAULT_KEYWORDS = [
   "GITAM CGPA calculator",

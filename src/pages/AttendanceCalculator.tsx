@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Seo } from "@/components/Seo";
+import { AttendanceScreenshotImport } from "@/components/AttendanceScreenshotImport";
 
 const STORAGE_KEY = "attendance_calculator_state";
 
@@ -328,6 +329,13 @@ export default function AttendanceCalculator() {
           </AlertDescription>
         </Alert>
       </motion.div>
+
+      <AttendanceScreenshotImport
+        onApply={({ attended: importedAttended, total: importedTotal }) => {
+          handleAttendedChange(importedAttended);
+          handleTotalChange(importedTotal);
+        }}
+      />
 
       {/* Section 1: Current Attendance */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>

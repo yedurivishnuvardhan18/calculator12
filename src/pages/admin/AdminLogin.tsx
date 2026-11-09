@@ -11,20 +11,30 @@ import { Seo } from "@/components/Seo";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
-    } else {
+    try {
+      const trimmedIdentifier = identifier.trim();
+      const email = trimmedIdentifier.includes("@")
+        ? trimmedIdentifier
+        : `${trimmedIdentifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}@habittracker.app`;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        toast({ title: "Login failed", description: error.message, variant: "destructive" });
+        return;
+      }
       navigate("/admin");
+    } catch (error) {
+      console.error("Admin sign-in request failed", error);
+      toast({ title: "Login failed", description: "Unable to sign in. Please try again.", variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -40,12 +50,12 @@ export default function AdminLogin() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <Label htmlFor="login-email">Email</Label>
-              <Input id="login-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+              <Label htmlFor="login-identifier">Student ID or email</Label>
+              <Input id="login-identifier" autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required />
             </div>
             <div>
               <Label htmlFor="login-password">Password</Label>
-              <Input id="login-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+              <Input id="login-password" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}

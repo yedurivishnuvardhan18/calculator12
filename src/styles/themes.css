@@ -188,13 +188,13 @@ html h1, html h2, html h3, html h4, html h5, html h6 {
   --card-foreground: 25 55% 14%;
   --popover: 36 60% 98%;
   --popover-foreground: 25 55% 14%;
-  --primary: 35 85% 48%;
+  --primary: 35 85% 32%;
   --primary-foreground: 36 60% 98%;
   --secondary: 36 35% 88%;
   --secondary-foreground: 25 55% 18%;
   --muted: 36 30% 90%;
   --muted-foreground: 28 25% 38%;
-  --accent: 35 85% 48%;
+  --accent: 35 85% 32%;
   --accent-foreground: 36 60% 98%;
   --destructive: 0 70% 45%;
   --destructive-foreground: 0 0% 100%;

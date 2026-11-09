@@ -1,6 +1,6 @@
 # GITAM Grade Calculator
 
-TeamDino's GITAM Grade Calculator helps students calculate semester grades, SGPA, and CGPA. The production website is [calculator.teamdino.dpdns.org](https://calculator.teamdino.dpdns.org/).
+TeamDino's GITAM Grade Calculator helps students calculate semester grades, SGPA, and CGPA. The production website is [calculator.teamdino.in](https://calculator.teamdino.in/).
 
 ## Features
 
@@ -75,6 +75,17 @@ Keep the AI API key in Supabase secrets; do not put it in a `VITE_` variable or 
 
 The `gitam-proxy` Edge Function is used for GITAM results and attendance integrations and has its own Supabase configuration.
 
+## Attendance screenshot import
+
+The Attendance Calculator can import class counts from a screenshot using the `attendance-screenshot` Supabase Edge Function. Configure a rotated OpenRouter API key as a server-side secret, then deploy the function:
+
+```sh
+supabase secrets set OPENROUTER_API_KEY=YOUR_ROTATED_OPENROUTER_API_KEY
+supabase functions deploy attendance-screenshot
+```
+
+The function defaults to the `google/gemini-2.5-flash` vision model. Set `OPENROUTER_MODEL` as a Supabase secret to use a different OpenRouter vision model. Never put the OpenRouter key in a `VITE_` variable or client-side code. The function accepts image uploads without a user login, limits image size and applies a per-instance request-frequency limit, and sends the image to OpenRouter for analysis. The request limit is best-effort, not a distributed abuse-prevention boundary; set suitable spending limits for the OpenRouter key.
+
 ## Deployment
 
 Build the static site with `npm run build` and deploy the contents of `dist/` to the configured hosting provider. Configure the host to serve `index.html` as the fallback for client-side routes. Supabase Edge Functions are deployed separately.
@@ -83,4 +94,4 @@ Build the static site with `npm run build` and deploy the contents of `dist/` to
 
 - `public/robots.txt` controls crawler guidance and advertises the sitemap.
 - `public/sitemap.xml` lists the public pages intended for indexing.
-- The production canonical domain is `https://calculator.teamdino.dpdns.org/`.
+- The production canonical domain is `https://calculator.teamdino.in/`.

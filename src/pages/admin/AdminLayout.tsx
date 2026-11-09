@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard, GitBranch, BookOpen, Layers, FileText, Video, LogOut, Menu, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Seo } from "@/components/Seo";
+import { toast } from "@/hooks/use-toast";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -23,10 +24,40 @@ export default function AdminLayout() {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) navigate("/admin/login", { replace: true });
-      else setChecking(false);
-    });
+    let active = true;
+
+    const verifyAdminAccess = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!data.session) {
+          navigate("/admin/login", { replace: true });
+          return;
+        }
+
+        const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin", {
+          _user_id: data.session.user.id,
+        });
+        if (adminError) throw adminError;
+        if (!isAdmin) {
+          toast({ title: "Admin access required", description: "This account is not an administrator.", variant: "destructive" });
+          navigate("/admin/login", { replace: true });
+          return;
+        }
+
+        if (active) setChecking(false);
+      } catch (error) {
+        if (!active) return;
+        console.error("Failed to verify admin access", error);
+        toast({ title: "Could not verify admin access", description: "Please sign in again.", variant: "destructive" });
+        navigate("/admin/login", { replace: true });
+      }
+    };
+
+    void verifyAdminAccess();
+    return () => {
+      active = false;
+    };
   }, [navigate]);
 
   if (checking) return (

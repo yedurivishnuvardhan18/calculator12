@@ -2,9 +2,8 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 
-const SITE_URL = "https://calculator.teamdino.dpdns.org";
+const SITE_URL = "https://calculator.teamdino.in";
 const TEAMDINO_URL = "https://www.teamdino.in";
-const LINKEDIN_URL = "https://www.linkedin.com/in/yedurivishnu/";
 const personData = {
   "@context": "https://schema.org",
   "@type": "Person",
@@ -19,7 +18,6 @@ const personData = {
   },
   description: "Administrator of TeamDino and the GITAM Grade Calculator.",
   url: `${SITE_URL}/about`,
-  sameAs: [LINKEDIN_URL],
 };
 
 export default function About() {
@@ -52,19 +50,9 @@ export default function About() {
         </section>
         <section className="space-y-3" aria-labelledby="links-heading">
           <h2 id="links-heading" className="text-2xl font-bold font-display">
-            Find Yeduri Vishnuvardhan and TeamDino
+            Find TeamDino
           </h2>
           <ul className="list-inside list-disc space-y-2">
-            <li>
-              <a
-                href={LINKEDIN_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-primary underline underline-offset-4"
-              >
-                Yeduri Vishnuvardhan on LinkedIn
-              </a>
-            </li>
             <li>
               <a
                 href={TEAMDINO_URL}
