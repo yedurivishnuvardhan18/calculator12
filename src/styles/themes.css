@@ -1,248 +1,472 @@
-/* ============================================================
-   GradeGuru Theme System — 4 curated themes
-   Each theme sets full HSL token palette on <html class="theme-*">
-   so every shadcn component, badge, chart, and surface follows.
-   ============================================================ */
-
 :root {
-  --theme-transition: background-color 0.3s ease, color 0.3s ease,
-    border-color 0.3s ease, box-shadow 0.3s ease;
-  --surface-bg: hsl(var(--card));
-  --surface-border: hsl(var(--border));
-  --surface-shadow: 4px 4px 0 0 hsl(var(--foreground) / 0.12);
-  --font-display-override: var(--font-display);
-  --font-body-override: var(--font-body);
+  --theme-transition: background-color 0.24s ease, color 0.24s ease, border-color 0.24s ease,
+    box-shadow 0.24s ease;
+  --surface-shadow: 0 1px 2px hsl(var(--foreground) / 0.04), 0 10px 28px -18px hsl(var(--foreground) / 0.2);
 }
 
-html, body, button, input, textarea, select {
+html,
+body,
+button,
+input,
+textarea,
+select {
   transition: var(--theme-transition);
 }
 
-html { font-family: var(--font-body-override); }
-html h1, html h2, html h3, html h4, html h5, html h6 {
-  font-family: var(--font-display-override);
+html {
+  min-height: 100%;
+  font-family: Inter, system-ui, sans-serif;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html, body, button, input, textarea, select { transition: none; }
+html h1,
+html h2,
+html h3,
+html h4,
+html h5,
+html h6 {
+  font-family: Inter, system-ui, sans-serif;
+  letter-spacing: -0.025em;
 }
 
-/* ============================================================
-   1. FOREST LIME — deep forest green canvas + lime accent
-   ============================================================ */
-.theme-forest-lime {
-  --background: 158 60% 8%;
-  --foreground: 80 70% 92%;
-  --card: 158 50% 12%;
-  --card-foreground: 80 70% 92%;
-  --popover: 158 50% 12%;
-  --popover-foreground: 80 70% 92%;
-  --primary: 80 75% 65%;
-  --primary-foreground: 158 60% 8%;
-  --secondary: 158 40% 16%;
-  --secondary-foreground: 80 60% 88%;
-  --muted: 158 35% 18%;
-  --muted-foreground: 90 25% 72%;
-  --accent: 80 75% 65%;
-  --accent-foreground: 158 60% 8%;
-  --destructive: 0 70% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 158 35% 22%;
-  --input: 158 40% 16%;
-  --ring: 80 75% 65%;
-  --radius: 1rem;
-  --font-display-override: 'Inter', system-ui, sans-serif;
-  --font-body-override: 'Inter', system-ui, sans-serif;
-
-  --surface-bg: hsl(158 50% 12%);
-  --surface-border: hsl(158 35% 22%);
-  --surface-shadow: 0 8px 32px -8px hsl(158 80% 4% / 0.6);
-
-  --pop-pink: 340 75% 70%;
-  --pop-cyan: 180 70% 60%;
-  --pop-green: 80 75% 60%;
-  --pop-orange: 25 90% 65%;
-  --pop-yellow: 50 95% 65%;
-  --pop-purple: 270 70% 70%;
-
-  --success: 80 75% 60%;
-  --success-foreground: 158 60% 8%;
-  --warning: 38 95% 60%;
-  --warning-foreground: 158 60% 8%;
-}
-.theme-forest-lime .pop-shadow,
-.theme-forest-lime .pop-shadow-lg,
-.theme-forest-lime .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ============================================================
-   2. SUNNY BROWN — bright yellow canvas + dark brown text
-   ============================================================ */
-.theme-sunny-brown {
-  --background: 48 95% 70%;
-  --foreground: 18 70% 12%;
-  --card: 48 100% 88%;
-  --card-foreground: 18 70% 12%;
-  --popover: 48 100% 88%;
-  --popover-foreground: 18 70% 12%;
-  --primary: 18 70% 18%;
-  --primary-foreground: 48 100% 92%;
-  --secondary: 48 80% 80%;
-  --secondary-foreground: 18 70% 15%;
-  --muted: 48 70% 82%;
-  --muted-foreground: 18 40% 28%;
-  --accent: 18 70% 18%;
-  --accent-foreground: 48 100% 92%;
-  --destructive: 0 75% 42%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 18 40% 35%;
-  --input: 48 100% 92%;
-  --ring: 18 70% 18%;
-  --radius: 1.25rem;
-  --font-display-override: 'Inter', system-ui, sans-serif;
-  --font-body-override: 'Inter', system-ui, sans-serif;
-
-  --surface-bg: hsl(48 100% 88%);
-  --surface-border: hsl(18 40% 35%);
-  --surface-shadow: 0 6px 20px -6px hsl(18 70% 12% / 0.25);
-
-  --pop-pink: 340 75% 45%;
-  --pop-cyan: 195 75% 38%;
-  --pop-green: 145 65% 32%;
-  --pop-orange: 18 90% 45%;
-  --pop-yellow: 45 95% 50%;
-  --pop-purple: 270 60% 45%;
-
-  --success: 145 65% 32%;
-  --success-foreground: 0 0% 100%;
-  --warning: 28 90% 45%;
-  --warning-foreground: 0 0% 100%;
-}
-.theme-sunny-brown .pop-shadow,
-.theme-sunny-brown .pop-shadow-lg,
-.theme-sunny-brown .pop-shadow-xl { box-shadow: var(--surface-shadow); }
-
-/* ============================================================
-   3. COSMIC VIOLET — deep navy bg + electric violet glow
-   ============================================================ */
-.theme-cosmic-violet {
-  --background: 250 45% 8%;
-  --foreground: 260 35% 95%;
-  --card: 250 40% 13%;
-  --card-foreground: 260 35% 95%;
-  --popover: 250 40% 13%;
-  --popover-foreground: 260 35% 95%;
-  --primary: 265 90% 70%;
-  --primary-foreground: 250 45% 8%;
-  --secondary: 250 35% 18%;
-  --secondary-foreground: 260 30% 92%;
-  --muted: 250 30% 17%;
-  --muted-foreground: 260 25% 72%;
-  --accent: 280 95% 75%;
-  --accent-foreground: 250 45% 8%;
-  --destructive: 350 80% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 260 40% 25%;
-  --input: 250 35% 16%;
-  --ring: 265 90% 70%;
-  --radius: 0.875rem;
-  --font-display-override: 'Inter', system-ui, sans-serif;
-  --font-body-override: 'Inter', system-ui, sans-serif;
-
-  --surface-bg: hsl(250 40% 13%);
-  --surface-border: hsl(260 40% 25%);
-  --surface-shadow: 0 0 0 1px hsl(265 90% 70% / 0.15), 0 12px 40px -10px hsl(265 90% 50% / 0.35);
-
-  --pop-pink: 320 90% 70%;
-  --pop-cyan: 195 95% 65%;
-  --pop-green: 160 75% 55%;
-  --pop-orange: 25 95% 65%;
-  --pop-yellow: 50 95% 65%;
-  --pop-purple: 275 95% 75%;
-
-  --success: 160 75% 55%;
-  --success-foreground: 250 45% 8%;
-  --warning: 38 95% 60%;
-  --warning-foreground: 250 45% 8%;
-}
-.theme-cosmic-violet body {
-  background:
-    radial-gradient(ellipse at 20% 0%, hsl(265 90% 30% / 0.35), transparent 55%),
-    radial-gradient(ellipse at 80% 100%, hsl(280 80% 35% / 0.25), transparent 55%),
-    hsl(250 45% 8%);
+body {
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+  background-image:
+    radial-gradient(ellipse at 12% 0%, hsl(var(--primary) / 0.075), transparent 34rem),
+    radial-gradient(ellipse at 92% 24%, hsl(var(--accent) / 0.045), transparent 30rem);
   background-attachment: fixed;
 }
-.theme-cosmic-violet h1, .theme-cosmic-violet h2 {
-  text-shadow: 0 0 24px hsl(265 90% 70% / 0.25);
+
+#root {
+  min-height: 100vh;
 }
-.theme-cosmic-violet .pop-shadow,
-.theme-cosmic-violet .pop-shadow-lg,
-.theme-cosmic-violet .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
-/* ============================================================
-   4. LUXURY GOLD — warm cream bg + amber gold accents
-   ============================================================ */
-.theme-luxury-gold {
-  --background: 36 45% 94%;
-  --foreground: 25 55% 14%;
-  --card: 36 60% 98%;
-  --card-foreground: 25 55% 14%;
-  --popover: 36 60% 98%;
-  --popover-foreground: 25 55% 14%;
-  --primary: 35 85% 32%;
-  --primary-foreground: 36 60% 98%;
-  --secondary: 36 35% 88%;
-  --secondary-foreground: 25 55% 18%;
-  --muted: 36 30% 90%;
-  --muted-foreground: 28 25% 38%;
-  --accent: 35 85% 32%;
-  --accent-foreground: 36 60% 98%;
-  --destructive: 0 70% 45%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 35 50% 70%;
-  --input: 36 55% 96%;
-  --ring: 35 85% 48%;
-  --radius: 0.5rem;
-  --font-display-override: 'Cormorant Garamond', Georgia, serif;
-  --font-body-override: 'Inter', system-ui, sans-serif;
-
-  --surface-bg: hsl(36 60% 98%);
-  --surface-border: hsl(35 50% 70%);
-  --surface-shadow: 0 4px 16px -4px hsl(25 55% 14% / 0.15);
-
-  --pop-pink: 340 70% 50%;
-  --pop-cyan: 195 65% 42%;
-  --pop-green: 145 55% 35%;
-  --pop-orange: 25 90% 50%;
-  --pop-yellow: 38 90% 50%;
-  --pop-purple: 280 50% 45%;
-
-  --success: 145 55% 35%;
-  --success-foreground: 0 0% 100%;
-  --warning: 35 90% 48%;
-  --warning-foreground: 0 0% 100%;
+:where([class~="bg-card"]) {
+  border-radius: var(--radius);
+  box-shadow: var(--surface-shadow);
 }
-.theme-luxury-gold h1, .theme-luxury-gold h2, .theme-luxury-gold h3 {
-  font-family: var(--font-display-override);
-  letter-spacing: -0.01em;
-  font-weight: 600;
-}
-.theme-luxury-gold .pop-shadow,
-.theme-luxury-gold .pop-shadow-lg,
-.theme-luxury-gold .pop-shadow-xl { box-shadow: var(--surface-shadow); }
 
-/* ============================================================
-   Hardcoded white surfaces should follow theme card token,
-   so older components keep contrast against themed bg.
-   ============================================================ */
-.theme-forest-lime [class*="bg-white"],
-.theme-sunny-brown [class*="bg-white"],
-.theme-cosmic-violet [class*="bg-white"],
-.theme-luxury-gold [class*="bg-white"] {
+:where(
+  .bg-background,
+  .bg-card,
+  .bg-secondary,
+  .bg-muted,
+  [class*="text-foreground"],
+  [class*="text-card-foreground"],
+  [class*="text-muted-foreground"]
+) {
+  transition: var(--theme-transition);
+}
+
+:where(button, input, textarea, select, a) {
+  accent-color: hsl(var(--primary));
+}
+
+:where(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+:where(button, input, textarea, select):disabled {
+  cursor: not-allowed;
+}
+
+html [class*="bg-white"] {
   background-color: hsl(var(--card));
 }
 
-/* Selection */
+.pop-shadow,
+.pop-shadow-lg,
+.pop-shadow-xl,
+.hover-lift:hover {
+  box-shadow: var(--surface-shadow);
+}
+
+.abstract-dots {
+  background-image: radial-gradient(circle, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.zigzag-divider {
+  background:
+    linear-gradient(135deg, hsl(var(--primary) / 0.8) 25%, transparent 25%) -12px 0,
+    linear-gradient(225deg, hsl(var(--primary) / 0.8) 25%, transparent 25%) -12px 0,
+    linear-gradient(315deg, hsl(var(--primary) / 0.8) 25%, transparent 25%),
+    linear-gradient(45deg, hsl(var(--primary) / 0.8) 25%, transparent 25%);
+  background-size: 24px 12px;
+  background-position: 0 0;
+  height: 12px;
+  opacity: 0.12;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  button,
+  input,
+  textarea,
+  select {
+    scroll-behavior: auto;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.theme-midnight-dark {
+  color-scheme: dark;
+  --background: 222 47% 8%;
+  --foreground: 215 28% 92%;
+  --card: 222 37% 11%;
+  --card-foreground: 215 28% 92%;
+  --popover: 222 37% 12%;
+  --popover-foreground: 215 28% 92%;
+  --primary: 212 92% 65%;
+  --primary-foreground: 222 47% 8%;
+  --secondary: 220 29% 17%;
+  --secondary-foreground: 215 25% 90%;
+  --muted: 220 26% 16%;
+  --muted-foreground: 218 15% 68%;
+  --accent: 174 63% 42%;
+  --accent-foreground: 222 47% 8%;
+  --destructive: 0 68% 65%;
+  --destructive-foreground: 222 47% 8%;
+  --border: 219 24% 22%;
+  --input: 220 29% 17%;
+  --ring: 212 92% 65%;
+  --radius: 0.9rem;
+  --surface-shadow: 0 1px 2px hsl(222 60% 3% / 0.35), 0 14px 36px -24px hsl(222 60% 2% / 0.75);
+  --success: 152 58% 52%;
+  --success-foreground: 160 60% 8%;
+  --warning: 38 85% 62%;
+  --warning-foreground: 30 55% 10%;
+  --pop-pink: 336 78% 72%;
+  --pop-cyan: 190 83% 64%;
+  --pop-green: 152 58% 52%;
+  --pop-orange: 23 88% 65%;
+  --pop-yellow: 43 90% 64%;
+  --pop-purple: 265 78% 75%;
+}
+
+.theme-pure-light {
+  color-scheme: light;
+  --background: 215 25% 97%;
+  --foreground: 222 36% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 36% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 36% 13%;
+  --primary: 217 84% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 24% 93%;
+  --secondary-foreground: 222 30% 20%;
+  --muted: 214 22% 93%;
+  --muted-foreground: 218 13% 41%;
+  --accent: 166 57% 33%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 70% 44%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 19% 86%;
+  --input: 214 19% 86%;
+  --ring: 217 84% 42%;
+  --radius: 0.85rem;
+  --surface-shadow: 0 1px 2px hsl(222 40% 15% / 0.04), 0 12px 30px -22px hsl(222 40% 15% / 0.25);
+  --success: 151 65% 29%;
+  --success-foreground: 0 0% 100%;
+  --warning: 34 85% 34%;
+  --warning-foreground: 0 0% 100%;
+  --pop-pink: 336 66% 45%;
+  --pop-cyan: 190 80% 31%;
+  --pop-green: 151 65% 29%;
+  --pop-orange: 23 80% 40%;
+  --pop-yellow: 39 85% 30%;
+  --pop-purple: 265 56% 45%;
+}
+
+.theme-ocean-blue {
+  color-scheme: light;
+  --background: 199 56% 96%;
+  --foreground: 213 47% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 213 47% 14%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 213 47% 14%;
+  --primary: 202 91% 35%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 197 42% 90%;
+  --secondary-foreground: 210 45% 21%;
+  --muted: 198 38% 91%;
+  --muted-foreground: 207 22% 38%;
+  --accent: 184 76% 26%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 70% 44%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 197 28% 82%;
+  --input: 197 28% 82%;
+  --ring: 202 91% 35%;
+  --radius: 0.9rem;
+  --surface-shadow: 0 1px 2px hsl(209 60% 20% / 0.04), 0 14px 32px -23px hsl(202 75% 30% / 0.28);
+  --success: 151 65% 29%;
+  --success-foreground: 0 0% 100%;
+  --warning: 34 85% 34%;
+  --warning-foreground: 0 0% 100%;
+  --pop-pink: 336 66% 45%;
+  --pop-cyan: 190 80% 31%;
+  --pop-green: 151 65% 29%;
+  --pop-orange: 23 80% 40%;
+  --pop-yellow: 39 85% 30%;
+  --pop-purple: 265 56% 45%;
+}
+
+.theme-emerald-green {
+  color-scheme: light;
+  --background: 145 28% 96%;
+  --foreground: 155 32% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 155 32% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 155 32% 13%;
+  --primary: 151 63% 28%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 144 25% 90%;
+  --secondary-foreground: 155 34% 20%;
+  --muted: 145 22% 91%;
+  --muted-foreground: 153 15% 38%;
+  --accent: 163 58% 31%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 70% 44%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 145 18% 82%;
+  --input: 145 18% 82%;
+  --ring: 151 63% 28%;
+  --radius: 0.9rem;
+  --surface-shadow: 0 1px 2px hsl(153 45% 16% / 0.04), 0 14px 30px -23px hsl(153 50% 20% / 0.24);
+  --success: 151 63% 28%;
+  --success-foreground: 0 0% 100%;
+  --warning: 34 85% 34%;
+  --warning-foreground: 0 0% 100%;
+  --pop-pink: 336 66% 45%;
+  --pop-cyan: 190 80% 31%;
+  --pop-green: 151 63% 28%;
+  --pop-orange: 23 80% 40%;
+  --pop-yellow: 39 85% 30%;
+  --pop-purple: 265 56% 45%;
+}
+
+.theme-lavender-dream {
+  color-scheme: light;
+  --background: 260 40% 97%;
+  --foreground: 258 32% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 258 32% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 258 32% 15%;
+  --primary: 263 51% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 258 32% 92%;
+  --secondary-foreground: 258 35% 22%;
+  --muted: 258 26% 93%;
+  --muted-foreground: 258 16% 41%;
+  --accent: 285 55% 40%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 70% 44%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 258 22% 85%;
+  --input: 258 22% 85%;
+  --ring: 263 51% 42%;
+  --radius: 0.95rem;
+  --surface-shadow: 0 1px 2px hsl(258 40% 15% / 0.04), 0 14px 32px -23px hsl(263 50% 35% / 0.25);
+  --success: 151 65% 29%;
+  --success-foreground: 0 0% 100%;
+  --warning: 34 85% 34%;
+  --warning-foreground: 0 0% 100%;
+  --pop-pink: 336 66% 45%;
+  --pop-cyan: 190 80% 31%;
+  --pop-green: 151 65% 29%;
+  --pop-orange: 23 80% 40%;
+  --pop-yellow: 39 85% 30%;
+  --pop-purple: 263 51% 42%;
+}
+
+.theme-sunset {
+  color-scheme: light;
+  --background: 25 64% 97%;
+  --foreground: 14 35% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 14 35% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 14 35% 15%;
+  --primary: 10 69% 39%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 22 42% 91%;
+  --secondary-foreground: 14 38% 22%;
+  --muted: 22 34% 92%;
+  --muted-foreground: 17 20% 40%;
+  --accent: 337 56% 40%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 70% 44%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 20 25% 84%;
+  --input: 20 25% 84%;
+  --ring: 10 69% 39%;
+  --radius: 0.9rem;
+  --surface-shadow: 0 1px 2px hsl(15 40% 20% / 0.04), 0 14px 30px -23px hsl(15 70% 40% / 0.25);
+  --success: 151 65% 29%;
+  --success-foreground: 0 0% 100%;
+  --warning: 34 85% 34%;
+  --warning-foreground: 0 0% 100%;
+  --pop-pink: 337 56% 40%;
+  --pop-cyan: 190 80% 31%;
+  --pop-green: 151 65% 29%;
+  --pop-orange: 10 69% 39%;
+  --pop-yellow: 39 85% 30%;
+  --pop-purple: 265 56% 45%;
+}
+
+.theme-amoled-black {
+  color-scheme: dark;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 96%;
+  --card: 0 0% 5%;
+  --card-foreground: 0 0% 96%;
+  --popover: 0 0% 6%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 171 100% 43%;
+  --primary-foreground: 180 100% 5%;
+  --secondary: 0 0% 11%;
+  --secondary-foreground: 0 0% 91%;
+  --muted: 0 0% 10%;
+  --muted-foreground: 0 0% 70%;
+  --accent: 277 87% 68%;
+  --accent-foreground: 0 0% 5%;
+  --destructive: 0 75% 62%;
+  --destructive-foreground: 0 0% 0%;
+  --border: 0 0% 18%;
+  --input: 0 0% 12%;
+  --ring: 171 100% 43%;
+  --radius: 0.85rem;
+  --surface-shadow: 0 0 0 1px hsl(0 0% 100% / 0.025), 0 16px 38px -25px hsl(0 0% 0% / 0.9);
+  --success: 171 100% 43%;
+  --success-foreground: 180 100% 5%;
+  --warning: 43 95% 58%;
+  --warning-foreground: 30 70% 8%;
+  --pop-pink: 336 85% 72%;
+  --pop-cyan: 171 100% 43%;
+  --pop-green: 171 100% 43%;
+  --pop-orange: 23 90% 65%;
+  --pop-yellow: 43 95% 58%;
+  --pop-purple: 277 87% 74%;
+}
+
+.theme-amoled-black body {
+  background-image: none;
+}
+
+.theme-amoled-black .abstract-dots {
+  background-image: none;
+}
+
+.theme-nord {
+  color-scheme: dark;
+  --background: 220 16% 17%;
+  --foreground: 219 28% 92%;
+  --card: 222 16% 21%;
+  --card-foreground: 219 28% 92%;
+  --popover: 222 16% 22%;
+  --popover-foreground: 219 28% 92%;
+  --primary: 193 43% 66%;
+  --primary-foreground: 220 16% 13%;
+  --secondary: 220 17% 27%;
+  --secondary-foreground: 219 27% 90%;
+  --muted: 220 17% 26%;
+  --muted-foreground: 218 17% 73%;
+  --accent: 179 28% 58%;
+  --accent-foreground: 220 16% 13%;
+  --destructive: 354 57% 70%;
+  --destructive-foreground: 220 16% 17%;
+  --border: 220 16% 32%;
+  --input: 220 17% 27%;
+  --ring: 193 43% 66%;
+  --radius: 0.85rem;
+  --surface-shadow: 0 1px 2px hsl(220 28% 8% / 0.28), 0 14px 34px -23px hsl(220 28% 8% / 0.7);
+  --success: 92 28% 65%;
+  --success-foreground: 220 28% 12%;
+  --warning: 40 71% 67%;
+  --warning-foreground: 220 28% 12%;
+  --pop-pink: 311 34% 73%;
+  --pop-cyan: 193 43% 66%;
+  --pop-green: 92 28% 65%;
+  --pop-orange: 14 51% 63%;
+  --pop-yellow: 40 71% 67%;
+  --pop-purple: 237 42% 75%;
+}
+
+.theme-midnight-dark,
+.theme-pure-light,
+.theme-ocean-blue,
+.theme-emerald-green,
+.theme-lavender-dream,
+.theme-sunset,
+.theme-amoled-black,
+.theme-nord {
+  --sidebar-background: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+.theme-midnight-dark,
+.theme-amoled-black,
+.theme-nord {
+  --pop-pink-foreground: var(--background);
+  --pop-cyan-foreground: var(--background);
+  --pop-green-foreground: var(--background);
+  --pop-orange-foreground: var(--background);
+  --pop-yellow-foreground: var(--background);
+  --pop-purple-foreground: var(--background);
+}
+
+.theme-pure-light,
+.theme-ocean-blue,
+.theme-emerald-green,
+.theme-lavender-dream,
+.theme-sunset {
+  --pop-pink-foreground: 0 0% 100%;
+  --pop-cyan-foreground: 0 0% 100%;
+  --pop-green-foreground: 0 0% 100%;
+  --pop-orange-foreground: 0 0% 100%;
+  --pop-yellow-foreground: 0 0% 100%;
+  --pop-purple-foreground: 0 0% 100%;
+}
+
 ::selection {
-  background: hsl(var(--primary) / 0.35);
+  background: hsl(var(--primary) / 0.28);
   color: hsl(var(--foreground));
 }

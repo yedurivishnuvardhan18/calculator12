@@ -269,10 +269,10 @@ export function CourseCard({
   ];
 
   const iconColors = [
-    "bg-pop-pink",
-    "bg-pop-cyan",
-    "bg-pop-green",
-    "bg-pop-orange",
+    ["bg-pop-pink", "text-pop-pink-foreground"],
+    ["bg-pop-cyan", "text-pop-cyan-foreground"],
+    ["bg-pop-green", "text-pop-green-foreground"],
+    ["bg-pop-orange", "text-pop-orange-foreground"],
   ];
 
   const accentBorders = [
@@ -293,8 +293,8 @@ export function CourseCard({
       <CardHeader className={cn("pb-3 sm:pb-4", headerColors[index % headerColors.length])}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className={cn("w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center pop-shadow rotate-3 hover:rotate-0 transition-transform", iconColors[index % iconColors.length])}>
-              <BookOpen className="w-5 h-5 text-white" />
+            <div className={cn("w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center pop-shadow rotate-3 hover:rotate-0 transition-transform", ...iconColors[index % iconColors.length])}>
+              <BookOpen className="w-5 h-5" />
             </div>
             <h3 className="text-base sm:text-lg font-bold font-display">Course {index + 1}</h3>
           </div>

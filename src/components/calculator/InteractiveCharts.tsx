@@ -2,16 +2,17 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { Course, GRADE_MAPPINGS } from "@/types/calculator";
+import type { Course } from "@/types/calculator";
 import { getThemeChartColors } from "@/lib/theme-colors";
-
-const COLORS = getThemeChartColors();
+import { useTheme } from "@/components/ThemeProvider";
 
 interface Props {
   courses: Course[];
 }
 
 export function InteractiveCharts({ courses }: Props) {
+  const { theme } = useTheme();
+  const colors = useMemo(() => getThemeChartColors(theme), [theme]);
   const validCourses = useMemo(
     () => courses.filter((c) => c.finalGradePoint !== null && c.name.trim()),
     [courses]
@@ -62,7 +63,7 @@ export function InteractiveCharts({ courses }: Props) {
   const chartConfig = {
     gradePoint: { label: "Grade Point", color: "hsl(var(--primary))" },
     credits: { label: "Credits", color: "hsl(var(--accent))" },
-    gp: { label: "Grade Point", color: "hsl(168 72% 40%)" },
+    gp: { label: "Grade Point", color: "hsl(var(--accent))" },
   };
 
   return (
@@ -97,7 +98,7 @@ export function InteractiveCharts({ courses }: Props) {
               <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis domain={[0, 10]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Line type="monotone" dataKey="gp" stroke="hsl(168 72% 40%)" strokeWidth={2} dot={{ r: 4, fill: "hsl(168 72% 40%)" }} />
+              <Line type="monotone" dataKey="gp" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 4, fill: "hsl(var(--accent))" }} />
             </LineChart>
           </ChartContainer>
         </CardContent>
@@ -114,7 +115,7 @@ export function InteractiveCharts({ courses }: Props) {
               <PieChart>
                 <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3} dataKey="value" label={({ name, value }) => `${name}(${value})`}>
                   {pieData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    <Cell key={i} fill={colors[i % colors.length]} />
                   ))}
                 </Pie>
                 <ChartTooltip />

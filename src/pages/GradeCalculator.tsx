@@ -7,7 +7,7 @@ import { SGPASection } from "@/components/calculator/SGPASection";
 import { CGPASection } from "@/components/calculator/CGPASection";
 import { GradeChart } from "@/components/calculator/GradeChart";
 import { Button } from "@/components/ui/button";
-import { Plus, GraduationCap, Sparkles, RotateCcw } from "lucide-react";
+import { Plus, GraduationCap, RotateCcw } from "lucide-react";
 import { usePersistedGrades } from "@/hooks/use-persisted-grades";
 import { MAX_COURSES } from "@/lib/security";
 import { toast } from "sonner";
@@ -89,18 +89,17 @@ export default function GradeCalculator() {
       <div className="container max-w-4xl py-5 sm:py-10 px-4 sm:px-6 space-y-5 sm:space-y-8">
         {/* Header */}
         <motion.div
-          className="text-center space-y-3"
-          initial={{ opacity: 0, scale: 0.5, rotate: -5 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="space-y-3 py-2 text-center sm:py-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <div className="inline-flex items-center gap-2 sm:gap-3 bg-pop-pink/15 px-5 sm:px-6 py-3 rounded-full border-3 border-pop-pink/30 pop-shadow-lg">
-            <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-pop-pink animate-float" />
-            <h1 className="text-xl sm:text-3xl font-black font-display">GITAM Grade Calculator</h1>
-            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-pop-yellow" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/15 bg-primary/10 text-primary">
+            <GraduationCap className="h-6 w-6" aria-hidden="true" />
           </div>
-          <p className="text-muted-foreground text-xs sm:text-base font-medium max-w-lg mx-auto">
-            Calculate your WGP, SGPA, and CGPA with step-by-step breakdowns ✨
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">GITAM Grade Calculator</h1>
+          <p className="mx-auto max-w-lg text-sm text-muted-foreground sm:text-base">
+            Calculate WGP, SGPA, and CGPA with a clear step-by-step breakdown.
           </p>
         </motion.div>
 
@@ -158,7 +157,7 @@ export default function GradeCalculator() {
               onClick={addCourse}
               variant="outline"
               size="lg"
-              className="rounded-full border-3 border-dashed border-pop-cyan font-bold font-display text-pop-cyan hover:bg-pop-cyan hover:text-white transition-all duration-300 hover:border-solid hover:pop-shadow"
+              className="rounded-xl border-primary/30 font-medium text-primary hover:bg-primary hover:text-primary-foreground"
             >
               <Plus className="w-5 h-5 mr-2" />
               Add Another Course

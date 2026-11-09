@@ -1,13 +1,25 @@
+import { Fragment, useState, useRef, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Calculator, Menu, X, Globe, Target, ClipboardCheck, Palette } from "lucide-react";
+import { Calculator, Menu, X, Globe, Target, ClipboardCheck, Palette, Eraser } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { GradeBattleModal } from "@/components/GradeBattleModal";
 import { RoastModeModal } from "@/components/RoastModeModal";
 import { ThemePanel } from "@/components/ThemePanel";
 import { Course, calculateSGPA, createNewCourse } from "@/types/calculator";
+import { clearAppCache } from "@/lib/app-cache";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const navItems = [
   { to: "/", label: "Grade Calculator", icon: Calculator, end: true },
@@ -39,6 +51,8 @@ export function Navbar() {
   const [battleOpen, setBattleOpen] = useState(false);
   const [roastOpen, setRoastOpen] = useState(false);
   const [themePanelOpen, setThemePanelOpen] = useState(false);
+  const [clearCacheOpen, setClearCacheOpen] = useState(false);
+  const [clearingCache, setClearingCache] = useState(false);
   const [courses, setCourses] = useState<Course[]>([createNewCourse()]);
 
   const activeIndex = navItems.findIndex((item) =>
@@ -83,6 +97,28 @@ export function Navbar() {
     else setRoastOpen(true);
   };
 
+  const handleClearAppCache = async () => {
+    setClearingCache(true);
+    try {
+      const deletedCount = await clearAppCache();
+      toast.success(
+        deletedCount > 0
+          ? "App cache cleared. Reloading..."
+          : "No app cache found. Reloading...",
+      );
+      window.setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+      console.error("Failed to clear app cache", error);
+      toast.error(error instanceof Error ? error.message : "Could not clear the app cache.");
+      setClearingCache(false);
+    }
+  };
+
+  const openClearCacheDialog = () => {
+    setMenuOpen(false);
+    setClearCacheOpen(true);
+  };
+
   return (
     <>
       <nav className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border overflow-x-hidden">
@@ -112,22 +148,36 @@ export function Navbar() {
                 ? location.pathname === item.to
                 : location.pathname.startsWith(item.to);
               return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  ref={(el) => {
-                    navRefs.current[i] = el;
-                  }}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-                    isActive
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </NavLink>
+                <Fragment key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    end={item.end}
+                    ref={(el) => {
+                      navRefs.current[i] = el;
+                    }}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+                      isActive
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </NavLink>
+                  {item.to === "/attendance" && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={openClearCacheDialog}
+                      aria-label="Clear app cache"
+                      className="gap-1.5 px-2 text-xs text-muted-foreground"
+                    >
+                      <Eraser className="h-4 w-4" />
+                      <span>Clear cache</span>
+                    </Button>
+                  )}
+                </Fragment>
               );
             })}
 
@@ -184,19 +234,31 @@ export function Navbar() {
                     ? location.pathname === item.to
                     : location.pathname.startsWith(item.to);
                   return (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      end={item.end}
-                      className={`inline-flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                        isActive
-                          ? "text-foreground bg-muted"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      }`}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </NavLink>
+                    <Fragment key={item.to}>
+                      <NavLink
+                        to={item.to}
+                        end={item.end}
+                        className={`inline-flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                          isActive
+                            ? "text-foreground bg-muted"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        }`}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </NavLink>
+                      {item.to === "/attendance" && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={openClearCacheDialog}
+                          className="justify-start gap-3 px-4 py-3 text-sm text-muted-foreground"
+                        >
+                          <Eraser className="h-4 w-4" />
+                          <span>Clear app cache</span>
+                        </Button>
+                      )}
+                    </Fragment>
                   );
                 })}
 
@@ -219,6 +281,23 @@ export function Navbar() {
       </nav>
 
       <ThemePanel open={themePanelOpen} onOpenChange={setThemePanelOpen} />
+      <AlertDialog open={clearCacheOpen} onOpenChange={setClearCacheOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear app cache?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This clears cached app files used for offline loading, then reloads the app. Your saved grades,
+              attendance, theme, and login data will not be deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={clearingCache}>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={clearingCache} onClick={handleClearAppCache}>
+              {clearingCache ? "Clearing..." : "Clear cache"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <GradeBattleModal open={battleOpen} onOpenChange={setBattleOpen} courses={courses} />
       <RoastModeModal open={roastOpen} onOpenChange={setRoastOpen} courses={courses} />
     </>

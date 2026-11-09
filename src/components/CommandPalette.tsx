@@ -67,10 +67,10 @@ export function CommandPalette() {
         <CommandSeparator />
         <CommandGroup heading="Quick Actions">
           <CommandItem onSelect={() => { toggleTheme(); setOpen(false); }}>
-            {theme === "forest-lime" || theme === "cosmic-violet"
+            {theme === "midnight-dark" || theme === "amoled-black" || theme === "nord"
               ? <Sun className="mr-2 h-4 w-4" />
               : <Moon className="mr-2 h-4 w-4" />}
-            Cycle Theme
+            Toggle light / dark
           </CommandItem>
         </CommandGroup>
       </CommandList>

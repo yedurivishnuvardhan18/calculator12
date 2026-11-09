@@ -31,11 +31,11 @@ interface SavedState {
 
 function getCGPATier(cgpa: number, scale: number) {
   const ratio = cgpa / scale;
-  if (ratio >= 0.9) return { label: "Outstanding", emoji: "🏆", color: "text-yellow-400", bg: "bg-yellow-400/20", barColor: "bg-yellow-400" };
-  if (ratio >= 0.8) return { label: "Distinction", emoji: "🥇", color: "text-green-400", bg: "bg-green-400/20", barColor: "bg-green-400" };
-  if (ratio >= 0.7) return { label: "Good", emoji: "🥈", color: "text-blue-400", bg: "bg-blue-400/20", barColor: "bg-blue-400" };
-  if (ratio >= 0.6) return { label: "Average", emoji: "🥉", color: "text-yellow-500", bg: "bg-yellow-500/20", barColor: "bg-yellow-500" };
-  return { label: "Needs Improvement", emoji: "🔴", color: "text-red-400", bg: "bg-red-400/20", barColor: "bg-red-400" };
+  if (ratio >= 0.9) return { label: "Outstanding", emoji: "🏆", color: "text-warning", bg: "bg-warning/10", barColor: "bg-warning" };
+  if (ratio >= 0.8) return { label: "Distinction", emoji: "🥇", color: "text-success", bg: "bg-success/10", barColor: "bg-success" };
+  if (ratio >= 0.7) return { label: "Good", emoji: "🥈", color: "text-primary", bg: "bg-primary/10", barColor: "bg-primary" };
+  if (ratio >= 0.6) return { label: "Average", emoji: "🥉", color: "text-warning", bg: "bg-warning/10", barColor: "bg-warning" };
+  return { label: "Needs Improvement", emoji: "🔴", color: "text-destructive", bg: "bg-destructive/10", barColor: "bg-destructive" };
 }
 
 function getMilestoneMessage(cgpa: number, scale: number): string | null {
@@ -365,7 +365,7 @@ export default function WhatIfCalculator() {
                 <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Projected: <strong className={tier?.color}>{projectedCGPA.toFixed(2)}</strong></span>
                 {delta !== null && (
-                  <span className={`flex items-center gap-1 font-semibold ${delta >= 0 ? "text-green-400" : "text-red-400"}`}>
+                  <span className={`flex items-center gap-1 font-semibold ${delta >= 0 ? "text-success" : "text-destructive"}`}>
                     {delta >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
                     {delta >= 0 ? "+" : ""}{delta.toFixed(2)}
                   </span>
@@ -427,14 +427,14 @@ export default function WhatIfCalculator() {
                   className="p-4 rounded-xl border border-border bg-muted/50 flex-1"
                 >
                   <p className="text-sm text-muted-foreground mb-1">You need an average SGPA of</p>
-                  <p className={`text-3xl font-bold ${requiredSGPA <= gradingScale && requiredSGPA >= 0 ? "text-green-400" : "text-red-400"}`}>
+                  <p className={`text-3xl font-bold ${requiredSGPA <= gradingScale && requiredSGPA >= 0 ? "text-success" : "text-destructive"}`}>
                     {requiredSGPA.toFixed(2)}
                   </p>
                   <p className="text-sm mt-1">
                     {requiredSGPA <= gradingScale && requiredSGPA >= 0 ? (
-                      <span className="text-green-400 font-medium">Achievable ✅</span>
+                      <span className="font-medium text-success">Achievable ✅</span>
                     ) : (
-                      <span className="text-red-400 font-medium">Not possible ❌</span>
+                      <span className="font-medium text-destructive">Not possible ❌</span>
                     )}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">in each remaining semester to reach {targetCGPA.toFixed(1)} CGPA</p>

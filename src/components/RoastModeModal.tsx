@@ -194,7 +194,7 @@ export function RoastModeModal({ open, onOpenChange, courses }: RoastModeModalPr
               <motion.div key="start" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <Button
                   onClick={generateRoast}
-                  className="w-full rounded-full bg-pop-orange hover:bg-pop-orange/90 text-white font-bold font-display pop-shadow h-12 text-base"
+                  className="w-full rounded-full bg-pop-orange hover:bg-pop-orange/90 text-pop-orange-foreground font-bold font-display pop-shadow h-12 text-base"
                 >
                   <Flame className="w-5 h-5 mr-2" />
                   Roast My Grades Ra! 🔥

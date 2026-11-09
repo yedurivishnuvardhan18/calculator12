@@ -139,21 +139,21 @@ function getWeeksRemaining(endDate: string): number {
 }
 
 function getColor(pct: number, target: number): string {
-  if (pct >= target) return "hsl(152, 60%, 42%)";
-  if (pct >= target - 10) return "hsl(38, 92%, 50%)";
-  return "hsl(0, 72%, 51%)";
+  if (pct >= target) return "hsl(var(--success))";
+  if (pct >= target - 10) return "hsl(var(--warning))";
+  return "hsl(var(--destructive))";
 }
 
 function getColorClass(pct: number, target: number): string {
-  if (pct >= target) return "text-green-400";
-  if (pct >= target - 10) return "text-yellow-400";
-  return "text-red-400";
+  if (pct >= target) return "text-success";
+  if (pct >= target - 10) return "text-warning";
+  return "text-destructive";
 }
 
 function getBgClass(pct: number, target: number): string {
-  if (pct >= target) return "bg-green-400/20 border-green-400/30";
-  if (pct >= target - 10) return "bg-yellow-400/20 border-yellow-400/30";
-  return "bg-red-400/20 border-red-400/30";
+  if (pct >= target) return "bg-success/10 border-success/30";
+  if (pct >= target - 10) return "bg-warning/10 border-warning/30";
+  return "bg-destructive/10 border-destructive/30";
 }
 
 function CircularProgress({ percentage, target, size = 160 }: { percentage: number; target: number; size?: number }) {
@@ -557,7 +557,7 @@ export default function AttendanceCalculator() {
                   <p className="text-xs text-muted-foreground mb-1">
                     {currentPct >= target ? "Can bunk right now" : "Must attend to reach target"}
                   </p>
-                  <p className={cn("text-3xl font-bold", currentPct >= target ? "text-green-400" : "text-red-400")}>
+                  <p className={cn("text-3xl font-bold", currentPct >= target ? "text-success" : "text-destructive")}>
                     {currentPct >= target ? safeBunksNow : mustAttendNow === Infinity ? "∞" : mustAttendNow}
                   </p>
                   <p className="text-xs text-muted-foreground">classes</p>
@@ -566,7 +566,7 @@ export default function AttendanceCalculator() {
               <Card className={cn("border", getBgClass(safeBunksFromRemaining > 0 ? target : 0, target))}>
                 <CardContent className="pt-4 pb-4 text-center">
                   <p className="text-xs text-muted-foreground mb-1">Safe bunks from remaining</p>
-                  <p className={cn("text-3xl font-bold", safeBunksFromRemaining > 0 ? "text-green-400" : "text-red-400")}>
+                  <p className={cn("text-3xl font-bold", safeBunksFromRemaining > 0 ? "text-success" : "text-destructive")}>
                     {safeBunksFromRemaining} / {remClasses}
                   </p>
                 </CardContent>

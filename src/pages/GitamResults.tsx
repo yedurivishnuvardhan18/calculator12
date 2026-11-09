@@ -72,31 +72,31 @@ async function invokeProxy(
 
 // Grade badge color map
 const gradeClass: Record<string, string> = {
-  O: "bg-emerald-400/15 text-emerald-400",
-  "A+": "bg-emerald-500/12 text-emerald-500",
-  A: "bg-emerald-400/10 text-emerald-400",
-  "B+": "bg-blue-400/12 text-blue-400",
-  B: "bg-blue-300/10 text-blue-300",
-  C: "bg-amber-400/10 text-amber-400",
-  F: "bg-red-400/12 text-red-400",
+  O: "bg-success/10 text-success",
+  "A+": "bg-success/10 text-success",
+  A: "bg-success/10 text-success",
+  "B+": "bg-primary/10 text-primary",
+  B: "bg-primary/10 text-primary",
+  C: "bg-warning/10 text-warning",
+  F: "bg-destructive/10 text-destructive",
 };
 
 const catClass: Record<string, string> = {
-  FC: "bg-emerald-400/12 text-emerald-400",
-  UC: "bg-indigo-400/12 text-indigo-400",
-  PC: "bg-blue-400/12 text-blue-400",
-  PE: "bg-amber-400/10 text-amber-400",
-  OE: "bg-red-400/10 text-red-400",
-  SEC: "bg-violet-400/12 text-violet-400",
-  AEC: "bg-orange-400/10 text-orange-400",
-  VAC: "bg-emerald-500/10 text-emerald-500",
+  FC: "bg-success/10 text-success",
+  UC: "bg-accent/10 text-accent",
+  PC: "bg-primary/10 text-primary",
+  PE: "bg-warning/10 text-warning",
+  OE: "bg-destructive/10 text-destructive",
+  SEC: "bg-pop-purple/10 text-pop-purple",
+  AEC: "bg-pop-orange/10 text-pop-orange",
+  VAC: "bg-success/10 text-success",
 };
 
 const statusColor: Record<string, { text: string; fill: string; border: string }> = {
-  safe: { text: "text-emerald-400", fill: "bg-emerald-400", border: "border-emerald-400" },
-  ok: { text: "text-blue-400", fill: "bg-blue-400", border: "border-blue-400" },
-  warning: { text: "text-amber-400", fill: "bg-amber-400", border: "border-amber-400" },
-  danger: { text: "text-red-400", fill: "bg-red-400", border: "border-red-400" },
+  safe: { text: "text-success", fill: "bg-success", border: "border-success" },
+  ok: { text: "text-primary", fill: "bg-primary", border: "border-primary" },
+  warning: { text: "text-warning", fill: "bg-warning", border: "border-warning" },
+  danger: { text: "text-destructive", fill: "bg-destructive", border: "border-destructive" },
 };
 
 function GradeBadge({ grade }: { grade: string }) {
@@ -434,8 +434,8 @@ function AttendanceView({ data }: { data: any }) {
       {/* Summary stats */}
       <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
         <StatCard value={`${s.average_pct}%`} label="Average" className={sc.text} />
-        <StatCard value={s.below_75} label="Below 75%" className="text-red-400" />
-        <StatCard value={s.below_85} label="75-84%" className="text-amber-400" />
+        <StatCard value={s.below_75} label="Below 75%" className="text-destructive" />
+        <StatCard value={s.below_85} label="75-84%" className="text-warning" />
         <StatCard value={s.safe} label="Safe (≥85%)" className="text-emerald-400" />
       </div>
 

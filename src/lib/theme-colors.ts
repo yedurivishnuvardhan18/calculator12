@@ -16,9 +16,11 @@ const POP_VARS = [
 
 const FALLBACK = ["#FF6B9D", "#FFE66D", "#4ECDC4", "#A855F7", "#FF8C42", "#10B981"];
 
-export function getThemeChartColors(): string[] {
+export function getThemeChartColors(expectedTheme?: string): string[] {
   if (typeof window === "undefined") return FALLBACK;
-  const root = getComputedStyle(document.documentElement);
+  const element = document.documentElement;
+  if (expectedTheme && element.dataset.theme !== expectedTheme) return FALLBACK;
+  const root = getComputedStyle(element);
   return POP_VARS.map((v, i) => {
     const hsl = root.getPropertyValue(v).trim();
     return hsl ? `hsl(${hsl})` : FALLBACK[i];

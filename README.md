@@ -10,6 +10,10 @@ TeamDino's GITAM Grade Calculator helps students calculate semester grades, SGPA
 - Browse GITAM learning materials and results tools.
 - Use optional AI-generated grade feedback and Telugu grade roasts when the Supabase AI function is configured.
 
+## Appearance themes
+
+Open **Themes** in the header to choose Midnight Dark, Pure Light, Ocean Blue, Emerald Green, Lavender Dream, Sunset, AMOLED Black, or Nord. The Light, Dark, and System appearance modes are available there as well. System mode follows the device color preference and all selections are saved in local storage.
+
 ## Technology
 
 - React 18, TypeScript, and Vite
@@ -56,6 +60,8 @@ TeamDino's GITAM Grade Calculator helps students calculate semester grades, SGPA
 | `npm test` | Run the Vitest test suite |
 
 ## Supabase and AI feedback
+
+Admin access is granted to existing Supabase Auth accounts through `public.admin_users`. The migration `supabase/migrations/20261109131000_grant_admin_to_yeduri_email.sql` grants access to `yedurivishnuvardhan@gmail.com`; create that account in Supabase Auth before applying migrations with the Supabase CLI.
 
 The app's AI feedback and roast features call the `ai-feedback` Supabase Edge Function. Deploy it with the Supabase CLI after linking your project:
 

@@ -7,10 +7,10 @@ interface StepIndicatorProps {
 }
 
 const steps = [
-  { id: 1, name: "Course & WGP", shortName: "WGP", icon: BookOpen, color: "bg-pop-pink" },
-  { id: 2, name: "Letter Grade", shortName: "Grade", icon: Award, color: "bg-pop-purple" },
-  { id: 3, name: "SGPA", shortName: "SGPA", icon: Calculator, color: "bg-pop-cyan" },
-  { id: 4, name: "CGPA", shortName: "CGPA", icon: TrendingUp, color: "bg-pop-orange" },
+  { id: 1, name: "Course & WGP", shortName: "WGP", icon: BookOpen, color: "bg-pop-pink", foreground: "text-pop-pink-foreground" },
+  { id: 2, name: "Letter Grade", shortName: "Grade", icon: Award, color: "bg-pop-purple", foreground: "text-pop-purple-foreground" },
+  { id: 3, name: "SGPA", shortName: "SGPA", icon: Calculator, color: "bg-pop-cyan", foreground: "text-pop-cyan-foreground" },
+  { id: 4, name: "CGPA", shortName: "CGPA", icon: TrendingUp, color: "bg-pop-orange", foreground: "text-pop-orange-foreground" },
 ];
 
 export function StepIndicator({ currentStep, completedSteps }: StepIndicatorProps) {
@@ -29,9 +29,9 @@ export function StepIndicator({ currentStep, completedSteps }: StepIndicatorProp
                   className={cn(
                     "w-10 h-10 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all duration-300 border-3",
                     isCompleted
-                      ? "bg-accent text-white border-accent pop-shadow rotate-0"
+                      ? "bg-accent text-accent-foreground border-accent pop-shadow rotate-0"
                       : isCurrent
-                      ? cn(step.color, "text-white border-foreground/20 pop-shadow animate-bounce-in -rotate-3")
+                      ? cn(step.color, step.foreground, "border-foreground/20 pop-shadow animate-bounce-in -rotate-3")
                       : "bg-muted text-muted-foreground border-foreground/10 group-hover:scale-105",
                     "group-hover:pop-shadow transition-all"
                   )}

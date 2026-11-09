@@ -20,6 +20,20 @@ const gradeColors: Record<string, string> = {
   'L/AB': 'bg-grade-f',
 };
 
+const gradeForegroundColors: Record<string, string> = {
+  'O': 'text-slate-950',
+  'A+': 'text-slate-950',
+  'A': 'text-slate-950',
+  'B+': 'text-slate-950',
+  'B': 'text-slate-950',
+  'C': 'text-slate-950',
+  'P': 'text-slate-950',
+  'I': 'text-slate-950',
+  'F': 'text-white',
+  'Ab/R': 'text-white',
+  'L/AB': 'text-white',
+};
+
 export function GradeBadge({ letter, point, size = "md" }: GradeBadgeProps) {
   const sizeClasses = {
     sm: "w-11 h-11 text-sm",
@@ -39,8 +53,9 @@ export function GradeBadge({ letter, point, size = "md" }: GradeBadgeProps) {
       
       <div
         className={cn(
-          "relative rounded-2xl flex flex-col items-center justify-center text-white font-extrabold font-display border-3 border-white pop-shadow transition-all duration-300 hover:scale-110 hover:rotate-3 hover:pop-shadow-lg cursor-default",
+          "relative rounded-2xl flex flex-col items-center justify-center font-extrabold font-display border-3 border-foreground/20 pop-shadow transition-all duration-300 hover:scale-110 hover:rotate-3 hover:pop-shadow-lg cursor-default",
           gradeColors[letter] || 'bg-muted',
+          gradeForegroundColors[letter] || "text-muted-foreground",
           sizeClasses[size]
         )}
       >

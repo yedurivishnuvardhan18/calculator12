@@ -76,7 +76,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
       <CardHeader className="pb-3 sm:pb-4 bg-pop-green/10">
         <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-pop-green flex items-center justify-center flex-shrink-0 pop-shadow -rotate-3">
-            <Calculator className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <Calculator className="w-5 h-5 sm:w-6 sm:h-6 text-pop-green-foreground" />
           </div>
           <span className="leading-tight font-bold font-display">Step 3: SGPA Calculation</span>
         </CardTitle>
@@ -90,7 +90,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
             <Button 
               onClick={() => setShowResult(true)} 
               size="lg"
-              className="bg-pop-green hover:bg-pop-green/90 text-white font-bold font-display rounded-full px-6 sm:px-8 pop-shadow transition-all duration-200 hover:scale-105 hover:-translate-y-0.5 hover:pop-shadow-lg active:scale-95"
+              className="bg-pop-green hover:bg-pop-green/90 text-pop-green-foreground font-bold font-display rounded-full px-6 sm:px-8 pop-shadow transition-all duration-200 hover:scale-105 hover:-translate-y-0.5 hover:pop-shadow-lg active:scale-95"
             >
               <Calculator className="w-5 h-5 mr-2" />
               Calculate SGPA
@@ -177,7 +177,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
                 variant="outline" 
                 onClick={onShowCGPA} 
                 size="lg"
-                className="w-full sm:w-auto sm:flex-1 rounded-full border-3 border-pop-orange font-bold font-display text-pop-orange hover:bg-pop-orange hover:text-white transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                className="w-full sm:w-auto sm:flex-1 rounded-full border-3 border-pop-orange font-bold font-display text-pop-orange hover:bg-pop-orange hover:text-pop-orange-foreground transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
               >
                 <TrendingUp className="w-5 h-5 mr-2" />
                 Calculate CGPA (Optional)
@@ -185,7 +185,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
               <Button 
                 onClick={() => generateGradeCard(courses, result!, cgpaData)}
                 size="lg"
-                className="w-full sm:w-auto sm:flex-1 rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
+                className="w-full sm:w-auto sm:flex-1 rounded-full bg-pop-pink hover:bg-pop-pink/90 text-pop-pink-foreground font-bold font-display transition-all duration-300 hover:scale-[1.02] hover:pop-shadow active:scale-95"
               >
                 <Download className="w-5 h-5 mr-2" />
                 Download Grade Card
@@ -199,7 +199,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
                 <Button
                   variant="outline"
                   size="sm"
-                  className="rounded-full border-2 border-pop-green/40 text-pop-green hover:bg-pop-green hover:text-white text-xs font-bold"
+                  className="rounded-full border-2 border-pop-green/40 text-pop-green hover:bg-pop-green hover:text-pop-green-foreground text-xs font-bold"
                   onClick={() => {
                     const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}!\nTotal Credits: ${result?.totalCredits} | Grade Points: ${result?.totalGradePoints.toFixed(0)}\n${result && result.sgpa >= 9 ? '🔥 Outstanding!' : '✨'}\nCalculated on GradeGuru - Work Smart`;
                     const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -211,7 +211,7 @@ export function SGPASection({ courses, onShowCGPA, cgpaData }: SGPASectionProps)
                 <Button
                   variant="outline"
                   size="sm"
-                  className="rounded-full border-2 border-pop-cyan/40 text-pop-cyan hover:bg-pop-cyan hover:text-white text-xs font-bold"
+                  className="rounded-full border-2 border-pop-cyan/40 text-pop-cyan hover:bg-pop-cyan hover:text-pop-cyan-foreground text-xs font-bold"
                   onClick={() => {
                     const text = `🎓 My SGPA: ${result?.sgpa.toFixed(2)}! ${result && result.sgpa >= 9 ? '🔥' : '✨'}\nCalculated on GradeGuru - Work Smart`;
                     navigator.clipboard.writeText(text);

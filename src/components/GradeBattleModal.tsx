@@ -203,7 +203,7 @@ export function GradeBattleModal({ open, onOpenChange, courses }: GradeBattleMod
               <Button
                 onClick={() => setBattleStarted(true)}
                 disabled={!isValidFriend}
-                className="w-full rounded-full bg-pop-pink hover:bg-pop-pink/90 text-white font-bold font-display pop-shadow h-12 text-base"
+                className="w-full rounded-full bg-pop-pink hover:bg-pop-pink/90 text-pop-pink-foreground font-bold font-display pop-shadow h-12 text-base"
               >
                 <Swords className="w-5 h-5 mr-2" />
                 Start Battle!

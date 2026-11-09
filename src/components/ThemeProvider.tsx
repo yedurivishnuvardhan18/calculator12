@@ -1,73 +1,138 @@
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 export type ThemeId =
-  | "forest-lime"
-  | "sunny-brown"
-  | "cosmic-violet"
-  | "luxury-gold";
+  | "midnight-dark"
+  | "pure-light"
+  | "ocean-blue"
+  | "emerald-green"
+  | "lavender-dream"
+  | "sunset"
+  | "amoled-black"
+  | "nord";
+
+export type ThemePreference = ThemeId | "system";
 
 export interface ThemeMeta {
   id: ThemeId;
   name: string;
-  swatch: string;
+  swatches: [string, string, string];
   isDark: boolean;
 }
 
 export const THEMES: ThemeMeta[] = [
-  { id: "forest-lime",   name: "Forest Lime",   swatch: "bg-[#0a2a1f]", isDark: true  },
-  { id: "sunny-brown",   name: "Sunny Brown",   swatch: "bg-[#f4d03f]", isDark: false },
-  { id: "cosmic-violet", name: "Cosmic Violet", swatch: "bg-[#0f0a1f]", isDark: true  },
-  { id: "luxury-gold",   name: "Luxury Gold",   swatch: "bg-[#f5ebd6]", isDark: false },
+  { id: "midnight-dark", name: "Midnight Dark", swatches: ["#0b1220", "#17243a", "#60a5fa"], isDark: true },
+  { id: "pure-light", name: "Pure Light", swatches: ["#f8fafc", "#e9eef5", "#2563eb"], isDark: false },
+  { id: "ocean-blue", name: "Ocean Blue", swatches: ["#edf7fc", "#d9edf7", "#087ca8"], isDark: false },
+  { id: "emerald-green", name: "Emerald Green", swatches: ["#f0f8f3", "#dcefe3", "#187447"], isDark: false },
+  { id: "lavender-dream", name: "Lavender Dream", swatches: ["#f7f4fc", "#eae3f8", "#7046b8"], isDark: false },
+  { id: "sunset", name: "Sunset", swatches: ["#fff6f1", "#ffe4da", "#c43d2b"], isDark: false },
+  { id: "amoled-black", name: "AMOLED Black", swatches: ["#000000", "#111111", "#00e5c4"], isDark: true },
+  { id: "nord", name: "Nord", swatches: ["#2e3440", "#3b4252", "#88c0d0"], isDark: true },
 ];
+
+const DEFAULT_THEME: ThemePreference = "pure-light";
+const STORAGE_KEY = "gg_theme";
+const THEME_IDS = THEMES.map(({ id }) => id);
+const ALL_THEME_CLASSES = THEME_IDS.map((id) => `theme-${id}`);
+const LEGACY_THEMES: Record<string, ThemeId> = {
+  "forest-lime": "emerald-green",
+  "sunny-brown": "sunset",
+  "cosmic-violet": "lavender-dream",
+  "luxury-gold": "pure-light",
+};
 
 interface ThemeContextType {
   theme: ThemeId;
-  setTheme: (id: ThemeId) => void;
+  preference: ThemePreference;
+  setTheme: (preference: ThemePreference) => void;
   toggleTheme: () => void;
 }
 
-const DEFAULT_THEME: ThemeId = "cosmic-violet";
 const ThemeContext = createContext<ThemeContextType>({
-  theme: DEFAULT_THEME,
+  theme: "pure-light",
+  preference: DEFAULT_THEME,
   setTheme: () => {},
   toggleTheme: () => {},
 });
 
-const STORAGE_KEY = "gg_theme";
-const ALL_THEME_CLASSES = THEMES.map((t) => `theme-${t.id}`);
+function isThemePreference(value: string | null): value is ThemePreference {
+  return value === "system" || (value !== null && THEME_IDS.includes(value as ThemeId));
+}
 
-function getInitialTheme(): ThemeId {
-  if (typeof window === "undefined") return DEFAULT_THEME;
-  const stored = localStorage.getItem(STORAGE_KEY) as string | null;
-  if (stored && THEMES.some((t) => t.id === stored)) return stored as ThemeId;
-  if (window.matchMedia?.("(prefers-color-scheme: light)").matches) return "luxury-gold";
+function readStoredPreference(): ThemePreference {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (isThemePreference(stored)) return stored;
+    if (stored && Object.prototype.hasOwnProperty.call(LEGACY_THEMES, stored)) {
+      return LEGACY_THEMES[stored];
+    }
+  } catch {
+    return DEFAULT_THEME;
+  }
   return DEFAULT_THEME;
 }
 
+function getSystemDarkPreference(): boolean {
+  return typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function resolveTheme(preference: ThemePreference, systemDark: boolean): ThemeId {
+  if (preference !== "system") return preference;
+  return systemDark ? "midnight-dark" : "pure-light";
+}
+
+function applyTheme(preference: ThemePreference, systemDark: boolean): ThemeId {
+  const theme = resolveTheme(preference, systemDark);
+  const meta = THEMES.find((item) => item.id === theme);
+  const root = document.documentElement;
+  root.classList.remove(...ALL_THEME_CLASSES);
+  root.classList.add(`theme-${theme}`);
+  root.classList.toggle("dark", Boolean(meta?.isDark));
+  root.dataset.theme = theme;
+  root.style.colorScheme = meta?.isDark ? "dark" : "light";
+  return theme;
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeId>(getInitialTheme);
+  const [preference, setPreference] = useState<ThemePreference>(readStoredPreference);
+  const [systemDark, setSystemDark] = useState(getSystemDarkPreference);
+  const theme = resolveTheme(preference, systemDark);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.remove(...ALL_THEME_CLASSES);
-    root.classList.add(`theme-${theme}`);
-    root.setAttribute("data-theme", theme);
-    const meta = THEMES.find((t) => t.id === theme);
-    root.classList.toggle("dark", !!meta?.isDark);
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateSystemPreference = (event: MediaQueryListEvent) => {
+      applyTheme(preference, event.matches);
+      setSystemDark(event.matches);
+    };
+    mediaQuery.addEventListener("change", updateSystemPreference);
+    return () => mediaQuery.removeEventListener("change", updateSystemPreference);
+  }, [preference]);
 
-  const setTheme = useCallback((id: ThemeId) => setThemeState(id), []);
-  const toggleTheme = useCallback(() => {
-    setThemeState((prev) => {
-      const idx = THEMES.findIndex((t) => t.id === prev);
-      return THEMES[(idx + 1) % THEMES.length].id;
-    });
+  useEffect(() => {
+    applyTheme(preference, systemDark);
+
+    try {
+      window.localStorage.setItem(STORAGE_KEY, preference);
+    } catch (error) {
+      console.warn("Could not save the selected theme preference.", error);
+    }
+  }, [preference, systemDark, theme]);
+
+  const setTheme = useCallback((nextPreference: ThemePreference) => {
+    applyTheme(nextPreference, getSystemDarkPreference());
+    setPreference(nextPreference);
   }, []);
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>{children}</ThemeContext.Provider>
+  const toggleTheme = useCallback(() => {
+    setPreference((current) => (resolveTheme(current, systemDark) === "midnight-dark" ? "pure-light" : "midnight-dark"));
+  }, [systemDark]);
+
+  const value = useMemo(
+    () => ({ theme, preference, setTheme, toggleTheme }),
+    [theme, preference, setTheme, toggleTheme],
   );
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export const useTheme = () => useContext(ThemeContext);

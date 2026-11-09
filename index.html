@@ -3,6 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (() => {
+        const themeIds = [
+          "midnight-dark",
+          "pure-light",
+          "ocean-blue",
+          "emerald-green",
+          "lavender-dream",
+          "sunset",
+          "amoled-black",
+          "nord",
+        ];
+        const legacyThemes = {
+          "forest-lime": "emerald-green",
+          "sunny-brown": "sunset",
+          "cosmic-violet": "lavender-dream",
+          "luxury-gold": "pure-light",
+        };
+        let preference = "pure-light";
+        try {
+          const stored = localStorage.getItem("gg_theme");
+          if (stored === "system" || themeIds.includes(stored)) preference = stored;
+          else if (stored && Object.prototype.hasOwnProperty.call(legacyThemes, stored)) {
+            preference = legacyThemes[stored];
+          }
+        } catch {
+          // Use the light default when browser storage is unavailable.
+        }
+        const theme = preference === "system"
+          ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "midnight-dark" : "pure-light")
+          : preference;
+        const root = document.documentElement;
+        root.classList.add(`theme-${theme}`);
+        root.classList.toggle("dark", theme === "midnight-dark" || theme === "amoled-black" || theme === "nord");
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme === "midnight-dark" || theme === "amoled-black" || theme === "nord"
+          ? "dark"
+          : "light";
+      })();
+    </script>
     <title>GITAM CGPA Calculator | SGPA & Grade Calculator | TeamDino</title>
     <meta data-default-seo="true" name="description" content="Calculate GITAM CGPA, SGPA, GPA, and semester grades with the free GITAM grade calculator. Ideal for GITAM students checking grade points and academic performance." />
     <meta name="keywords" content="GITAM CGPA calculator, GITAM SGPA calculator, GITAM grade calculator, GITAM GPA calculator, CGPA calculator GITAM, SGPA calculator GITAM, TeamDino grade calculator" />
